@@ -1,0 +1,31 @@
+CapyMeal
+
+🌸 Tu diario de comidas con la calma de un carpincho.
+
+CapyMeal es una aplicación web diseñada para registrar las comidas diarias de forma simple, agradable y visualmente acogedora.
+
+No busca controlar calorías ni imponer objetivos nutricionales.
+
+Su propósito es ayudarte a construir el hábito de registrar tus comidas y conservar un diario personal de tu alimentación.
+
+Características:
+
+✅ Registro diario
+✅ Historial
+✅ Filtro por fechas
+✅ Exportación a PDF
+✅ Diseño cozy
+✅ Identidad basada en carpinchos
+
+Tecnologías
+
+Vue
+Laravel
+Tailwind
+SQLite
+
+-
+
+Capi es un carpincho curioso y tranquilo. Le encanta compartir la mesa con sus amigos y cree que cada comida cuenta una historia.
+No está interesado en dietas ni reglas estrictas; solo quiere ayudarte a recordar esos pequeños momentos del día que, con el tiempo,
+también forman parte de tus recuerdos.
