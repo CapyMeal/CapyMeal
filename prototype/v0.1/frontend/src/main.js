@@ -1,7 +1,12 @@
 import { createApp } from 'vue'
-import './styles/main.css'
 import App from './App.vue'
 import router from './router'
 
-createApp(App).use(router)
-              .mount('#app')
+import './styles/main.css'
+
+// Tema por defecto
+document.documentElement.setAttribute('data-theme', 'dark')
+
+createApp(App)
+  .use(router)
+  .mount('#app')

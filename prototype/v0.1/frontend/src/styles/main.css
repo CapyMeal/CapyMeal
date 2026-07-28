@@ -1,41 +1,97 @@
 :root {
-  --capy-pink: #f7b6d2;
-  --capy-lilac: #cbb7f6;
-  --capy-gray: #f3f1f5;
-  --capy-text: #5f5968;
-  --capy-dark: #3f3948;
-  --capy-white: #ffffff;
+  /* Colores */
 
-  font-family:
+  --color-primary: #EFA6C8;
+  --color-primary-hover: #E88AB7;
+
+  --color-secondary: #CDB8F7;
+
+  --color-background: #F4F2F6;
+  --color-surface: #FFFFFF;
+
+  --color-text: #5E5568;
+  --color-title: #40384A;
+
+  --color-border: #E6E2EA;
+
+  --color-success: #A9D7B5;
+  --color-warning: #F7D7A8;
+  --color-danger: #F2A8A8;
+
+  /* Tema claro */
+  --color-background: #F4F2F6;
+  --color-surface: #FFFFFF;
+  --color-text: #5E5568;
+  --color-title: #40384A;
+
+  --color-primary: #EFA6C8;
+  --color-primary-hover: #E88AB7;
+
+  --color-border: #E6E2EA;
+
+  /* Bordes */
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+
+  /* Sombras */
+
+  --shadow-sm: 0 4px 12px rgba(0,0,0,.05);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.08);
+
+  /* Espaciado */
+
+  --space-xs: .5rem;
+  --space-sm: .75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Tipografía */
+
+  --font-main:
     "Nunito",
     "Segoe UI",
-    system-ui,
     sans-serif;
-
-  color: var(--capy-text);
-  background: var(--capy-gray);
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
 }
 
-* {
-  box-sizing: border-box;
+:root[data-theme="dark"] {
+  --color-background: #2B2831;
+  --color-surface: #3A3642;
+  --color-text: #E8E3EF;
+  --color-title: #FFFFFF;
+
+  --color-primary: #F2A8CC;
+  --color-primary-hover: #F6BCD8;
+
+  --color-border: #4A4654;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:var(--font-main);
+  background:var(--color-background);
+  color:var(--color-text);
 }
 
 button,
 input,
-textarea {
-  font-family: inherit;
+textarea{
+  font:inherit;
 }
 
-#app {
-  min-height: 100vh;
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+#app{
+  min-height:100vh;
 }
