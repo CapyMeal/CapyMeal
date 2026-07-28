@@ -1,0 +1,41 @@
+:root {
+  --capy-pink: #f7b6d2;
+  --capy-lilac: #cbb7f6;
+  --capy-gray: #f3f1f5;
+  --capy-text: #5f5968;
+  --capy-dark: #3f3948;
+  --capy-white: #ffffff;
+
+  font-family:
+    "Nunito",
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+
+  color: var(--capy-text);
+  background: var(--capy-gray);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+#app {
+  min-height: 100vh;
+}
