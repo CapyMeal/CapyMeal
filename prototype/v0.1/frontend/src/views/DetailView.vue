@@ -40,10 +40,62 @@
             <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry[meal.key] }">
               {{ entry[meal.key] || 'No registrado' }}
             </p>
+            <div class="detail-meal__actions">
+              <CapyButton
+                variant="ghost"
+                :disabled="savingMealKey === meal.key"
+                @click="startMealEdit(meal.key)"
+              >
+                {{ editingMealKey === meal.key ? 'Editando...' : `Editar ${meal.title.toLowerCase()}` }}
+              </CapyButton>
+            </div>
+            <div v-if="editingMealKey === meal.key" class="detail-meal-editor">
+              <textarea
+                v-model="mealDraftValue"
+                class="detail-meal-editor__textarea"
+                rows="3"
+              />
+              <div class="detail-meal-editor__actions">
+                <CapyButton
+                  :disabled="savingMealKey === meal.key"
+                  @click="saveSingleMeal(meal.key, meal.title)"
+                >
+                  {{ savingMealKey === meal.key ? 'Guardando...' : 'Guardar' }}
+                </CapyButton>
+                <CapyButton variant="ghost" @click="cancelMealEdit">Cancelar</CapyButton>
+              </div>
+            </div>
           </div>
-          <div v-if="entry.notes" class="detail-meal">
+          <div class="detail-meal">
             <p class="detail-meal__label">📝 Recuerdo del día</p>
-            <p class="detail-meal__value">{{ entry.notes }}</p>
+            <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry.notes }">
+              {{ entry.notes || 'No registrado' }}
+            </p>
+            <div class="detail-meal__actions">
+              <CapyButton
+                variant="ghost"
+                :disabled="savingMealKey === 'notes'"
+                @click="startMealEdit('notes')"
+              >
+                {{ editingMealKey === 'notes' ? 'Editando...' : 'Editar recuerdo' }}
+              </CapyButton>
+            </div>
+            <div v-if="editingMealKey === 'notes'" class="detail-meal-editor">
+              <textarea
+                v-model="mealDraftValue"
+                class="detail-meal-editor__textarea"
+                rows="3"
+              />
+              <div class="detail-meal-editor__actions">
+                <CapyButton
+                  :disabled="savingMealKey === 'notes'"
+                  @click="saveSingleMeal('notes', 'recuerdo')"
+                >
+                  {{ savingMealKey === 'notes' ? 'Guardando...' : 'Guardar' }}
+                </CapyButton>
+                <CapyButton variant="ghost" @click="cancelMealEdit">Cancelar</CapyButton>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -100,6 +152,9 @@ const editing         = ref(false)
 const confirmingDelete = ref(false)
 const errorMessage = ref('')
 const exportingPdf = ref(false)
+const editingMealKey = ref('')
+const mealDraftValue = ref('')
+const savingMealKey = ref('')
 
 const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
 
@@ -124,10 +179,22 @@ onMounted(() => {
 function startEdit() {
   Object.assign(form, { ...entry.value })
   editing.value = true
+  cancelMealEdit()
 }
 
 function cancelEdit() {
   editing.value = false
+}
+
+function startMealEdit(fieldKey) {
+  editingMealKey.value = fieldKey
+  mealDraftValue.value = entry.value?.[fieldKey] || ''
+  errorMessage.value = ''
+}
+
+function cancelMealEdit() {
+  editingMealKey.value = ''
+  mealDraftValue.value = ''
 }
 
 async function saveEdit() {
@@ -189,6 +256,34 @@ async function exportDayPdf() {
     errorMessage.value = 'No pude exportar este día. Intentá nuevamente.'
   } finally {
     exportingPdf.value = false
+  }
+}
+
+async function saveSingleMeal(fieldKey, fieldLabel) {
+  const value = mealDraftValue.value.trim()
+  if (!value) {
+    errorMessage.value = `Completá ${fieldLabel.toLowerCase()} antes de guardar.`
+    return
+  }
+
+  savingMealKey.value = fieldKey
+  errorMessage.value = ''
+
+  try {
+    await upsertMealEntry({
+      date: dateKey,
+      [fieldKey]: value,
+    })
+
+    entry.value = {
+      ...entry.value,
+      [fieldKey]: value,
+    }
+    cancelMealEdit()
+  } catch {
+    errorMessage.value = `No pude guardar ${fieldLabel.toLowerCase()}. Intentá nuevamente.`
+  } finally {
+    savingMealKey.value = ''
   }
 }
 </script>
@@ -259,6 +354,31 @@ async function exportDayPdf() {
 .detail-meal__value--empty {
   opacity: .4;
   font-style: italic;
+}
+
+.detail-meal__actions {
+  margin-top: var(--space-sm);
+}
+
+.detail-meal-editor {
+  margin-top: var(--space-sm);
+}
+
+.detail-meal-editor__textarea {
+  width: 100%;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text);
+  resize: vertical;
+}
+
+.detail-meal-editor__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
 }
 
 .detail-edit-meals {

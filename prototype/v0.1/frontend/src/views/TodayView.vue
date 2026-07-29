@@ -26,38 +26,29 @@
       </div>
 
       <p v-if="errorMessage" class="today-error">{{ errorMessage }}</p>
+      <p v-if="successMessage" class="today-success">{{ successMessage }}</p>
 
       <div class="today-meals">
-        <MealCard
-          icon="☀️"
-          title="Desayuno"
-          placeholder="¿Qué desayunaste?"
-          v-model="form.breakfast"
-        />
-        <MealCard
-          icon="🍝"
-          title="Almuerzo"
-          placeholder="¿Qué almorzaste?"
-          v-model="form.lunch"
-        />
-        <MealCard
-          icon="🧁"
-          title="Merienda"
-          placeholder="¿Merendaste algo?"
-          v-model="form.snack"
-        />
-        <MealCard
-          icon="🌙"
-          title="Cena"
-          placeholder="¿Qué cenaste?"
-          v-model="form.dinner"
-        />
-        <MealCard
-          icon="📝"
-          title="Recuerdo del día"
-          placeholder="¿Hubo algo especial hoy?"
-          v-model="form.notes"
-        />
+        <div
+          v-for="meal in mealFields"
+          :key="meal.key"
+          class="today-meal-item"
+        >
+          <MealCard
+            :icon="meal.icon"
+            :title="meal.title"
+            :placeholder="meal.placeholder"
+            v-model="form[meal.key]"
+          />
+          <CapyButton
+            class="today-meal-save"
+            variant="ghost"
+            :disabled="loading || !isFieldFilled(meal.key)"
+            @click="saveSingleField(meal.key, meal.title)"
+          >
+            {{ loadingFieldKey === meal.key ? 'Guardando...' : `Guardar ${meal.title.toLowerCase()}` }}
+          </CapyButton>
+        </div>
       </div>
 
       <CapyButton class="today-save" :disabled="loading" @click="saveDay">
@@ -88,7 +79,17 @@ const form = reactive({
 
 const saved = ref(false)
 const loading = ref(false)
+const loadingFieldKey = ref('')
 const errorMessage = ref('')
+const successMessage = ref('')
+
+const mealFields = [
+  { key: 'breakfast', icon: '☀️', title: 'Desayuno', placeholder: '¿Qué desayunaste?' },
+  { key: 'lunch', icon: '🍝', title: 'Almuerzo', placeholder: '¿Qué almorzaste?' },
+  { key: 'snack', icon: '🧁', title: 'Merienda', placeholder: '¿Merendaste algo?' },
+  { key: 'dinner', icon: '🌙', title: 'Cena', placeholder: '¿Qué cenaste?' },
+  { key: 'notes', icon: '📝', title: 'Recuerdo', placeholder: '¿Hubo algo especial hoy?' },
+]
 
 const formattedDate = computed(() => {
   const [year, month, day] = selectedDate.value.split('-').map(Number)
@@ -107,6 +108,7 @@ async function loadEntryByDate(date) {
 
   loading.value = true
   errorMessage.value = ''
+  successMessage.value = ''
   saved.value = false
 
   try {
@@ -131,8 +133,14 @@ async function loadEntryByDate(date) {
 }
 
 async function saveDay() {
+  if (!hasAnyContent()) {
+    errorMessage.value = 'Completá al menos una comida o recuerdo antes de guardar.'
+    return
+  }
+
   loading.value = true
   errorMessage.value = ''
+  successMessage.value = ''
 
   try {
     await upsertMealEntry({
@@ -140,10 +148,35 @@ async function saveDay() {
       ...form,
     })
     saved.value = true
+    successMessage.value = 'Guardé tu día completo.'
   } catch {
     errorMessage.value = 'No pude guardar este día. Intentá nuevamente.'
   } finally {
     loading.value = false
+  }
+}
+
+async function saveSingleField(fieldKey, fieldTitle) {
+  if (!isFieldFilled(fieldKey)) {
+    errorMessage.value = `Completá ${fieldTitle.toLowerCase()} antes de guardar.`
+    return
+  }
+
+  loadingFieldKey.value = fieldKey
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  try {
+    await upsertMealEntry({
+      date: selectedDate.value,
+      [fieldKey]: form[fieldKey],
+    })
+
+    successMessage.value = `Guardé ${fieldTitle.toLowerCase()}.`
+  } catch {
+    errorMessage.value = `No pude guardar ${fieldTitle.toLowerCase()}. Intentá nuevamente.`
+  } finally {
+    loadingFieldKey.value = ''
   }
 }
 
@@ -154,6 +187,15 @@ function resetFormFields() {
 function resetForm() {
   resetFormFields()
   saved.value = false
+}
+
+function isFieldFilled(fieldKey) {
+  const value = form[fieldKey]
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+function hasAnyContent() {
+  return mealFields.some((meal) => isFieldFilled(meal.key))
 }
 
 watch(selectedDate, (newDate) => {
@@ -207,11 +249,27 @@ onMounted(() => {
   color: var(--color-danger);
 }
 
+.today-success {
+  font-size: .9rem;
+  margin-bottom: var(--space-md);
+  color: var(--color-success);
+}
+
 .today-meals {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
+}
+
+.today-meal-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.today-meal-save {
+  width: 100%;
 }
 
 .today-save {
