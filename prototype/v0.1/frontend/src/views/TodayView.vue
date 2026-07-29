@@ -14,15 +14,21 @@
     <!-- Formulario -->
     <template v-else>
       <div class="today-header">
-        <p class="today-header__greeting">🐹 Hola, Mechi</p>
+        <p class="today-header__greeting">
+          <img src="../assets/icons/capy2.png" alt="Capi" class="today-header__avatar">
+          <span>Hola, Mechi</span>
+        </p>
         <p class="today-header__date">{{ formattedDate }}</p>
-        <label class="today-header__picker-label" for="entry-date">📅 Cambiar fecha</label>
-        <input
-          id="entry-date"
-          v-model="selectedDate"
-          class="today-header__picker"
-          type="date"
-        >
+        <div class="today-header__picker-card">
+          <label class="today-header__picker-label" for="entry-date">📅 Elegí el día a registrar</label>
+          <input
+            id="entry-date"
+            v-model="selectedDate"
+            class="today-header__picker"
+            type="date"
+          >
+          <p class="today-header__picker-hint">Se carga hoy por defecto, pero podés registrar cualquier día pasado.</p>
+        </div>
       </div>
 
       <p v-if="errorMessage" class="today-error">{{ errorMessage }}</p>
@@ -218,10 +224,19 @@ onMounted(() => {
 }
 
 .today-header__greeting {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-title);
   margin-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.today-header__avatar {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .today-header__date {
@@ -229,6 +244,14 @@ onMounted(() => {
   color: var(--color-text);
   text-transform: capitalize;
   margin-bottom: var(--space-sm);
+}
+
+.today-header__picker-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .today-header__picker-label {
@@ -246,6 +269,12 @@ onMounted(() => {
   border-radius: var(--radius-sm);
   color: var(--color-text);
   padding: var(--space-sm) var(--space-md);
+}
+
+.today-header__picker-hint {
+  font-size: .78rem;
+  margin-top: var(--space-xs);
+  opacity: .75;
 }
 
 .today-error {
