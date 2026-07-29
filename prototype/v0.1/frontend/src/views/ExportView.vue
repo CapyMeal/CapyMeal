@@ -14,9 +14,10 @@
     </div>
 
     <p v-if="errorMessage" class="export-error">{{ errorMessage }}</p>
+    <p v-if="loading" class="export-loading">Cargando registros para exportar...</p>
 
     <EmptyState
-      v-if="!loading && filteredEntries.length === 0"
+      v-else-if="filteredEntries.length === 0"
       message="No encontré registros para esas fechas."
     />
 
@@ -187,5 +188,11 @@ async function printPdf() {
   font-size: .9rem;
   margin-bottom: var(--space-md);
   color: var(--color-danger);
+}
+
+.export-loading {
+  font-size: .88rem;
+  margin-bottom: var(--space-md);
+  opacity: .8;
 }
 </style>

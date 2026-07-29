@@ -14,9 +14,10 @@
     </div>
 
     <p v-if="errorMessage" class="diary-error">{{ errorMessage }}</p>
+    <p v-if="loading" class="diary-loading">Cargando tu diario...</p>
 
     <EmptyState
-      v-if="!loading && entries.length === 0"
+      v-else-if="entries.length === 0"
       message="Todavía no guardamos ningún recuerdo."
       action-label="Registrar mi primer día"
       @action="$router.push('/hoy')"
@@ -125,5 +126,11 @@ onMounted(async () => {
   font-size: .9rem;
   margin-bottom: var(--space-md);
   color: var(--color-danger);
+}
+
+.diary-loading {
+  font-size: .88rem;
+  margin-bottom: var(--space-md);
+  opacity: .8;
 }
 </style>

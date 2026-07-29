@@ -11,6 +11,10 @@
       </div>
     </div>
 
+    <div v-else-if="loading" class="detail-loading">
+      Cargando el detalle del día...
+    </div>
+
     <!-- No encontrado -->
     <EmptyState
       v-else-if="!entry"
@@ -158,6 +162,7 @@ const router = useRouter()
 const dateKey = route.params.date
 
 const entry           = ref(null)
+const loading = ref(true)
 const editing         = ref(false)
 const confirmingDelete = ref(false)
 const errorMessage = ref('')
@@ -235,6 +240,7 @@ async function deleteEntry() {
 }
 
 async function loadEntry() {
+  loading.value = true
   try {
     entry.value = await getMealEntry(dateKey)
   } catch (error) {
@@ -243,6 +249,8 @@ async function loadEntry() {
       return
     }
     errorMessage.value = 'No pude cargar este día. Intentá nuevamente.'
+  } finally {
+    loading.value = false
   }
 }
 
@@ -328,6 +336,11 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   font-size: .9rem;
   margin-bottom: var(--space-md);
   color: var(--color-danger);
+}
+
+.detail-loading {
+  font-size: .9rem;
+  opacity: .8;
 }
 
 .detail-meals {

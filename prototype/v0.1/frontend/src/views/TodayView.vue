@@ -39,6 +39,7 @@
 
       <p v-if="errorMessage" class="today-error">{{ errorMessage }}</p>
       <p v-if="successMessage" class="today-success">{{ successMessage }}</p>
+      <p v-if="loading" class="today-loading">Cargando registro del día...</p>
 
       <div class="today-meals">
         <div
@@ -327,6 +328,12 @@ onMounted(() => {
   font-size: .9rem;
   margin-bottom: var(--space-md);
   color: var(--color-success);
+}
+
+.today-loading {
+  font-size: .88rem;
+  margin-bottom: var(--space-md);
+  opacity: .8;
 }
 
 .today-meals {
