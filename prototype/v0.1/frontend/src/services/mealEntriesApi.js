@@ -1,9 +1,14 @@
+import { getToken } from '../stores/authStore'
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
 async function request(path, options = {}) {
+  const token = getToken()
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
     ...options,
@@ -68,7 +73,10 @@ export async function exportMealEntriesPdf({ from, to }) {
   const url = `${API_BASE_URL}/api/meal-entries/export/pdf${query ? `?${query}` : ''}`
 
   const response = await fetch(url, {
-    headers: { Accept: 'application/pdf' },
+    headers: {
+      Accept: 'application/pdf',
+      ...(getToken() ? { 'Authorization': `Bearer ${getToken()}` } : {}),
+    },
   })
 
   if (!response.ok) {

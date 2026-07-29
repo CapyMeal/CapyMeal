@@ -1,0 +1,75 @@
+import { reactive, computed } from 'vue'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+
+const state = reactive({
+  token: localStorage.getItem('capymeal-token') || null,
+  user:  JSON.parse(localStorage.getItem('capymeal-user') || 'null'),
+})
+
+export const isAuthenticated = computed(() => !!state.token)
+export const currentUser     = computed(() => state.user)
+
+export function getToken() {
+  return state.token
+}
+
+function persist(token, user) {
+  state.token = token
+  state.user  = user
+  localStorage.setItem('capymeal-token', token)
+  localStorage.setItem('capymeal-user', JSON.stringify(user))
+}
+
+function clear() {
+  state.token = null
+  state.user  = null
+  localStorage.removeItem('capymeal-token')
+  localStorage.removeItem('capymeal-user')
+}
+
+async function authRequest(path, body) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    const message = data?.message
+      || Object.values(data?.errors || {})[0]?.[0]
+      || 'Ocurrió un error.'
+    const error = new Error(message)
+    error.status = response.status
+    throw error
+  }
+
+  return data
+}
+
+export async function register({ name, email, password, password_confirmation }) {
+  const data = await authRequest('/api/register', { name, email, password, password_confirmation })
+  persist(data.token, data.user)
+  return data.user
+}
+
+export async function login({ email, password }) {
+  const data = await authRequest('/api/login', { email, password })
+  persist(data.token, data.user)
+  return data.user
+}
+
+export async function logout() {
+  if (state.token) {
+    await fetch(`${API_BASE_URL}/api/logout`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${state.token}`,
+      },
+    }).catch(() => {})
+  }
+  clear()
+}

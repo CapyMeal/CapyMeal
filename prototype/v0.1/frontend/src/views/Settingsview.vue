@@ -40,21 +40,49 @@
         </div>
       </div>
 
+      <hr class="settings-divider" />
+
+      <!-- Cuenta -->
+      <div class="settings-item">
+        <div class="settings-item__info">
+          <span class="settings-item__icon">👤</span>
+          <div>
+            <p class="settings-item__label">{{ currentUser?.name }}</p>
+            <p class="settings-item__desc">{{ currentUser?.email }}</p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="settings-divider" />
+
+      <div class="settings-item settings-item--danger" @click="handleLogout">
+        <span class="settings-item__icon">🚪</span>
+        <p class="settings-item__label">Cerrar sesión</p>
+      </div>
+
     </div>
   </MainLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import MainLayout from '../layouts/MainLayout.vue'
+import { logout, currentUser } from '../stores/authStore'
 
-const isDark = ref(document.documentElement.getAttribute('data-theme') === 'dark')
+const router  = useRouter()
+const isDark  = ref(document.documentElement.getAttribute('data-theme') === 'dark')
 
 function toggleTheme() {
   isDark.value = !isDark.value
   const theme = isDark.value ? 'dark' : 'light'
   document.documentElement.setAttribute('data-theme', theme)
   localStorage.setItem('capymeal-theme', theme)
+}
+
+async function handleLogout() {
+  await logout()
+  router.push('/login')
 }
 </script>
 
@@ -113,6 +141,19 @@ function toggleTheme() {
 
 .settings-item--static .settings-item__icon {
   margin-top: 2px;
+}
+
+.settings-item--danger {
+  cursor: pointer;
+  color: #b94040;
+}
+
+.settings-item--danger .settings-item__label {
+  color: #b94040;
+}
+
+.settings-item--danger:hover {
+  background: rgba(242,168,168,.1);
 }
 
 .settings-item__label {

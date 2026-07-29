@@ -22,7 +22,7 @@
         <div class="today-header__capi-row">
           <img src="../assets/icons/capy2.png" alt="Capi" class="today-header__avatar">
           <div>
-            <p class="today-header__greeting">Hola 🌸</p>
+            <p class="today-header__greeting">Hola, {{ currentUser?.name?.split(' ')[0] }} 🌸</p>
             <p class="today-header__date">{{ formattedDate }}</p>
           </div>
         </div>
@@ -90,6 +90,7 @@ import MainLayout  from '../layouts/MainLayout.vue'
 import MealCard    from '../components/meal/MealCard.vue'
 import CapyButton  from '../components/base/CapyButton.vue'
 import { getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
+import { currentUser } from '../stores/authStore'
 import breakfastIcon from '../assets/icons/desayuno.png'
 import lunchIcon     from '../assets/icons/almuerzo.png'
 import snackIcon     from '../assets/icons/merienda.png'
