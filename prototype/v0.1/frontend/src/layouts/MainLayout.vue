@@ -1,6 +1,7 @@
 <template>
   <div class="layout">
     <header class="layout__header">
+      <img src="../assets/illustrations/Chef.png" alt="Capi" class="layout__header-icon">
       <span class="layout__brand">CapyMeal</span>
     </header>
 
@@ -42,6 +43,13 @@ import BottomNavigation from '../components/layout/BottomNavigation.vue'
   margin: 0 auto;
   padding: var(--space-lg) var(--space-md);
   padding-bottom: calc(70px + var(--space-xl));
+}
+
+.layout__header-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
 }
 
 .layout__brand {

@@ -62,8 +62,8 @@ import settingsIcon from '../../assets/icons/ajustes.png'
 }
 
 .bottom-nav__icon-image {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 
