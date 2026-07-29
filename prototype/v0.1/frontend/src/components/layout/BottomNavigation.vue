@@ -31,12 +31,13 @@ import pdfIcon from '../../assets/icons/miPdf.png'
   bottom: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 70px;
 
   display: flex;
   align-items: stretch;
 
-  background: var(--color-surface);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  backdrop-filter: blur(8px);
   border-top: 1px solid var(--color-border);
   box-shadow: 0 -4px 16px rgba(0, 0, 0, .06);
 }
@@ -65,13 +66,13 @@ import pdfIcon from '../../assets/icons/miPdf.png'
 }
 
 .bottom-nav__icon-image {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
 }
 
 .bottom-nav__label {
-  font-size: .7rem;
+  font-size: .72rem;
   font-weight: 600;
   letter-spacing: .03em;
 }

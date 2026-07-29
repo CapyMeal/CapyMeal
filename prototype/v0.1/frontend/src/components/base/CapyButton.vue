@@ -17,11 +17,13 @@ defineProps({
 <style scoped>
 .capy-button {
   width: 100%;
+  min-height: 44px;
   padding: 0.85rem 1.5rem;
   border: none;
   border-radius: var(--radius-md);
-  font-size: 1rem;
+  font-size: .98rem;
   font-weight: 600;
+  letter-spacing: .01em;
   cursor: pointer;
   transition:
     background .2s ease,
@@ -48,7 +50,7 @@ defineProps({
 }
 
 .capy-button--ghost:hover {
-  background: var(--color-border);
+  background: color-mix(in srgb, var(--color-border) 70%, transparent);
 }
 
 .capy-button--danger {
@@ -62,5 +64,5 @@ defineProps({
 }
 
 .capy-button:active  { transform: translateY(0); }
-.capy-button:disabled { opacity: .5; cursor: not-allowed; }
+.capy-button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 </style>

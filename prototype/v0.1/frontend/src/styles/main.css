@@ -47,6 +47,7 @@
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
+  --space-2xl: 2.5rem;
 
   /* Tipografía */
 
@@ -79,6 +80,9 @@ body{
   font-family:var(--font-main);
   background:var(--color-background);
   color:var(--color-text);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
 
 button,
@@ -94,4 +98,26 @@ a{
 
 #app{
   min-height:100vh;
+}
+
+button,
+input,
+textarea {
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline:none;
+  box-shadow:0 0 0 3px rgba(239,166,200,.35);
+}
+
+@media (min-width: 768px){
+  :root{
+    --space-lg: 1.75rem;
+    --space-xl: 2.25rem;
+    --space-2xl: 3rem;
+  }
 }

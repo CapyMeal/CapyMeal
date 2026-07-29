@@ -19,15 +19,18 @@ import BottomNavigation from '../components/layout/BottomNavigation.vue'
 <style scoped>
 .layout {
   min-height: 100vh;
-  background: var(--color-background);
+  background: linear-gradient(180deg, #f8f2fa 0%, var(--color-background) 160px);
 }
 
 .layout__header {
-  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 68px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 2rem;
+  padding: 0 var(--space-lg);
 
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -37,12 +40,19 @@ import BottomNavigation from '../components/layout/BottomNavigation.vue'
 .layout__content {
   max-width: 600px;
   margin: 0 auto;
-  padding: var(--space-xl) var(--space-lg);
-  padding-bottom: calc(64px + var(--space-xl));
+  padding: var(--space-lg) var(--space-md);
+  padding-bottom: calc(70px + var(--space-xl));
 }
 
 .layout__logo {
-  width: 128px;
+  width: 136px;
   object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .layout__content {
+    padding: var(--space-xl) var(--space-lg);
+    padding-bottom: calc(70px + var(--space-xl));
+  }
 }
 </style>
