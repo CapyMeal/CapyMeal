@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView   from '../views/HomeView.vue'
 import TodayView  from '../views/TodayView.vue'
 import DiaryView  from '../views/DiaryView.vue'
+import DetailView from '../views/DetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -22,6 +23,11 @@ const router = createRouter({
       path: '/recuerdos',
       name: 'diary',
       component: DiaryView
+    },
+    {
+      path: '/recuerdos/:date',
+      name: 'detail',
+      component: DetailView
     }
   ]
 })

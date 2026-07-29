@@ -1,0 +1,227 @@
+<template>
+  <MainLayout>
+
+    <!-- Confirmar eliminar -->
+    <div v-if="confirmingDelete" class="detail-confirm">
+      <p class="detail-confirm__emoji">🐹</p>
+      <p class="detail-confirm__message">¿Segura que querés eliminar este recuerdo?</p>
+      <div class="detail-confirm__actions">
+        <CapyButton variant="danger" @click="deleteEntry">Sí, eliminar</CapyButton>
+        <CapyButton variant="ghost" @click="confirmingDelete = false">Cancelar</CapyButton>
+      </div>
+    </div>
+
+    <!-- No encontrado -->
+    <EmptyState
+      v-else-if="!entry"
+      message="No encontré ese recuerdo."
+      action-label="Volver al diario"
+      @action="$router.push('/recuerdos')"
+    />
+
+    <!-- Detalle / Edición -->
+    <template v-else>
+      <div class="detail-header">
+        <button class="detail-back" @click="$router.push('/recuerdos')">
+          ← Volver
+        </button>
+        <p class="detail-date">{{ formattedDate }}</p>
+      </div>
+
+      <!-- Modo lectura -->
+      <template v-if="!editing">
+        <div class="detail-meals">
+          <div v-for="meal in allMeals" :key="meal.key" class="detail-meal">
+            <p class="detail-meal__label">
+              <span>{{ meal.icon }}</span> {{ meal.title }}
+            </p>
+            <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry[meal.key] }">
+              {{ entry[meal.key] || 'No registrado' }}
+            </p>
+          </div>
+          <div v-if="entry.notes" class="detail-meal">
+            <p class="detail-meal__label">📝 Recuerdo del día</p>
+            <p class="detail-meal__value">{{ entry.notes }}</p>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <CapyButton @click="startEdit">✏️ Editar</CapyButton>
+          <CapyButton variant="ghost" @click="confirmingDelete = true">🗑 Eliminar</CapyButton>
+        </div>
+      </template>
+
+      <!-- Modo edición -->
+      <template v-else>
+        <div class="detail-edit-meals">
+          <MealCard icon="☀️" title="Desayuno"      placeholder="¿Qué desayunaste?"  v-model="form.breakfast" />
+          <MealCard icon="🍝" title="Almuerzo"      placeholder="¿Qué almorzaste?"   v-model="form.lunch"      />
+          <MealCard icon="🧁" title="Merienda"      placeholder="¿Merendaste algo?"  v-model="form.snack"     />
+          <MealCard icon="🌙" title="Cena"          placeholder="¿Qué cenaste?"      v-model="form.dinner"    />
+          <MealCard icon="📝" title="Recuerdo del día" placeholder="¿Hubo algo especial?" v-model="form.notes" />
+        </div>
+
+        <div class="detail-actions">
+          <CapyButton @click="saveEdit">🩷 Guardar cambios</CapyButton>
+          <CapyButton variant="ghost" @click="cancelEdit">Cancelar</CapyButton>
+        </div>
+      </template>
+    </template>
+
+  </MainLayout>
+</template>
+
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import MainLayout from '../layouts/MainLayout.vue'
+import MealCard   from '../components/meal/MealCard.vue'
+import EmptyState from '../components/diary/EmptyState.vue'
+import CapyButton from '../components/base/CapyButton.vue'
+
+const STORAGE_KEY = 'capymeal-entries'
+
+const route  = useRoute()
+const router = useRouter()
+
+const dateKey = route.params.date
+
+const entry           = ref(null)
+const editing         = ref(false)
+const confirmingDelete = ref(false)
+
+const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
+
+const allMeals = [
+  { key: 'breakfast', icon: '☀️', title: 'Desayuno' },
+  { key: 'lunch',     icon: '🍝', title: 'Almuerzo' },
+  { key: 'snack',     icon: '🧁', title: 'Merienda' },
+  { key: 'dinner',    icon: '🌙', title: 'Cena' },
+]
+
+const formattedDate = computed(() => {
+  const [year, month, day] = dateKey.split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('es-AR', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  })
+})
+
+onMounted(() => {
+  const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+  entry.value = entries[dateKey] ?? null
+})
+
+function startEdit() {
+  Object.assign(form, { ...entry.value })
+  editing.value = true
+}
+
+function cancelEdit() {
+  editing.value = false
+}
+
+function saveEdit() {
+  const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+  entries[dateKey] = { ...form }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
+  entry.value = { ...form }
+  editing.value = false
+}
+
+function deleteEntry() {
+  const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+  delete entries[dateKey]
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
+  router.push('/recuerdos')
+}
+</script>
+
+<style scoped>
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.detail-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: .9rem;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.detail-date {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-title);
+  text-transform: capitalize;
+}
+
+.detail-meals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.detail-meal {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.detail-meal__label {
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.detail-meal__value {
+  font-size: .95rem;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.detail-meal__value--empty {
+  opacity: .4;
+  font-style: italic;
+}
+
+.detail-edit-meals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Confirmar eliminar */
+.detail-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl) 0;
+}
+
+.detail-confirm__emoji    { font-size: 3.5rem; }
+.detail-confirm__message  { font-size: 1.1rem; color: var(--color-title); font-weight: 600; }
+.detail-confirm__actions  { display: flex; flex-direction: column; gap: var(--space-sm); width: 100%; }
+</style>

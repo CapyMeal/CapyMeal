@@ -1,5 +1,5 @@
 <template>
-  <article class="diary-card">
+  <RouterLink :to="`/recuerdos/${date}`" class="diary-card">
     <p class="diary-card__date">{{ formattedDate }}</p>
 
     <ul class="diary-card__meals">
@@ -12,7 +12,7 @@
     <p v-if="entry.notes" class="diary-card__notes">
       📝 {{ entry.notes }}
     </p>
-  </article>
+  </RouterLink>
 </template>
 
 <script setup>
@@ -48,11 +48,19 @@ const formattedDate = computed(() => {
 
 <style scoped>
 .diary-card {
+  display: block;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-lg);
   box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s ease, transform .15s ease;
+  text-decoration: none;
+}
+
+.diary-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .diary-card__date {
