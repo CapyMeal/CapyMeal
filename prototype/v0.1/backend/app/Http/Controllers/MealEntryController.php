@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MealEntry;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class MealEntryController extends Controller
 {
@@ -29,7 +30,15 @@ class MealEntryController extends Controller
             'notes'     => 'nullable|string',
         ]);
 
-        return response()->json(MealEntry::create($data), 201);
+        $normalized = $this->normalizeEntryFields($data);
+
+        if (!$this->hasAtLeastOneFilledField($normalized)) {
+            throw ValidationException::withMessages([
+                'entry' => ['Tenés que completar al menos una comida o recuerdo antes de guardar.'],
+            ]);
+        }
+
+        return response()->json(MealEntry::create($normalized), 201);
     }
 
     public function update(Request $request, string $date)
@@ -44,7 +53,19 @@ class MealEntryController extends Controller
             'notes'     => 'nullable|string',
         ]);
 
-        $entry->update($data);
+        $normalized = $this->normalizeEntryFields($data);
+
+        if (array_key_exists('breakfast', $data) || array_key_exists('lunch', $data) ||
+            array_key_exists('snack', $data) || array_key_exists('dinner', $data) ||
+            array_key_exists('notes', $data)) {
+            if (!$this->hasAtLeastOneFilledField($normalized)) {
+                throw ValidationException::withMessages([
+                    'entry' => ['No se puede guardar un registro vacío.'],
+                ]);
+            }
+        }
+
+        $entry->update($normalized);
 
         return response()->json($entry);
     }
@@ -82,5 +103,27 @@ class MealEntryController extends Controller
         ]);
 
         return $pdf->download('capymeal-diario.pdf');
+    }
+
+    private function normalizeEntryFields(array $data): array
+    {
+        foreach (['breakfast', 'lunch', 'snack', 'dinner', 'notes'] as $field) {
+            if (array_key_exists($field, $data) && is_string($data[$field])) {
+                $data[$field] = trim($data[$field]);
+            }
+        }
+
+        return $data;
+    }
+
+    private function hasAtLeastOneFilledField(array $data): bool
+    {
+        foreach (['breakfast', 'lunch', 'snack', 'dinner', 'notes'] as $field) {
+            if (!empty($data[$field])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
