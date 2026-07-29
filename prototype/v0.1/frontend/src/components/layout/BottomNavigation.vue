@@ -8,6 +8,10 @@
       <span class="bottom-nav__icon">📖</span>
       <span class="bottom-nav__label">Diario</span>
     </RouterLink>
+    <RouterLink to="/ajustes" class="bottom-nav__item" active-class="bottom-nav__item--active">
+      <span class="bottom-nav__icon">⚙️</span>
+      <span class="bottom-nav__label">Ajustes</span>
+    </RouterLink>
   </nav>
 </template>
 
