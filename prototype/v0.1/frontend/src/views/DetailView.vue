@@ -49,6 +49,9 @@
 
         <div class="detail-actions">
           <CapyButton @click="startEdit">✏️ Editar</CapyButton>
+          <CapyButton :disabled="exportingPdf" variant="ghost" @click="exportDayPdf">
+            {{ exportingPdf ? 'Preparando PDF...' : '📄 Exportar este día' }}
+          </CapyButton>
           <CapyButton variant="ghost" @click="confirmingDelete = true">🗑 Eliminar</CapyButton>
         </div>
       </template>
@@ -80,7 +83,12 @@ import MainLayout from '../layouts/MainLayout.vue'
 import MealCard   from '../components/meal/MealCard.vue'
 import EmptyState from '../components/diary/EmptyState.vue'
 import CapyButton from '../components/base/CapyButton.vue'
-import { deleteMealEntry, getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
+import {
+  deleteMealEntry,
+  exportMealEntriesPdf,
+  getMealEntry,
+  upsertMealEntry,
+} from '../services/mealEntriesApi'
 
 const route  = useRoute()
 const router = useRouter()
@@ -91,6 +99,7 @@ const entry           = ref(null)
 const editing         = ref(false)
 const confirmingDelete = ref(false)
 const errorMessage = ref('')
+const exportingPdf = ref(false)
 
 const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
 
@@ -157,6 +166,29 @@ async function loadEntry() {
       return
     }
     errorMessage.value = 'No pude cargar este día. Intentá nuevamente.'
+  }
+}
+
+async function exportDayPdf() {
+  exportingPdf.value = true
+  errorMessage.value = ''
+
+  try {
+    const blob = await exportMealEntriesPdf({
+      from: dateKey,
+      to: dateKey,
+    })
+
+    const fileURL = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = fileURL
+    link.download = `capymeal-${dateKey}.pdf`
+    link.click()
+    window.URL.revokeObjectURL(fileURL)
+  } catch {
+    errorMessage.value = 'No pude exportar este día. Intentá nuevamente.'
+  } finally {
+    exportingPdf.value = false
   }
 }
 </script>
