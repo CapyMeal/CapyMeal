@@ -26,7 +26,13 @@
             v-model="selectedDate"
             class="today-header__picker"
             type="date"
+            :max="todayISO"
           >
+          <div class="today-header__quick-dates">
+            <button type="button" class="today-header__quick-btn" @click="setQuickDate(0)">Hoy</button>
+            <button type="button" class="today-header__quick-btn" @click="setQuickDate(1)">Ayer</button>
+            <button type="button" class="today-header__quick-btn" @click="setQuickDate(7)">Hace 7 días</button>
+          </div>
           <p class="today-header__picker-hint">Se carga hoy por defecto, pero podés registrar cualquier día pasado.</p>
         </div>
       </div>
@@ -78,7 +84,8 @@ import snackIcon from '../assets/icons/merienda.png'
 import dinnerIcon from '../assets/icons/cena.png'
 
 const today = new Date()
-const selectedDate = ref(today.toISOString().slice(0, 10))
+const todayISO = formatDateISO(today)
+const selectedDate = ref(todayISO)
 
 const form = reactive({
   breakfast: '',
@@ -209,6 +216,23 @@ function hasAnyContent() {
   return mealFields.some((meal) => isFieldFilled(meal.key))
 }
 
+function setQuickDate(daysAgo) {
+  selectedDate.value = formatDateISO(shiftDays(new Date(), -daysAgo))
+}
+
+function shiftDays(baseDate, days) {
+  const nextDate = new Date(baseDate)
+  nextDate.setDate(nextDate.getDate() + days)
+  return nextDate
+}
+
+function formatDateISO(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 watch(selectedDate, (newDate) => {
   loadEntryByDate(newDate)
 })
@@ -275,6 +299,22 @@ onMounted(() => {
   font-size: .78rem;
   margin-top: var(--space-xs);
   opacity: .75;
+}
+
+.today-header__quick-dates {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.today-header__quick-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: .3rem .65rem;
+  font-size: .75rem;
+  cursor: pointer;
 }
 
 .today-error {
