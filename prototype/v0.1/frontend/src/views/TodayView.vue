@@ -36,6 +36,7 @@
         >
           <MealCard
             :icon="meal.icon"
+            :icon-image="meal.iconImage"
             :title="meal.title"
             :placeholder="meal.placeholder"
             v-model="form[meal.key]"
@@ -65,6 +66,10 @@ import MainLayout from '../layouts/MainLayout.vue'
 import MealCard   from '../components/meal/MealCard.vue'
 import CapyButton from '../components/base/CapyButton.vue'
 import { getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
+import breakfastIcon from '../assets/icons/desayuno.png'
+import lunchIcon from '../assets/icons/almuerzo.png'
+import snackIcon from '../assets/icons/merienda.png'
+import dinnerIcon from '../assets/icons/cena.png'
 
 const today = new Date()
 const selectedDate = ref(today.toISOString().slice(0, 10))
@@ -84,10 +89,10 @@ const errorMessage = ref('')
 const successMessage = ref('')
 
 const mealFields = [
-  { key: 'breakfast', icon: '☀️', title: 'Desayuno', placeholder: '¿Qué desayunaste?' },
-  { key: 'lunch', icon: '🍝', title: 'Almuerzo', placeholder: '¿Qué almorzaste?' },
-  { key: 'snack', icon: '🧁', title: 'Merienda', placeholder: '¿Merendaste algo?' },
-  { key: 'dinner', icon: '🌙', title: 'Cena', placeholder: '¿Qué cenaste?' },
+  { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno', placeholder: '¿Qué desayunaste?' },
+  { key: 'lunch', iconImage: lunchIcon, title: 'Almuerzo', placeholder: '¿Qué almorzaste?' },
+  { key: 'snack', iconImage: snackIcon, title: 'Merienda', placeholder: '¿Merendaste algo?' },
+  { key: 'dinner', iconImage: dinnerIcon, title: 'Cena', placeholder: '¿Qué cenaste?' },
   { key: 'notes', icon: '📝', title: 'Recuerdo', placeholder: '¿Hubo algo especial hoy?' },
 ]
 

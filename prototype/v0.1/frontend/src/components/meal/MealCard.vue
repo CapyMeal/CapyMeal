@@ -1,7 +1,13 @@
 <template>
   <div class="meal-card">
     <div class="meal-card__header">
-      <span class="meal-card__icon">{{ icon }}</span>
+      <img
+        v-if="iconImage"
+        :src="iconImage"
+        :alt="title"
+        class="meal-card__icon-image"
+      >
+      <span v-else class="meal-card__icon">{{ icon }}</span>
       <h2 class="meal-card__title">{{ title }}</h2>
     </div>
     <textarea
@@ -16,7 +22,8 @@
 
 <script setup>
 defineProps({
-  icon:       { type: String, required: true },
+  icon:       { type: String, default: '' },
+  iconImage:  { type: String, default: '' },
   title:      { type: String, required: true },
   modelValue: { type: String, default: '' },
   placeholder:{ type: String, default: '¿Qué comiste?' },
@@ -44,6 +51,12 @@ defineEmits(['update:modelValue'])
 .meal-card__icon {
   font-size: 1.4rem;
   line-height: 1;
+}
+
+.meal-card__icon-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .meal-card__title {

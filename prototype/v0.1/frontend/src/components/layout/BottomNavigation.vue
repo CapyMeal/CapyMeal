@@ -1,15 +1,15 @@
 <template>
   <nav class="bottom-nav">
     <RouterLink to="/hoy" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <span class="bottom-nav__icon">🏠</span>
+      <img :src="dayIcon" alt="Hoy" class="bottom-nav__icon-image">
       <span class="bottom-nav__label">Hoy</span>
     </RouterLink>
     <RouterLink to="/recuerdos" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <span class="bottom-nav__icon">📖</span>
+      <img :src="diaryIcon" alt="Diario" class="bottom-nav__icon-image">
       <span class="bottom-nav__label">Diario</span>
     </RouterLink>
     <RouterLink to="/exportar" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <span class="bottom-nav__icon">📄</span>
+      <img :src="pdfIcon" alt="PDF" class="bottom-nav__icon-image">
       <span class="bottom-nav__label">PDF</span>
     </RouterLink>
     <RouterLink to="/ajustes" class="bottom-nav__item" active-class="bottom-nav__item--active">
@@ -18,6 +18,12 @@
     </RouterLink>
   </nav>
 </template>
+
+<script setup>
+import dayIcon from '../../assets/icons/miDia.png'
+import diaryIcon from '../../assets/icons/miDiario.png'
+import pdfIcon from '../../assets/icons/miPdf.png'
+</script>
 
 <style scoped>
 .bottom-nav {
@@ -56,6 +62,12 @@
 .bottom-nav__icon {
   font-size: 1.25rem;
   line-height: 1;
+}
+
+.bottom-nav__icon-image {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 .bottom-nav__label {

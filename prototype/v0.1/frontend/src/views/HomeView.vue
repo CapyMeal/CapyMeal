@@ -3,14 +3,14 @@
     <div class="splash__content">
       <img
         class="splash__logo"
-        src="../assets/logo/LogoSinFondo.png"
+        src="../assets/logo/Alternativa.png"
         alt="CapyMeal"
       />
 
       <img
         class="splash__capi"
-        src="../assets/illustrations/CapyDiaryComfy.png"
-        alt="Capi con su libreta"
+        src="../assets/illustrations/Chef.png"
+        alt="Capi chef"
       />
 
       <p class="splash__tagline">
@@ -35,7 +35,7 @@ import CapyButton from '../components/base/CapyButton.vue'
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-background);
+  background: linear-gradient(180deg, #f8f2fa 0%, var(--color-background) 100%);
   padding: var(--space-xl);
 }
 
@@ -50,14 +50,14 @@ import CapyButton from '../components/base/CapyButton.vue'
 }
 
 .splash__logo {
-  width: 160px;
+  width: 190px;
   object-fit: contain;
 }
 
 .splash__capi {
-  width: 200px;
+  width: 220px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, .1));
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, .12));
 }
 
 .splash__tagline {

@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <header class="layout__header">
-      <h1 class="layout__logo">🐹 CapyMeal</h1>
+      <img class="layout__logo" src="../assets/logo/Alternativa.png" alt="CapyMeal">
     </header>
 
     <main class="layout__content">
@@ -42,9 +42,7 @@ import BottomNavigation from '../components/layout/BottomNavigation.vue'
 }
 
 .layout__logo {
-  margin: 0;
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--color-title);
+  width: 128px;
+  object-fit: contain;
 }
 </style>

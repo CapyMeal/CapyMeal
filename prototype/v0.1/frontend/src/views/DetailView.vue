@@ -35,7 +35,13 @@
         <div class="detail-meals">
           <div v-for="meal in allMeals" :key="meal.key" class="detail-meal">
             <p class="detail-meal__label">
-              <span>{{ meal.icon }}</span> {{ meal.title }}
+              <img
+                v-if="meal.iconImage"
+                :src="meal.iconImage"
+                :alt="meal.title"
+                class="detail-meal__icon-image"
+              >
+              <span v-else>{{ meal.icon }}</span> {{ meal.title }}
             </p>
             <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry[meal.key] }">
               {{ entry[meal.key] || 'No registrado' }}
@@ -111,10 +117,10 @@
       <!-- Modo edición -->
       <template v-else>
         <div class="detail-edit-meals">
-          <MealCard icon="☀️" title="Desayuno"      placeholder="¿Qué desayunaste?"  v-model="form.breakfast" />
-          <MealCard icon="🍝" title="Almuerzo"      placeholder="¿Qué almorzaste?"   v-model="form.lunch"      />
-          <MealCard icon="🧁" title="Merienda"      placeholder="¿Merendaste algo?"  v-model="form.snack"     />
-          <MealCard icon="🌙" title="Cena"          placeholder="¿Qué cenaste?"      v-model="form.dinner"    />
+          <MealCard :icon-image="breakfastIcon" title="Desayuno"      placeholder="¿Qué desayunaste?"  v-model="form.breakfast" />
+          <MealCard :icon-image="lunchIcon" title="Almuerzo"      placeholder="¿Qué almorzaste?"   v-model="form.lunch"      />
+          <MealCard :icon-image="snackIcon" title="Merienda"      placeholder="¿Merendaste algo?"  v-model="form.snack"     />
+          <MealCard :icon-image="dinnerIcon" title="Cena"          placeholder="¿Qué cenaste?"      v-model="form.dinner"    />
           <MealCard icon="📝" title="Recuerdo del día" placeholder="¿Hubo algo especial?" v-model="form.notes" />
         </div>
 
@@ -135,6 +141,10 @@ import MainLayout from '../layouts/MainLayout.vue'
 import MealCard   from '../components/meal/MealCard.vue'
 import EmptyState from '../components/diary/EmptyState.vue'
 import CapyButton from '../components/base/CapyButton.vue'
+import breakfastIcon from '../assets/icons/desayuno.png'
+import lunchIcon from '../assets/icons/almuerzo.png'
+import snackIcon from '../assets/icons/merienda.png'
+import dinnerIcon from '../assets/icons/cena.png'
 import {
   deleteMealEntry,
   exportMealEntriesPdf,
@@ -159,10 +169,10 @@ const savingMealKey = ref('')
 const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
 
 const allMeals = [
-  { key: 'breakfast', icon: '☀️', title: 'Desayuno' },
-  { key: 'lunch',     icon: '🍝', title: 'Almuerzo' },
-  { key: 'snack',     icon: '🧁', title: 'Merienda' },
-  { key: 'dinner',    icon: '🌙', title: 'Cena' },
+  { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno' },
+  { key: 'lunch',     iconImage: lunchIcon, title: 'Almuerzo' },
+  { key: 'snack',     iconImage: snackIcon, title: 'Merienda' },
+  { key: 'dinner',    iconImage: dinnerIcon, title: 'Cena' },
 ]
 
 const formattedDate = computed(() => {
@@ -343,6 +353,12 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
+}
+
+.detail-meal__icon-image {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 .detail-meal__value {
