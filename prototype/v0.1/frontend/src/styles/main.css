@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Colores — design-system.md */
+  --color-primary:        #F4B6D7;
+  --color-primary-hover:  #e89ec3;
+  --color-lavender:       #DCCCF4;
+  --color-brown:          #A98274;
+
+  --color-background: #F5F5F7;
+  --color-surface:    #FFFFFF;
+
+  --color-text:   #3F3F46;
+  --color-title:  #3F3F46;
+  --color-muted:  #6B6B72;
+
+  --color-border: #EDE9F2;
+
+  --color-success: #A9D7B5;
+  --color-warning: #F7D7A8;
+  --color-danger:  #F2A8A8;
+
+  /* Bordes */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+
+  /* Sombras */
+  --shadow-sm: 0 2px 12px rgba(164,130,116,.09);
+  --shadow-md: 0 6px 24px rgba(164,130,116,.13);
+
+  /* Espaciado */
+  --space-xs:  .5rem;
+  --space-sm:  .75rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2rem;
+  --space-2xl: 2.75rem;
+
+  /* Tipografía */
+  --font-title: "Fredoka", "Nunito", sans-serif;
+  --font-main:  "Inter", "Segoe UI", sans-serif;
+}
+
+:root[data-theme="dark"] {
+  --color-background: #2B2831;
+  --color-surface:    #3A3642;
+  --color-text:       #E8E3EF;
+  --color-title:      #FFFFFF;
+  --color-muted:      #B0AABF;
+
+  --color-primary:        #F4B6D7;
+  --color-primary-hover:  #F9CDE4;
+
+  --color-border: #4A4654;
+}
+
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:var(--font-main);
+  background:var(--color-background);
+  color:var(--color-text);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-title);
+}
+
+button,
+input,
+textarea{
+  font:inherit;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+#app{
+  min-height:100vh;
+}
+
+button,
+input,
+textarea {
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline:none;
+  box-shadow:0 0 0 3px rgba(239,166,200,.35);
+}
+
+@media (min-width: 768px){
+  :root{
+    --space-lg: 1.75rem;
+    --space-xl: 2.25rem;
+    --space-2xl: 3rem;
+  }
+}
