@@ -7,10 +7,13 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Instala Laravel en staging durante el build (no en el volumen)
+RUN composer create-project laravel/laravel /laravel-staging --prefer-dist --quiet
+
 WORKDIR /var/www/html
 
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 EXPOSE 8000
 

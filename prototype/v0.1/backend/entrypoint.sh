@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-# Bootstrapea Laravel la primera vez que se levanta el contenedor
+# Copia Laravel desde staging si es la primera vez (artisan no existe en el volumen)
 if [ ! -f "artisan" ]; then
-    echo "🐹 Primera vez — instalando Laravel..."
-    composer create-project laravel/laravel . --prefer-dist --quiet
-    echo "✅ Laravel instalado"
+    echo "🐹 Primera vez — copiando Laravel al volumen..."
+    cp -rn /laravel-staging/. /var/www/html/
+    echo "✅ Laravel listo"
 fi
 
 # Configura el .env con las variables del entorno Docker

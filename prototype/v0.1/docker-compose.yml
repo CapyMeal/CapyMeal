@@ -9,7 +9,7 @@ services:
       POSTGRES_USER:     capymeal
       POSTGRES_PASSWORD: capymeal
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
@@ -25,7 +25,7 @@ services:
     container_name: capymeal-backend
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8080:8000"
     volumes:
       - ./backend:/var/www/html
     depends_on:
@@ -49,12 +49,12 @@ services:
     container_name: capymeal-frontend
     restart: unless-stopped
     ports:
-      - "5173:5173"
+      - "5174:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      VITE_API_URL: http://localhost:8000
+      VITE_API_URL: http://localhost:8080
 
 volumes:
   db_data:
