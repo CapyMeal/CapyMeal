@@ -1,0 +1,29 @@
+FROM php:8.2-cli
+
+RUN apt-get update && apt-get install -y \
+        git curl zip unzip libpq-dev libzip-dev \
+        libpng-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql zip gd \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Copia el código de la app
+COPY . .
+
+# Instala dependencias de producción
+RUN composer install --no-dev --optimize-autoloader --no-interaction --quiet
+
+# Permisos de storage
+RUN mkdir -p storage/framework/{sessions,views,cache} bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+COPY entrypoint.prod.sh /entrypoint.sh
+RUN sed -i 's/\r//' /entrypoint.sh && chmod +x /entrypoint.sh
+
+EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]

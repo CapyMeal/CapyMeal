@@ -1,9 +1,17 @@
 <?php
 
+$frontendUrl = env('FRONTEND_URL');
+
+$allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+
+if ($frontendUrl) {
+    $allowedOrigins[] = rtrim($frontendUrl, '/');
+}
+
 return [
     'paths'                    => ['api/*'],
     'allowed_methods'          => ['*'],
-    'allowed_origins'          => ['http://localhost:5174', 'http://localhost:5173'],
+    'allowed_origins'          => $allowedOrigins,
     'allowed_origins_patterns' => [],
     'allowed_headers'          => ['*'],
     'exposed_headers'          => [],
