@@ -29,6 +29,7 @@ FRONTEND_URL=${FRONTEND_URL:-*}
 EOF
 
 php artisan key:generate --force --no-interaction
+php artisan package:discover --ansi
 
 echo "🌸 Ejecutando migraciones..."
 php artisan migrate --force --no-interaction

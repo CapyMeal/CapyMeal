@@ -14,8 +14,8 @@ WORKDIR /var/www/html
 # Copia el código de la app
 COPY . .
 
-# Instala dependencias de producción
-RUN composer install --no-dev --optimize-autoloader --no-interaction --quiet
+# Instala dependencias de producción (--no-scripts evita package:discover sin .env)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --quiet
 
 # Permisos de storage
 RUN mkdir -p storage/framework/{sessions,views,cache} bootstrap/cache \
