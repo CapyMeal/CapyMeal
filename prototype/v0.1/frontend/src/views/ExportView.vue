@@ -1,6 +1,9 @@
 <template>
   <MainLayout>
-    <h1 class="export-title">📄 Exportar PDF</h1>
+    <div class="export-heading">
+      <img src="../assets/icons/pdf.png" alt="" class="export-heading__icon">
+      <h1 class="export-heading__title">Exportar PDF</h1>
+    </div>
 
     <div class="export-filters">
       <div class="export-field">
@@ -124,11 +127,25 @@ async function printPdf() {
 </script>
 
 <style scoped>
-.export-title {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--color-title);
+.export-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   margin-bottom: var(--space-lg);
+}
+
+.export-heading__icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
+}
+
+.export-heading__title {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-title);
 }
 
 .export-filters {

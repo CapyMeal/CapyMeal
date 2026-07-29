@@ -1,6 +1,9 @@
 <template>
   <MainLayout>
-    <h1 class="settings-title">⚙️ Ajustes</h1>
+    <div class="settings-heading">
+      <img src="../assets/icons/ajustes.png" alt="" class="settings-heading__icon">
+      <h1 class="settings-heading__title">Ajustes</h1>
+    </div>
 
     <div class="settings-list">
 
@@ -56,11 +59,25 @@ function toggleTheme() {
 </script>
 
 <style scoped>
-.settings-title {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--color-title);
+.settings-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   margin-bottom: var(--space-xl);
+}
+
+.settings-heading__icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
+}
+
+.settings-heading__title {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-title);
 }
 
 .settings-list {

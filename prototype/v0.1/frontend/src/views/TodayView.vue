@@ -1,26 +1,42 @@
 <template>
   <MainLayout>
 
-    <!-- Confirmación -->
+    <!-- Confirmación de Capi -->
     <div v-if="saved" class="confirmation">
-      <p class="confirmation__emoji">🐹</p>
+      <img src="../assets/icons/capy2.png" alt="Capi" class="confirmation__capi">
       <p class="confirmation__message">
         Listo 🌸<br>
-        Este día ya forma parte de tu diario.
+        <span>Este día ya forma parte de tu diario.</span>
       </p>
-      <CapyButton @click="resetForm">Registrar otro día</CapyButton>
+      <div class="confirmation__actions">
+        <CapyButton @click="goToDiary">Ver mi diario</CapyButton>
+        <CapyButton variant="ghost" @click="resetForm">Registrar otro día</CapyButton>
+      </div>
     </div>
 
     <!-- Formulario -->
     <template v-else>
+
+      <!-- Encabezado -->
       <div class="today-header">
-        <p class="today-header__greeting">
+        <div class="today-header__capi-row">
           <img src="../assets/icons/capy2.png" alt="Capi" class="today-header__avatar">
-          <span>Hola, Mechi</span>
-        </p>
-        <p class="today-header__date">{{ formattedDate }}</p>
-        <div class="today-header__picker-card">
-          <label class="today-header__picker-label" for="entry-date">📅 Elegí el día a registrar</label>
+          <div>
+            <p class="today-header__greeting">Hola 🌸</p>
+            <p class="today-header__date">{{ formattedDate }}</p>
+          </div>
+        </div>
+
+        <!-- Selector de fecha discreto -->
+        <button
+          type="button"
+          class="today-header__date-toggle"
+          @click="showDatePicker = !showDatePicker"
+        >
+          📅 {{ showDatePicker ? 'Cerrar' : 'Cambiar día' }}
+        </button>
+
+        <div v-if="showDatePicker" class="today-header__date-panel">
           <input
             id="entry-date"
             v-model="selectedDate"
@@ -33,41 +49,35 @@
             <button type="button" class="today-header__quick-btn" @click="setQuickDate(1)">Ayer</button>
             <button type="button" class="today-header__quick-btn" @click="setQuickDate(7)">Hace 7 días</button>
           </div>
-          <p class="today-header__picker-hint">Se carga hoy por defecto, pero podés registrar cualquier día pasado.</p>
         </div>
       </div>
 
-      <p v-if="errorMessage" class="today-error">{{ errorMessage }}</p>
-      <p v-if="successMessage" class="today-success">{{ successMessage }}</p>
-      <p v-if="loading" class="today-loading">Cargando registro del día...</p>
+      <!-- Feedback inline -->
+      <p v-if="loading" class="today-status today-status--loading">Cargando…</p>
+      <p v-if="errorMessage" class="today-status today-status--error">{{ errorMessage }}</p>
+      <p v-if="successMessage" class="today-status today-status--success">{{ successMessage }}</p>
 
+      <!-- Tarjetas de comida -->
       <div class="today-meals">
-        <div
+        <MealCard
           v-for="meal in mealFields"
           :key="meal.key"
-          class="today-meal-item"
-        >
-          <MealCard
-            :icon="meal.icon"
-            :icon-image="meal.iconImage"
-            :title="meal.title"
-            :placeholder="meal.placeholder"
-            v-model="form[meal.key]"
-          />
-          <CapyButton
-            class="today-meal-save"
-            variant="ghost"
-            :disabled="loading || !isFieldFilled(meal.key)"
-            @click="saveSingleField(meal.key, meal.title)"
-          >
-            {{ loadingFieldKey === meal.key ? 'Guardando...' : `Guardar ${meal.title.toLowerCase()}` }}
-          </CapyButton>
-        </div>
+          :icon="meal.icon"
+          :icon-image="meal.iconImage"
+          :title="meal.title"
+          :placeholder="meal.placeholder"
+          :saving="loadingFieldKey === meal.key"
+          :just-saved="savedFields.has(meal.key)"
+          v-model="form[meal.key]"
+          @save-field="saveSingleField(meal.key)"
+        />
       </div>
 
+      <!-- Acción principal -->
       <CapyButton class="today-save" :disabled="loading" @click="saveDay">
         🩷 Guardar mi día
       </CapyButton>
+
     </template>
 
   </MainLayout>
@@ -75,18 +85,23 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
-import MainLayout from '../layouts/MainLayout.vue'
-import MealCard   from '../components/meal/MealCard.vue'
-import CapyButton from '../components/base/CapyButton.vue'
+import { useRouter } from 'vue-router'
+import MainLayout  from '../layouts/MainLayout.vue'
+import MealCard    from '../components/meal/MealCard.vue'
+import CapyButton  from '../components/base/CapyButton.vue'
 import { getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
 import breakfastIcon from '../assets/icons/desayuno.png'
-import lunchIcon from '../assets/icons/almuerzo.png'
-import snackIcon from '../assets/icons/merienda.png'
-import dinnerIcon from '../assets/icons/cena.png'
+import lunchIcon     from '../assets/icons/almuerzo.png'
+import snackIcon     from '../assets/icons/merienda.png'
+import dinnerIcon    from '../assets/icons/cena.png'
 
-const today = new Date()
+const router = useRouter()
+
+const today    = new Date()
 const todayISO = formatDateISO(today)
-const selectedDate = ref(todayISO)
+
+const selectedDate  = ref(todayISO)
+const showDatePicker = ref(false)
 
 const form = reactive({
   breakfast: '',
@@ -96,55 +111,50 @@ const form = reactive({
   notes:     '',
 })
 
-const saved = ref(false)
-const loading = ref(false)
+const saved          = ref(false)
+const loading        = ref(false)
 const loadingFieldKey = ref('')
-const errorMessage = ref('')
+const errorMessage   = ref('')
 const successMessage = ref('')
+const savedFields    = ref(new Set())
 
 const mealFields = [
-  { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno', placeholder: '¿Qué desayunaste?' },
-  { key: 'lunch', iconImage: lunchIcon, title: 'Almuerzo', placeholder: '¿Qué almorzaste?' },
-  { key: 'snack', iconImage: snackIcon, title: 'Merienda', placeholder: '¿Merendaste algo?' },
-  { key: 'dinner', iconImage: dinnerIcon, title: 'Cena', placeholder: '¿Qué cenaste?' },
-  { key: 'notes', icon: '📝', title: 'Recuerdo', placeholder: '¿Hubo algo especial hoy?' },
+  { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno',  placeholder: 'Ej: café con leche y tostadas' },
+  { key: 'lunch',     iconImage: lunchIcon,     title: 'Almuerzo',  placeholder: 'Ej: fideos con tuco y ensalada' },
+  { key: 'snack',     iconImage: snackIcon,     title: 'Merienda',  placeholder: 'Ej: mate con facturas' },
+  { key: 'dinner',    iconImage: dinnerIcon,    title: 'Cena',      placeholder: 'Ej: pizza con familia' },
+  { key: 'notes',     icon: '📝',              title: 'Recuerdo del día', placeholder: '¿Hubo algo especial hoy?' },
 ]
 
 const formattedDate = computed(() => {
   const [year, month, day] = selectedDate.value.split('-').map(Number)
   return new Date(year, month - 1, day).toLocaleDateString('es-AR', {
     weekday: 'long',
-    day: 'numeric',
-    month: 'long',
+    day:     'numeric',
+    month:   'long',
   })
 })
 
 async function loadEntryByDate(date) {
-  if (!date) {
-    resetFormFields()
-    return
-  }
+  if (!date) { resetFormFields(); return }
 
-  loading.value = true
+  loading.value      = true
   errorMessage.value = ''
   successMessage.value = ''
-  saved.value = false
+  saved.value        = false
+  savedFields.value  = new Set()
 
   try {
     const entry = await getMealEntry(date)
     Object.assign(form, {
       breakfast: entry.breakfast || '',
-      lunch: entry.lunch || '',
-      snack: entry.snack || '',
-      dinner: entry.dinner || '',
-      notes: entry.notes || '',
+      lunch:     entry.lunch     || '',
+      snack:     entry.snack     || '',
+      dinner:    entry.dinner    || '',
+      notes:     entry.notes     || '',
     })
   } catch (error) {
-    if (error.status === 404) {
-      resetFormFields()
-      return
-    }
-
+    if (error.status === 404) { resetFormFields(); return }
     errorMessage.value = 'No pude cargar ese día. Intentá nuevamente.'
   } finally {
     loading.value = false
@@ -157,17 +167,13 @@ async function saveDay() {
     return
   }
 
-  loading.value = true
+  loading.value      = true
   errorMessage.value = ''
   successMessage.value = ''
 
   try {
-    await upsertMealEntry({
-      date: selectedDate.value,
-      ...form,
-    })
+    await upsertMealEntry({ date: selectedDate.value, ...form })
     saved.value = true
-    successMessage.value = 'Guardé tu día completo.'
   } catch {
     errorMessage.value = 'No pude guardar este día. Intentá nuevamente.'
   } finally {
@@ -175,25 +181,23 @@ async function saveDay() {
   }
 }
 
-async function saveSingleField(fieldKey, fieldTitle) {
-  if (!isFieldFilled(fieldKey)) {
-    errorMessage.value = `Completá ${fieldTitle.toLowerCase()} antes de guardar.`
-    return
-  }
+async function saveSingleField(fieldKey) {
+  const value = form[fieldKey]
+  if (!value || !value.trim()) return
 
   loadingFieldKey.value = fieldKey
-  errorMessage.value = ''
-  successMessage.value = ''
+  errorMessage.value    = ''
 
   try {
-    await upsertMealEntry({
-      date: selectedDate.value,
-      [fieldKey]: form[fieldKey],
-    })
-
-    successMessage.value = `Guardé ${fieldTitle.toLowerCase()}.`
+    await upsertMealEntry({ date: selectedDate.value, [fieldKey]: form[fieldKey] })
+    savedFields.value = new Set([...savedFields.value, fieldKey])
+    setTimeout(() => {
+      const next = new Set(savedFields.value)
+      next.delete(fieldKey)
+      savedFields.value = next
+    }, 2500)
   } catch {
-    errorMessage.value = `No pude guardar ${fieldTitle.toLowerCase()}. Intentá nuevamente.`
+    // auto-save silencioso: no mostrar error para no interrumpir
   } finally {
     loadingFieldKey.value = ''
   }
@@ -205,137 +209,148 @@ function resetFormFields() {
 
 function resetForm() {
   resetFormFields()
-  saved.value = false
+  saved.value       = false
+  savedFields.value = new Set()
+  selectedDate.value = todayISO
 }
 
-function isFieldFilled(fieldKey) {
-  const value = form[fieldKey]
-  return typeof value === 'string' && value.trim().length > 0
+function goToDiary() {
+  router.push('/recuerdos')
 }
 
 function hasAnyContent() {
-  return mealFields.some((meal) => isFieldFilled(meal.key))
+  return mealFields.some((meal) => {
+    const v = form[meal.key]
+    return typeof v === 'string' && v.trim().length > 0
+  })
 }
 
 function setQuickDate(daysAgo) {
-  selectedDate.value = formatDateISO(shiftDays(new Date(), -daysAgo))
+  selectedDate.value  = formatDateISO(shiftDays(new Date(), -daysAgo))
+  showDatePicker.value = false
 }
 
 function shiftDays(baseDate, days) {
-  const nextDate = new Date(baseDate)
-  nextDate.setDate(nextDate.getDate() + days)
-  return nextDate
+  const d = new Date(baseDate)
+  d.setDate(d.getDate() + days)
+  return d
 }
 
 function formatDateISO(date) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
 }
 
-watch(selectedDate, (newDate) => {
-  loadEntryByDate(newDate)
-})
-
-onMounted(() => {
-  loadEntryByDate(selectedDate.value)
-})
+watch(selectedDate, (newDate) => loadEntryByDate(newDate))
+onMounted(() => loadEntryByDate(selectedDate.value))
 </script>
 
 <style scoped>
+/* ── Encabezado ─────────────────────────────── */
 .today-header {
   margin-bottom: var(--space-xl);
 }
 
-.today-header__greeting {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-title);
-  margin-bottom: var(--space-xs);
+.today-header__capi-row {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-}
-
-.today-header__avatar {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-
-.today-header__date {
-  font-size: 1rem;
-  color: var(--color-text);
-  text-transform: capitalize;
+  gap: var(--space-md);
   margin-bottom: var(--space-sm);
 }
 
-.today-header__picker-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-sm);
-  box-shadow: var(--shadow-sm);
+.today-header__avatar {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFF0F8, #F8EEFF);
+  padding: 4px;
 }
 
-.today-header__picker-label {
-  font-size: .85rem;
+.today-header__greeting {
+  font-family: var(--font-title);
+  font-size: 1.4rem;
   font-weight: 700;
+  color: var(--color-title);
+  line-height: 1.2;
+}
+
+.today-header__date {
+  font-size: .9rem;
+  color: var(--color-muted);
+  text-transform: capitalize;
+}
+
+.today-header__date-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: .85rem;
   color: var(--color-primary);
-  display: block;
-  margin-bottom: var(--space-xs);
+  font-weight: 600;
+  padding: .25rem 0;
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.today-header__date-panel {
+  margin-top: var(--space-sm);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .today-header__picker {
   width: 100%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-text);
   padding: var(--space-sm) var(--space-md);
 }
 
-.today-header__picker-hint {
-  font-size: .78rem;
-  margin-top: var(--space-xs);
-  opacity: .75;
-}
-
 .today-header__quick-dates {
   display: flex;
   gap: var(--space-xs);
-  margin-top: var(--space-xs);
 }
 
 .today-header__quick-btn {
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
   background: var(--color-background);
   color: var(--color-text);
   border-radius: 999px;
-  padding: .3rem .65rem;
-  font-size: .75rem;
+  padding: .3rem .8rem;
+  font-size: .8rem;
   cursor: pointer;
+  transition: background .2s, border-color .2s;
 }
 
-.today-error {
-  font-size: .9rem;
+.today-header__quick-btn:hover {
+  border-color: var(--color-primary);
+  background: rgba(244,182,215,.1);
+}
+
+/* ── Estado inline ──────────────────────────── */
+.today-status {
+  font-size: .85rem;
   margin-bottom: var(--space-md);
-  color: var(--color-danger);
+  border-radius: var(--radius-sm);
+  padding: .5rem var(--space-md);
 }
 
-.today-success {
-  font-size: .9rem;
-  margin-bottom: var(--space-md);
-  color: var(--color-success);
-}
+.today-status--loading { color: var(--color-muted); }
+.today-status--error   { background: rgba(242,168,168,.18); color: #b94040; }
+.today-status--success { background: rgba(169,215,181,.18); color: #3a8050; }
 
-.today-loading {
-  font-size: .88rem;
-  margin-bottom: var(--space-md);
-  opacity: .8;
-}
-
+/* ── Tarjetas ───────────────────────────────── */
 .today-meals {
   display: flex;
   flex-direction: column;
@@ -343,37 +358,47 @@ onMounted(() => {
   margin-bottom: var(--space-xl);
 }
 
-.today-meal-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.today-meal-save {
-  width: 100%;
-}
-
+/* ── Botón principal ────────────────────────── */
 .today-save {
   width: 100%;
 }
 
-/* Confirmación */
+/* ── Confirmación ───────────────────────────── */
 .confirmation {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: var(--space-lg);
-  padding: var(--space-xl) 0;
+  padding: var(--space-2xl) 0;
 }
 
-.confirmation__emoji {
-  font-size: 4rem;
+.confirmation__capi {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFF0F8, #F8EEFF);
+  padding: 8px;
 }
 
 .confirmation__message {
-  font-size: 1.2rem;
+  font-family: var(--font-title);
+  font-size: 1.35rem;
   line-height: 1.8;
   color: var(--color-title);
+}
+
+.confirmation__message span {
+  font-family: var(--font-main);
+  font-size: 1rem;
+  color: var(--color-muted);
+}
+
+.confirmation__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
 }
 </style>

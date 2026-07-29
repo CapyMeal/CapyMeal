@@ -70,10 +70,8 @@ function onBlur() {
 }
 
 .meal-card__icon-wrap {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #FFF0F8 0%, #F8EEFF 100%);
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,14 +79,15 @@ function onBlur() {
 }
 
 .meal-card__icon {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   line-height: 1;
 }
 
 .meal-card__icon-image {
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
 }
 
 .meal-card__title {

@@ -70,7 +70,8 @@ import CapyButton from '../components/base/CapyButton.vue'
 
 .splash__tagline {
   font-size: 1rem;
-  color: var(--color-muted);
+  color: var(--color-text);
+  font-weight: 500;
   line-height: 1.7;
 }
 

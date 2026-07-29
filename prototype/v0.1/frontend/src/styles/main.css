@@ -1,70 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
 :root {
-  /* Colores */
+  /* Colores — design-system.md */
+  --color-primary:        #F4B6D7;
+  --color-primary-hover:  #e89ec3;
+  --color-lavender:       #DCCCF4;
+  --color-brown:          #A98274;
 
-  --color-primary: #EFA6C8;
-  --color-primary-hover: #E88AB7;
+  --color-background: #F5F5F7;
+  --color-surface:    #FFFFFF;
 
-  --color-secondary: #CDB8F7;
+  --color-text:   #3F3F46;
+  --color-title:  #3F3F46;
+  --color-muted:  #6B6B72;
 
-  --color-background: #F4F2F6;
-  --color-surface: #FFFFFF;
-
-  --color-text: #5E5568;
-  --color-title: #40384A;
-
-  --color-border: #E6E2EA;
+  --color-border: #EDE9F2;
 
   --color-success: #A9D7B5;
   --color-warning: #F7D7A8;
-  --color-danger: #F2A8A8;
-
-  /* Tema claro */
-  --color-background: #F4F2F6;
-  --color-surface: #FFFFFF;
-  --color-text: #5E5568;
-  --color-title: #40384A;
-
-  --color-primary: #EFA6C8;
-  --color-primary-hover: #E88AB7;
-
-  --color-border: #E6E2EA;
+  --color-danger:  #F2A8A8;
 
   /* Bordes */
-
-  --radius-sm: 10px;
-  --radius-md: 18px;
-  --radius-lg: 28px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
 
   /* Sombras */
-
-  --shadow-sm: 0 4px 12px rgba(0,0,0,.05);
-  --shadow-md: 0 8px 24px rgba(0,0,0,.08);
+  --shadow-sm: 0 2px 12px rgba(164,130,116,.09);
+  --shadow-md: 0 6px 24px rgba(164,130,116,.13);
 
   /* Espaciado */
-
-  --space-xs: .5rem;
-  --space-sm: .75rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 2.5rem;
+  --space-xs:  .5rem;
+  --space-sm:  .75rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2rem;
+  --space-2xl: 2.75rem;
 
   /* Tipografía */
-
-  --font-main:
-    "Nunito",
-    "Segoe UI",
-    sans-serif;
+  --font-title: "Fredoka", "Nunito", sans-serif;
+  --font-main:  "Inter", "Segoe UI", sans-serif;
 }
 
 :root[data-theme="dark"] {
   --color-background: #2B2831;
-  --color-surface: #3A3642;
-  --color-text: #E8E3EF;
-  --color-title: #FFFFFF;
+  --color-surface:    #3A3642;
+  --color-text:       #E8E3EF;
+  --color-title:      #FFFFFF;
+  --color-muted:      #B0AABF;
 
-  --color-primary: #F2A8CC;
-  --color-primary-hover: #F6BCD8;
+  --color-primary:        #F4B6D7;
+  --color-primary-hover:  #F9CDE4;
 
   --color-border: #4A4654;
 }
@@ -83,6 +69,10 @@ body{
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-title);
 }
 
 button,
