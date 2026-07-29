@@ -7,8 +7,14 @@
     <main class="layout__content">
       <slot />
     </main>
+
+    <BottomNavigation />
   </div>
 </template>
+
+<script setup>
+import BottomNavigation from '../components/layout/BottomNavigation.vue'
+</script>
 
 <style scoped>
 .layout {
@@ -17,7 +23,7 @@
 }
 
 .layout__header {
-  height: 72px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,19 +35,15 @@
 }
 
 .layout__content {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+  padding-bottom: calc(64px + var(--space-xl));
 }
 
 .layout__logo {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: var(--color-title);
 }
