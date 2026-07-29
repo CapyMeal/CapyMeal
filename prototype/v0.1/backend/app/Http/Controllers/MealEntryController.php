@@ -96,6 +96,8 @@ class MealEntryController extends Controller
 
         $entries = $query->get();
 
+        \Carbon\Carbon::setLocale('es');
+
         $pdf = Pdf::loadView('pdf.meal-entries', [
             'entries' => $entries,
             'from'    => $validated['from'] ?? null,
