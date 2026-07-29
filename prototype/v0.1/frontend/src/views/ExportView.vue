@@ -38,9 +38,10 @@
     <CapyButton
       v-if="!loading && filteredEntries.length > 0"
       class="export-button"
+      :disabled="exporting"
       @click="printPdf"
     >
-      🩷 Imprimir PDF
+      {{ exporting ? 'Preparando PDF...' : '🩷 Descargar PDF' }}
     </CapyButton>
   </MainLayout>
 </template>
@@ -50,10 +51,11 @@ import { computed, onMounted, ref } from 'vue'
 import MainLayout from '../layouts/MainLayout.vue'
 import EmptyState from '../components/diary/EmptyState.vue'
 import CapyButton from '../components/base/CapyButton.vue'
-import { getMealEntries } from '../services/mealEntriesApi'
+import { exportMealEntriesPdf, getMealEntries } from '../services/mealEntriesApi'
 
 const entries = ref([])
 const loading = ref(false)
+const exporting = ref(false)
 const errorMessage = ref('')
 const fromDate = ref('')
 const toDate = ref('')
@@ -96,8 +98,27 @@ function formatDate(date) {
   })
 }
 
-function printPdf() {
-  window.print()
+async function printPdf() {
+  exporting.value = true
+  errorMessage.value = ''
+
+  try {
+    const blob = await exportMealEntriesPdf({
+      from: fromDate.value,
+      to: toDate.value,
+    })
+
+    const fileURL = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = fileURL
+    link.download = 'capymeal-diario.pdf'
+    link.click()
+    window.URL.revokeObjectURL(fileURL)
+  } catch {
+    errorMessage.value = 'No pude generar el PDF. Intentá nuevamente.'
+  } finally {
+    exporting.value = false
+  }
 }
 </script>
 

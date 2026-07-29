@@ -52,3 +52,31 @@ export async function upsertMealEntry(payload) {
 export function deleteMealEntry(date) {
   return request(`/api/meal-entries/${date}`, { method: 'DELETE' })
 }
+
+export async function exportMealEntriesPdf({ from, to }) {
+  const params = new URLSearchParams()
+
+  if (from) {
+    params.set('from', from)
+  }
+
+  if (to) {
+    params.set('to', to)
+  }
+
+  const query = params.toString()
+  const url = `${API_BASE_URL}/api/meal-entries/export/pdf${query ? `?${query}` : ''}`
+
+  const response = await fetch(url, {
+    headers: { Accept: 'application/pdf' },
+  })
+
+  if (!response.ok) {
+    const text = await response.text()
+    const error = new Error(`API ${response.status}: ${text}`)
+    error.status = response.status
+    throw error
+  }
+
+  return response.blob()
+}
