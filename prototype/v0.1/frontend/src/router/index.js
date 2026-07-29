@@ -4,6 +4,7 @@ import HomeView     from '../views/HomeView.vue'
 import TodayView    from '../views/TodayView.vue'
 import DiaryView    from '../views/DiaryView.vue'
 import DetailView   from '../views/DetailView.vue'
+import ExportView   from '../views/ExportView.vue'
 import SettingsView from '../views/Settingsview.vue'
 
 const router = createRouter({
@@ -14,6 +15,7 @@ const router = createRouter({
     { path: '/hoy',             name: 'today',    component: TodayView    },
     { path: '/recuerdos',       name: 'diary',    component: DiaryView    },
     { path: '/recuerdos/:date', name: 'detail',   component: DetailView   },
+    { path: '/exportar',        name: 'export',   component: ExportView   },
     { path: '/ajustes',         name: 'settings', component: SettingsView },
   ]
 })
