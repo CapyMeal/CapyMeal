@@ -9,20 +9,52 @@ use Illuminate\Validation\ValidationException;
 
 class MealEntryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return MealEntry::orderByDesc('date')->get();
+        return $request->user()->mealEntries()->orderByDesc('date')->get();
     }
 
-    public function show(string $date)
+    public function show(Request $request, string $date)
     {
-        return MealEntry::where('date', $date)->firstOrFail();
+        return $request->user()->mealEntries()->where('date', $date)->firstOrFail();
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'date'      => 'required|date|unique:meal_entries,date',
+            'date'      => 'required|date',
+            'breakfast' => 'nullable|string',
+            'lunch'     => 'nullable|string',
+            'snack'     => 'nullable|string',
+            'dinner'    => 'nullable|string',
+            'notes'     => 'nullable|string',
+        ]);
+
+        // Un registro por usuario y fecha
+        if ($request->user()->mealEntries()->where('date', $data['date'])->exists()) {
+            throw ValidationException::withMessages([
+                'date' => ['Ya existe un registro para esa fecha.'],
+            ]);
+        }
+
+        $normalized = $this->normalizeEntryFields($data);
+
+        if (!$this->hasAtLeastOneFilledField($normalized)) {
+            throw ValidationException::withMessages([
+                'entry' => ['Tenés que completar al menos una comida o recuerdo antes de guardar.'],
+            ]);
+        }
+
+        $entry = $request->user()->mealEntries()->create($normalized);
+
+        return response()->json($entry, 201);
+    }
+
+    public function update(Request $request, string $date)
+    {
+        $entry = $request->user()->mealEntries()->where('date', $date)->firstOrFail();
+
+        $data = $request->validate([
             'breakfast' => 'nullable|string',
             'lunch'     => 'nullable|string',
             'snack'     => 'nullable|string',
@@ -34,35 +66,8 @@ class MealEntryController extends Controller
 
         if (!$this->hasAtLeastOneFilledField($normalized)) {
             throw ValidationException::withMessages([
-                'entry' => ['Tenés que completar al menos una comida o recuerdo antes de guardar.'],
+                'entry' => ['No se puede guardar un registro vacío.'],
             ]);
-        }
-
-        return response()->json(MealEntry::create($normalized), 201);
-    }
-
-    public function update(Request $request, string $date)
-    {
-        $entry = MealEntry::where('date', $date)->firstOrFail();
-
-        $data = $request->validate([
-            'breakfast' => 'nullable|string',
-            'lunch'     => 'nullable|string',
-            'snack'     => 'nullable|string',
-            'dinner'    => 'nullable|string',
-            'notes'     => 'nullable|string',
-        ]);
-
-        $normalized = $this->normalizeEntryFields($data);
-
-        if (array_key_exists('breakfast', $data) || array_key_exists('lunch', $data) ||
-            array_key_exists('snack', $data) || array_key_exists('dinner', $data) ||
-            array_key_exists('notes', $data)) {
-            if (!$this->hasAtLeastOneFilledField($normalized)) {
-                throw ValidationException::withMessages([
-                    'entry' => ['No se puede guardar un registro vacío.'],
-                ]);
-            }
         }
 
         $entry->update($normalized);
@@ -70,9 +75,9 @@ class MealEntryController extends Controller
         return response()->json($entry);
     }
 
-    public function destroy(string $date)
+    public function destroy(Request $request, string $date)
     {
-        MealEntry::where('date', $date)->firstOrFail()->delete();
+        $request->user()->mealEntries()->where('date', $date)->firstOrFail()->delete();
 
         return response()->json(null, 204);
     }
@@ -84,7 +89,7 @@ class MealEntryController extends Controller
             'to'   => 'nullable|date|after_or_equal:from',
         ]);
 
-        $query = MealEntry::query()->orderBy('date');
+        $query = $request->user()->mealEntries()->orderBy('date');
 
         if (!empty($validated['from'])) {
             $query->whereDate('date', '>=', $validated['from']);
