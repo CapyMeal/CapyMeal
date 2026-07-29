@@ -1,6 +1,9 @@
 <template>
   <MainLayout>
-    <h1 class="diary-title">📖 Mi Diario</h1>
+    <div class="diary-heading">
+      <img src="../assets/icons/diario.png" alt="" class="diary-heading__icon">
+      <h1 class="diary-heading__title">Mi Diario</h1>
+    </div>
 
     <div class="diary-filters">
       <div class="diary-filters__field">
@@ -85,11 +88,25 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.diary-title {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--color-title);
+.diary-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   margin-bottom: var(--space-xl);
+}
+
+.diary-heading__icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
+}
+
+.diary-heading__title {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-title);
 }
 
 .diary-list {
