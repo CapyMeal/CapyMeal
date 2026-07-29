@@ -13,16 +13,17 @@
       <span class="bottom-nav__label">PDF</span>
     </RouterLink>
     <RouterLink to="/ajustes" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <span class="bottom-nav__icon">⚙️</span>
+      <img :src="settingsIcon" alt="Ajustes" class="bottom-nav__icon-image">
       <span class="bottom-nav__label">Ajustes</span>
     </RouterLink>
   </nav>
 </template>
 
 <script setup>
-import dayIcon from '../../assets/icons/miDia.png'
-import diaryIcon from '../../assets/icons/miDiario.png'
-import pdfIcon from '../../assets/icons/miPdf.png'
+import dayIcon      from '../../assets/icons/hoy.png'
+import diaryIcon    from '../../assets/icons/diario.png'
+import pdfIcon      from '../../assets/icons/pdf.png'
+import settingsIcon from '../../assets/icons/ajustes.png'
 </script>
 
 <style scoped>
@@ -60,14 +61,9 @@ import pdfIcon from '../../assets/icons/miPdf.png'
   color: var(--color-primary);
 }
 
-.bottom-nav__icon {
-  font-size: 1.25rem;
-  line-height: 1;
-}
-
 .bottom-nav__icon-image {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   object-fit: contain;
 }
 

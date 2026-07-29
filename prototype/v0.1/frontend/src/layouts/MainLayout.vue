@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <header class="layout__header">
-      <img class="layout__logo" src="../assets/logo/Alternativa.png" alt="CapyMeal">
+      <span class="layout__brand">CapyMeal</span>
     </header>
 
     <main class="layout__content">
@@ -44,9 +44,12 @@ import BottomNavigation from '../components/layout/BottomNavigation.vue'
   padding-bottom: calc(70px + var(--space-xl));
 }
 
-.layout__logo {
-  width: 136px;
-  object-fit: contain;
+.layout__brand {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-title);
+  letter-spacing: -.3px;
 }
 
 @media (min-width: 768px) {

@@ -1,11 +1,6 @@
 <template>
   <div class="splash">
     <div class="splash__content">
-      <img
-        class="splash__logo"
-        src="../assets/logo/Alternativa.png"
-        alt="CapyMeal"
-      />
 
       <img
         class="splash__capi"
@@ -13,10 +8,13 @@
         alt="Capi chef"
       />
 
-      <p class="splash__tagline">
-        Las comidas pasan.<br>
-        Los recuerdos quedan.
-      </p>
+      <div class="splash__brand">
+        <h1 class="splash__title">CapyMeal</h1>
+        <p class="splash__tagline">
+          Las comidas pasan.<br>
+          Los recuerdos quedan.
+        </p>
+      </div>
 
       <CapyButton class="splash__btn" @click="$router.push('/hoy')">
         🌸 Comenzar
@@ -35,7 +33,7 @@ import CapyButton from '../components/base/CapyButton.vue'
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #f8f2fa 0%, var(--color-background) 100%);
+  background: linear-gradient(180deg, #fdf6fb 0%, var(--color-background) 100%);
   padding: var(--space-xl);
 }
 
@@ -49,21 +47,30 @@ import CapyButton from '../components/base/CapyButton.vue'
   width: 100%;
 }
 
-.splash__logo {
-  width: 190px;
+.splash__capi {
+  width: 260px;
   object-fit: contain;
+  filter: drop-shadow(0 12px 32px rgba(169,130,116,.18));
 }
 
-.splash__capi {
-  width: 220px;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, .12));
+.splash__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.splash__title {
+  font-family: var(--font-title);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--color-title);
+  letter-spacing: -.5px;
 }
 
 .splash__tagline {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--color-title);
+  font-size: 1rem;
+  color: var(--color-muted);
   line-height: 1.7;
 }
 
