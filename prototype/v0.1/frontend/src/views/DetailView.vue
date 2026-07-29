@@ -28,6 +28,8 @@
         <p class="detail-date">{{ formattedDate }}</p>
       </div>
 
+      <p v-if="errorMessage" class="detail-error">{{ errorMessage }}</p>
+
       <!-- Modo lectura -->
       <template v-if="!editing">
         <div class="detail-meals">
@@ -78,8 +80,7 @@ import MainLayout from '../layouts/MainLayout.vue'
 import MealCard   from '../components/meal/MealCard.vue'
 import EmptyState from '../components/diary/EmptyState.vue'
 import CapyButton from '../components/base/CapyButton.vue'
-
-const STORAGE_KEY = 'capymeal-entries'
+import { deleteMealEntry, getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
 
 const route  = useRoute()
 const router = useRouter()
@@ -89,6 +90,7 @@ const dateKey = route.params.date
 const entry           = ref(null)
 const editing         = ref(false)
 const confirmingDelete = ref(false)
+const errorMessage = ref('')
 
 const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
 
@@ -107,8 +109,7 @@ const formattedDate = computed(() => {
 })
 
 onMounted(() => {
-  const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
-  entry.value = entries[dateKey] ?? null
+  loadEntry()
 })
 
 function startEdit() {
@@ -120,19 +121,43 @@ function cancelEdit() {
   editing.value = false
 }
 
-function saveEdit() {
-  const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
-  entries[dateKey] = { ...form }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
-  entry.value = { ...form }
-  editing.value = false
+async function saveEdit() {
+  errorMessage.value = ''
+
+  try {
+    await upsertMealEntry({
+      date: dateKey,
+      ...form,
+    })
+
+    entry.value = { ...form }
+    editing.value = false
+  } catch {
+    errorMessage.value = 'No pude guardar los cambios. Intentá nuevamente.'
+  }
 }
 
-function deleteEntry() {
-  const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
-  delete entries[dateKey]
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
-  router.push('/recuerdos')
+async function deleteEntry() {
+  errorMessage.value = ''
+
+  try {
+    await deleteMealEntry(dateKey)
+    router.push('/recuerdos')
+  } catch {
+    errorMessage.value = 'No pude eliminar este día. Intentá nuevamente.'
+  }
+}
+
+async function loadEntry() {
+  try {
+    entry.value = await getMealEntry(dateKey)
+  } catch (error) {
+    if (error.status === 404) {
+      entry.value = null
+      return
+    }
+    errorMessage.value = 'No pude cargar este día. Intentá nuevamente.'
+  }
 }
 </script>
 
@@ -160,6 +185,12 @@ function deleteEntry() {
   font-weight: 800;
   color: var(--color-title);
   text-transform: capitalize;
+}
+
+.detail-error {
+  font-size: .9rem;
+  margin-bottom: var(--space-md);
+  color: var(--color-danger);
 }
 
 .detail-meals {
