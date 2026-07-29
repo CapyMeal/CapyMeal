@@ -10,7 +10,10 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Instala Laravel en staging durante el build (no en el volumen)
-RUN composer create-project laravel/laravel /laravel-staging --prefer-dist --quiet
+RUN composer create-project laravel/laravel /laravel-staging --prefer-dist --quiet \
+    && cd /laravel-staging \
+    && composer require laravel/sanctum barryvdh/laravel-dompdf --quiet \
+    && php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider" --quiet
 
 WORKDIR /var/www/html
 
