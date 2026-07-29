@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import TodayView from '../views/TodayView.vue'
-import DiaryView from '../views/DiaryView.vue'
+import HomeView   from '../views/HomeView.vue'
+import TodayView  from '../views/TodayView.vue'
+import DiaryView  from '../views/DiaryView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -9,7 +10,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/hoy'
+      name: 'splash',
+      component: HomeView
     },
     {
       path: '/hoy',
