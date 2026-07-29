@@ -14,10 +14,10 @@
   border-radius: var(--radius-md);
 
   background: var(--color-primary);
-  color: white;
+  color: black;
 
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 500;
 
   cursor: pointer;
 

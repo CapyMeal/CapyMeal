@@ -1,24 +1,21 @@
 <template>
-  <main class="today">
+  <MainLayout>
     <h1>🐹 Hoy</h1>
 
     <p>Guardemos los momentos de este día.</p>
 
-    <BrandButton>
+    <CapyButton>
       Agregar comida
-    </BrandButton>
-  </main>
+    </CapyButton>
+  </MainLayout>
 </template>
 
 <script setup>
-import BrandButton from '../components/base/BrandButton.vue'
+import MainLayout from '../layouts/MainLayout.vue'
+import CapyButton from '../components/base/CapyButton.vue'
 </script>
 
 <style scoped>
-.today {
-  padding: 2rem;
-}
-
 h1 {
   margin-bottom: 1rem;
 }
