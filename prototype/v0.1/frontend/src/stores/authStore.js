@@ -31,11 +31,23 @@ function clear() {
 async function authRequest(path, body) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     body:    JSON.stringify(body),
   })
 
-  const data = await response.json()
+  const raw = await response.text()
+  let data = null
+
+  try {
+    data = raw ? JSON.parse(raw) : null
+  } catch {
+    const error = new Error('El servidor devolvió una respuesta inválida.')
+    error.status = response.status
+    throw error
+  }
 
   if (!response.ok) {
     const message = data?.message

@@ -17,8 +17,13 @@ COPY . .
 # Instala dependencias de producción (--no-scripts evita package:discover sin .env)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --quiet
 
-# Permisos de storage
-RUN mkdir -p storage/framework/{sessions,views,cache} bootstrap/cache \
+# Permisos de storage (sin brace expansion para /bin/sh)
+RUN mkdir -p storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
+    storage/framework/cache/data \
+    storage/logs \
+    bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 COPY entrypoint.prod.sh /entrypoint.sh

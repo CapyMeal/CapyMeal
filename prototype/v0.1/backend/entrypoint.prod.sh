@@ -28,6 +28,13 @@ QUEUE_CONNECTION=sync
 FRONTEND_URL=${FRONTEND_URL:-*}
 EOF
 
+mkdir -p storage/framework/sessions \
+  storage/framework/views \
+  storage/framework/cache \
+  storage/framework/cache/data \
+  storage/logs \
+  bootstrap/cache
+
 php artisan key:generate --force --no-interaction
 php artisan package:discover --ansi
 
