@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\MealEntryController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas públicas de autenticación
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/register',        [AuthController::class, 'register']);
+Route::post('/login',           [AuthController::class, 'login']);
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendLink']);
+Route::post('/reset-password',  [ForgotPasswordController::class, 'reset']);
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
