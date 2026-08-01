@@ -107,7 +107,7 @@ class MealEntryController extends Controller
             'entries' => $entries,
             'from'    => $validated['from'] ?? null,
             'to'      => $validated['to'] ?? null,
-        ]);
+        ])->setOptions(['isRemoteEnabled' => true]);
 
         return $pdf->download('capymeal-diario.pdf');
     }

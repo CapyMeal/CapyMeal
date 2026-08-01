@@ -1,3 +1,22 @@
+{{-- Convierte emoji Unicode a imágenes Twemoji para DomPDF --}}
+@php
+function renderEmoji(string $text): string {
+    return preg_replace_callback(
+        '/(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]|\x{2B50}|\x{2B55})(?:\x{200D}(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]))*\x{FE0F}?/u',
+        function ($m) {
+            $chars = preg_split('//u', $m[0], -1, PREG_SPLIT_NO_EMPTY);
+            $codepoints = array_values(array_filter(
+                array_map(fn($c) => mb_ord($c), $chars),
+                fn($cp) => $cp !== 0xFE0F
+            ));
+            $filename = implode('-', array_map(fn($cp) => strtolower(dechex($cp)), $codepoints));
+            return '<img src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/assets/72x72/' . $filename . '.png" width="13" height="13" style="vertical-align:middle;margin:0 1px;">';
+        },
+        $text
+    );
+}
+@endphp
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,34 +29,34 @@
             background: #F5F5F7;
             color: #3F3F46;
             font-size: 11px;
-            padding: 28px;
+            padding: 18px 20px;
         }
 
         /* ── Portada ── */
         .cover {
             text-align: center;
-            padding: 32px 0 28px;
-            margin-bottom: 28px;
+            padding: 20px 0 16px;
+            margin-bottom: 16px;
             border-bottom: 2px solid #F4B6D7;
         }
 
         .cover__chef {
-            width: 90px;
-            margin-bottom: 10px;
+            width: 64px;
+            margin-bottom: 6px;
         }
 
         .cover__title {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 700;
             color: #3F3F46;
             letter-spacing: -0.5px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .cover__tagline {
-            font-size: 11px;
+            font-size: 10px;
             color: #6B6B72;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .cover__badge {
@@ -45,7 +64,7 @@
             background: #F4B6D7;
             color: #3F3F46;
             border-radius: 999px;
-            padding: 4px 14px;
+            padding: 3px 12px;
             font-size: 10px;
             font-weight: 700;
         }
@@ -54,33 +73,33 @@
         .day-card {
             background: #FFFFFF;
             border: 1.5px solid #EDE9F2;
-            border-radius: 14px;
-            margin-bottom: 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
             overflow: hidden;
             page-break-inside: avoid;
         }
 
         .day-card__header {
             background: linear-gradient(90deg, #F4B6D7 0%, #DCCCF4 100%);
-            padding: 10px 16px;
+            padding: 5px 12px;
         }
 
         .day-card__date {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #3F3F46;
             text-transform: capitalize;
         }
 
         .day-card__body {
-            padding: 12px 16px;
+            padding: 5px 12px 6px;
         }
 
         /* ── Fila de comida ── */
         .meal-row {
             display: table;
             width: 100%;
-            padding: 7px 0;
+            padding: 4px 0;
             border-bottom: 1px solid #F0EBF5;
         }
 
@@ -90,34 +109,34 @@
 
         .meal-row__icon-cell {
             display: table-cell;
-            width: 32px;
+            width: 24px;
             vertical-align: middle;
         }
 
         .meal-row__icon {
-            width: 26px;
-            height: 26px;
+            width: 18px;
+            height: 18px;
         }
 
         .meal-row__content {
             display: table-cell;
             vertical-align: middle;
-            padding-left: 8px;
+            padding-left: 6px;
         }
 
         .meal-row__label {
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 700;
             color: #A98274;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         .meal-row__value {
             font-size: 11px;
             color: #3F3F46;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         .meal-row__empty {
@@ -128,26 +147,26 @@
 
         /* ── Recuerdo del día ── */
         .notes-row {
-            margin-top: 10px;
+            margin-top: 5px;
             background: #FDF6FB;
             border: 1px solid #F4B6D7;
-            border-radius: 8px;
-            padding: 8px 12px;
+            border-radius: 6px;
+            padding: 4px 10px;
         }
 
         .notes-row__label {
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 700;
             color: #A98274;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
 
         .notes-row__value {
             font-size: 11px;
             color: #3F3F46;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         /* ── Sin resultados ── */
@@ -166,8 +185,8 @@
         /* ── Footer ── */
         .footer {
             text-align: center;
-            margin-top: 28px;
-            padding-top: 14px;
+            margin-top: 16px;
+            padding-top: 10px;
             border-top: 1px solid #EDE9F2;
             font-size: 9px;
             color: #B0AABF;
@@ -209,7 +228,7 @@
                     <div class="meal-row__content">
                         <div class="meal-row__label">Desayuno</div>
                         @if ($entry->breakfast)
-                            <div class="meal-row__value">{{ $entry->breakfast }}</div>
+                            <div class="meal-row__value">{!! renderEmoji($entry->breakfast) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -223,7 +242,7 @@
                     <div class="meal-row__content">
                         <div class="meal-row__label">Almuerzo</div>
                         @if ($entry->lunch)
-                            <div class="meal-row__value">{{ $entry->lunch }}</div>
+                            <div class="meal-row__value">{!! renderEmoji($entry->lunch) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -237,7 +256,7 @@
                     <div class="meal-row__content">
                         <div class="meal-row__label">Merienda</div>
                         @if ($entry->snack)
-                            <div class="meal-row__value">{{ $entry->snack }}</div>
+                            <div class="meal-row__value">{!! renderEmoji($entry->snack) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -251,7 +270,7 @@
                     <div class="meal-row__content">
                         <div class="meal-row__label">Cena</div>
                         @if ($entry->dinner)
-                            <div class="meal-row__value">{{ $entry->dinner }}</div>
+                            <div class="meal-row__value">{!! renderEmoji($entry->dinner) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -261,7 +280,7 @@
                 @if ($entry->notes)
                     <div class="notes-row">
                         <div class="notes-row__label">📝 Recuerdo del día</div>
-                        <div class="notes-row__value">{{ $entry->notes }}</div>
+                        <div class="notes-row__value">{!! renderEmoji($entry->notes) !!}</div>
                     </div>
                 @endif
 
