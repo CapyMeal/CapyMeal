@@ -66,9 +66,8 @@ async function submit() {
       body: JSON.stringify({ email: email.value }),
     })
     sent.value = true
-  } catch {
-    // Mostramos el mismo mensaje pase lo que pase (no exponer si el email existe)
-    sent.value = true
+  } catch (error) {
+    errorMessage.value = error.message || 'No pude enviar el email de recuperación. Intentá nuevamente.'
   } finally {
     loading.value = false
   }
