@@ -7,7 +7,7 @@ APP_NAME=CapyMeal
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=${APP_URL:-http://localhost:8000}
-APP_KEY=
+APP_KEY=${APP_KEY:-}
 
 LOG_CHANNEL=stderr
 LOG_LEVEL=error
@@ -44,7 +44,10 @@ mkdir -p storage/framework/sessions \
   storage/logs \
   bootstrap/cache
 
-php artisan key:generate --force --no-interaction
+# Solo genera APP_KEY si no fue provista como env var
+if [ -z "${APP_KEY:-}" ]; then
+  php artisan key:generate --force --no-interaction
+fi
 php artisan package:discover --ansi
 
 echo "🌸 Ejecutando migraciones..."
