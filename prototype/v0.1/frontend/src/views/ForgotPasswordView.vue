@@ -4,52 +4,42 @@
 
       <img src="../assets/illustrations/Chef.png" alt="Capi" class="auth-card__capi">
 
-      <h1 class="auth-card__title">Bienvenida 🌸</h1>
-      <p class="auth-card__subtitle">Guardemos juntos los pequeños momentos de hoy.</p>
+      <template v-if="!sent">
+        <h1 class="auth-card__title">¿Olvidaste tu contraseña? 🔑</h1>
+        <p class="auth-card__subtitle">Ingresá tu email y te mandamos un enlace para recuperarla.</p>
 
-      <form class="auth-form" @submit.prevent="submit">
-        <div class="auth-field">
-          <label class="auth-field__label" for="email">Email</label>
-          <input
-            id="email"
-            v-model="email"
-            class="auth-field__input"
-            type="email"
-            placeholder="tu@email.com"
-            autocomplete="email"
-            required
-          >
-        </div>
+        <form class="auth-form" @submit.prevent="submit">
+          <div class="auth-field">
+            <label class="auth-field__label" for="email">Email</label>
+            <input
+              id="email"
+              v-model="email"
+              class="auth-field__input"
+              type="email"
+              placeholder="tu@email.com"
+              autocomplete="email"
+              required
+            >
+          </div>
 
-        <div class="auth-field">
-          <label class="auth-field__label" for="password">Contraseña</label>
-          <input
-            id="password"
-            v-model="password"
-            class="auth-field__input"
-            type="password"
-            placeholder="Tu contraseña"
-            autocomplete="current-password"
-            required
-          >
-        </div>
+          <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
 
-        <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
+          <CapyButton class="auth-submit" :disabled="loading" type="submit">
+            {{ loading ? 'Enviando…' : '✉️ Enviar enlace' }}
+          </CapyButton>
+        </form>
+      </template>
 
-        <CapyButton class="auth-submit" :disabled="loading" type="submit">
-          {{ loading ? 'Entrando…' : '🌸 Entrar' }}
-        </CapyButton>
-      </form>
+      <template v-else>
+        <h1 class="auth-card__title">¡Listo! 🌸</h1>
+        <p class="auth-card__subtitle">
+          Si existe una cuenta con ese email, vas a recibir un enlace en los próximos minutos.<br>
+          Revisá también la carpeta de spam.
+        </p>
+      </template>
 
       <p class="auth-switch">
-        ¿No tenés cuenta?
-        <RouterLink to="/registro" class="auth-switch__link">Registrate</RouterLink>
-      </p>
-
-      <p class="auth-switch">
-        <RouterLink to="/olvide-contrasena" class="auth-switch__link auth-switch__link--soft">
-          ¿Olvidaste tu contraseña?
-        </RouterLink>
+        <RouterLink to="/login" class="auth-switch__link">← Volver al inicio de sesión</RouterLink>
       </p>
 
     </div>
@@ -58,26 +48,27 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import CapyButton from '../components/base/CapyButton.vue'
-import { login } from '../stores/authStore'
-
-const router = useRouter()
+import { apiFetch } from '../services/mealEntriesApi'
 
 const email        = ref('')
-const password     = ref('')
 const loading      = ref(false)
 const errorMessage = ref('')
+const sent         = ref(false)
 
 async function submit() {
   loading.value      = true
   errorMessage.value = ''
 
   try {
-    await login({ email: email.value, password: password.value })
-    router.push('/hoy')
-  } catch (error) {
-    errorMessage.value = error.message || 'No pude iniciar sesión. Intentá nuevamente.'
+    await apiFetch('/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email: email.value }),
+    })
+    sent.value = true
+  } catch {
+    // Mostramos el mismo mensaje pase lo que pase (no exponer si el email existe)
+    sent.value = true
   } finally {
     loading.value = false
   }
@@ -125,7 +116,7 @@ async function submit() {
 .auth-card__subtitle {
   font-size: .9rem;
   color: var(--color-muted);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .auth-form {
@@ -186,11 +177,5 @@ async function submit() {
 .auth-switch__link {
   color: var(--color-primary);
   font-weight: 700;
-}
-
-.auth-switch__link--soft {
-  font-weight: 400;
-  color: var(--color-muted);
-  font-size: .8rem;
 }
 </style>

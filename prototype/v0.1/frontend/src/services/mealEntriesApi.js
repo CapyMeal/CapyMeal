@@ -33,6 +33,11 @@ export function getMealEntry(date) {
   return request(`/api/meal-entries/${date}`)
 }
 
+// Export genérico para rutas públicas (sin prefijo forzado)
+export function apiFetch(path, options = {}) {
+  return request(`/api${path}`, options)
+}
+
 export function getMealEntries() {
   return request('/api/meal-entries')
 }
