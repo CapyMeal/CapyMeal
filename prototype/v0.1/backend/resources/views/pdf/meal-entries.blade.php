@@ -1,4 +1,21 @@
+{{-- Convierte emoji Unicode a imágenes Twemoji para DomPDF --}}
 @php
+function renderEmoji(string $text): string {
+    return preg_replace_callback(
+        '/(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]|\x{2B50}|\x{2B55})(?:\x{200D}(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]))*\x{FE0F}?/u',
+        function ($m) {
+            $chars = preg_split('//u', $m[0], -1, PREG_SPLIT_NO_EMPTY);
+            $codepoints = array_values(array_filter(
+                array_map(fn($c) => mb_ord($c), $chars),
+                fn($cp) => $cp !== 0xFE0F
+            ));
+            $filename = implode('-', array_map(fn($cp) => strtolower(dechex($cp)), $codepoints));
+            return '<img src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/assets/72x72/' . $filename . '.png" width="13" height="13" style="vertical-align:middle;margin:0 1px;">';
+        },
+        $text
+    );
+}
+
 function cleanMealValue(?string $text): string {
     $value = trim((string) $text);
     return preg_replace('/^\s*(desayuno|almuerzo|merienda|cena)\s*[:\-]?\s*/iu', '', $value) ?? $value;
@@ -217,7 +234,7 @@ function cleanMealValue(?string $text): string {
                     <div class="meal-row__content">
                         <div class="meal-row__label">Desayuno</div>
                         @if ($entry->breakfast)
-                            <div class="meal-row__value">{{ cleanMealValue($entry->breakfast) }}</div>
+                            <div class="meal-row__value">{!! renderEmoji(cleanMealValue($entry->breakfast)) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -231,7 +248,7 @@ function cleanMealValue(?string $text): string {
                     <div class="meal-row__content">
                         <div class="meal-row__label">Almuerzo</div>
                         @if ($entry->lunch)
-                            <div class="meal-row__value">{{ cleanMealValue($entry->lunch) }}</div>
+                            <div class="meal-row__value">{!! renderEmoji(cleanMealValue($entry->lunch)) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -245,7 +262,7 @@ function cleanMealValue(?string $text): string {
                     <div class="meal-row__content">
                         <div class="meal-row__label">Merienda</div>
                         @if ($entry->snack)
-                            <div class="meal-row__value">{{ cleanMealValue($entry->snack) }}</div>
+                            <div class="meal-row__value">{!! renderEmoji(cleanMealValue($entry->snack)) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -259,7 +276,7 @@ function cleanMealValue(?string $text): string {
                     <div class="meal-row__content">
                         <div class="meal-row__label">Cena</div>
                         @if ($entry->dinner)
-                            <div class="meal-row__value">{{ cleanMealValue($entry->dinner) }}</div>
+                            <div class="meal-row__value">{!! renderEmoji(cleanMealValue($entry->dinner)) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -269,7 +286,7 @@ function cleanMealValue(?string $text): string {
                 @if ($entry->notes)
                     <div class="notes-row">
                         <div class="notes-row__label">📝 Recuerdo del día</div>
-                        <div class="notes-row__value">{{ $entry->notes }}</div>
+                        <div class="notes-row__value">{!! renderEmoji($entry->notes) !!}</div>
                     </div>
                 @endif
 
