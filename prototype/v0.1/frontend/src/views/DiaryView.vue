@@ -79,8 +79,8 @@ onMounted(async () => {
       date: entry.date,
       entry,
     }))
-  } catch {
-    errorMessage.value = 'No pude cargar el diario. Intentá nuevamente.'
+  } catch (error) {
+    errorMessage.value = error.message || 'No pude cargar el diario. Intentá nuevamente.'
   } finally {
     loading.value = false
   }

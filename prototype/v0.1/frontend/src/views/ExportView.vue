@@ -85,8 +85,8 @@ onMounted(async () => {
   try {
     const data = await getMealEntries()
     entries.value = data.map((entry) => ({ date: entry.date, entry }))
-  } catch {
-    errorMessage.value = 'No pude cargar los registros para exportar.'
+  } catch (error) {
+    errorMessage.value = error.message || 'No pude cargar los registros para exportar.'
   } finally {
     loading.value = false
   }
@@ -116,10 +116,15 @@ async function printPdf() {
     const link = document.createElement('a')
     link.href = fileURL
     link.download = 'capymeal-diario.pdf'
+    link.rel = 'noopener'
+    document.body.appendChild(link)
     link.click()
+    document.body.removeChild(link)
+    // Fallback para navegadores móviles que bloquean descargas por blob
+    setTimeout(() => window.open(fileURL, '_blank'), 100)
     window.URL.revokeObjectURL(fileURL)
-  } catch {
-    errorMessage.value = 'No pude generar el PDF. Intentá nuevamente.'
+  } catch (error) {
+    errorMessage.value = error.message || 'No pude generar el PDF. Intentá nuevamente.'
   } finally {
     exporting.value = false
   }

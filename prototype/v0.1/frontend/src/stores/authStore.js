@@ -21,7 +21,7 @@ function persist(token, user) {
   localStorage.setItem('capymeal-user', JSON.stringify(user))
 }
 
-function clear() {
+export function clearAuthState() {
   state.token = null
   state.user  = null
   localStorage.removeItem('capymeal-token')
@@ -83,5 +83,5 @@ export async function logout() {
       },
     }).catch(() => {})
   }
-  clear()
+  clearAuthState()
 }
