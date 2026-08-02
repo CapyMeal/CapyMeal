@@ -41,6 +41,7 @@ class AuthController extends Controller
             ]);
         }
 
+        $user->tokens()->delete();
         $token = $user->createToken('capymeal')->plainTextToken;
 
         return response()->json([
