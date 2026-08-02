@@ -16,15 +16,6 @@
       </div>
     </div>
 
-    <CapyButton
-      v-if="!loading && filteredEntries.length > 0"
-      class="export-button"
-      :disabled="exporting"
-      @click="printPdf"
-    >
-      {{ exporting ? 'Preparando PDF...' : '🩷 Descargar PDF' }}
-    </CapyButton>
-
     <p v-if="errorMessage" class="export-error">{{ errorMessage }}</p>
     <p v-if="loading" class="export-loading">Cargando registros para exportar...</p>
 
@@ -47,6 +38,15 @@
         <p v-if="entry.notes"><strong>📝 Recuerdo:</strong> {{ entry.notes }}</p>
       </article>
     </div>
+
+    <CapyButton
+      v-if="!loading && filteredEntries.length > 0"
+      class="export-button"
+      :disabled="exporting"
+      @click="printPdf"
+    >
+      {{ exporting ? 'Preparando PDF...' : '🩷 Descargar PDF' }}
+    </CapyButton>
   </MainLayout>
 </template>
 
@@ -198,9 +198,7 @@ async function printPdf() {
 }
 
 .export-button {
-  margin-top: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  width: 100%;
+  margin-top: var(--space-lg);
 }
 
 .export-error {
