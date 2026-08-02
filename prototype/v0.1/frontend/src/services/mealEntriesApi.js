@@ -1,4 +1,4 @@
-import { clearAuthState, getToken } from '../stores/authStore'
+import { getToken } from '../stores/authStore'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -17,13 +17,6 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const text = await response.text()
-    if (response.status === 401) {
-      clearAuthState()
-      window.location.href = '/login'
-      const error = new Error('Tu sesión venció. Volvé a iniciar sesión.')
-      error.status = 401
-      throw error
-    }
     const error = new Error(`API ${response.status}: ${text}`)
     error.status = response.status
     throw error
@@ -94,13 +87,6 @@ export async function exportMealEntriesPdf({ from, to }) {
 
   if (!response.ok) {
     const text = await response.text()
-    if (response.status === 401) {
-      clearAuthState()
-      window.location.href = '/login'
-      const error = new Error('Tu sesión venció. Volvé a iniciar sesión.')
-      error.status = 401
-      throw error
-    }
     const error = new Error(`API ${response.status}: ${text}`)
     error.status = response.status
     throw error

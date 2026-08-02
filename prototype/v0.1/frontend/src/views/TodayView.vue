@@ -156,7 +156,7 @@ async function loadEntryByDate(date) {
     })
   } catch (error) {
     if (error.status === 404) { resetFormFields(); return }
-    errorMessage.value = error.message || 'No pude cargar ese día. Intentá nuevamente.'
+    errorMessage.value = 'No pude cargar ese día. Intentá nuevamente.'
   } finally {
     loading.value = false
   }
