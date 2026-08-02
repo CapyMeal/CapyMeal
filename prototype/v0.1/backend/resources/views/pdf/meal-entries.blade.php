@@ -203,7 +203,7 @@ function cleanMealValue(?string $text): string {
 
     {{-- Portada --}}
     <div class="cover">
-        <img class="cover__chef" src="{{ public_path('images/Chef.png') }}" alt="Capi">
+        <img class="cover__chef" src="{{ config('app.url') }}/images/Chef.png" alt="">
         <div class="cover__title">CapyMeal</div>
         <div class="cover__tagline">Las comidas pasan. Los recuerdos quedan.</div>
         <span class="cover__badge">
@@ -229,7 +229,7 @@ function cleanMealValue(?string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ public_path('images/desayuno.png') }}" alt="Desayuno">
+                        <img class="meal-row__icon" src="{{ config('app.url') }}/images/desayuno.png" alt="">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Desayuno</div>
@@ -243,7 +243,7 @@ function cleanMealValue(?string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ public_path('images/almuerzo.png') }}" alt="Almuerzo">
+                        <img class="meal-row__icon" src="{{ config('app.url') }}/images/almuerzo.png" alt="">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Almuerzo</div>
@@ -257,7 +257,7 @@ function cleanMealValue(?string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ public_path('images/merienda.png') }}" alt="Merienda">
+                        <img class="meal-row__icon" src="{{ config('app.url') }}/images/merienda.png" alt="">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Merienda</div>
@@ -271,7 +271,7 @@ function cleanMealValue(?string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ public_path('images/cena.png') }}" alt="Cena">
+                        <img class="meal-row__icon" src="{{ config('app.url') }}/images/cena.png" alt="">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Cena</div>
@@ -294,7 +294,7 @@ function cleanMealValue(?string $text): string {
         </div>
     @empty
         <div class="empty-state">
-            <img class="empty-state__chef" src="{{ public_path('images/Chef.png') }}" alt="Capi">
+            <img class="empty-state__chef" src="{{ config('app.url') }}/images/Chef.png" alt="">
             <p>No hay registros para ese rango.</p>
         </div>
     @endforelse
