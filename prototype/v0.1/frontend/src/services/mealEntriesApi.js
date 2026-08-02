@@ -1,12 +1,11 @@
 import { clearAuthState, getToken } from '../stores/authStore'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
-const REQUEST_TIMEOUT_MS = 60000
-const PDF_TIMEOUT_MS = 180000
+const REQUEST_TIMEOUT_MS = 20000
 
-async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
   try {
     return await fetch(url, {
@@ -28,7 +27,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_M
   }
 }
 
-async function request(path, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+async function request(path, options = {}) {
   const token = getToken()
 
   const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
@@ -39,7 +38,7 @@ async function request(path, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
       ...(options.headers || {}),
     },
     ...options,
-  }, timeoutMs)
+  })
 
   if (!response.ok) {
     const text = await response.text()
@@ -116,7 +115,7 @@ export async function exportMealEntriesPdf({ from, to }) {
       Accept: 'application/pdf',
       ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
     },
-  }, PDF_TIMEOUT_MS)
+  })
 
   if (!response.ok) {
     const text = await response.text()
