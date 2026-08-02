@@ -11,47 +11,29 @@
         <form class="auth-form" @submit.prevent="submit">
           <div class="auth-field">
             <label class="auth-field__label" for="password">Nueva contraseña</label>
-            <div class="auth-field__password-wrap">
-              <input
-                id="password"
-                v-model="password"
-                class="auth-field__input auth-field__input--password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Mínimo 8 caracteres"
-                autocomplete="new-password"
-                required
-                minlength="8"
-              >
-              <button
-                type="button"
-                class="auth-field__toggle"
-                @click="showPassword = !showPassword"
-              >
-                {{ showPassword ? '🙈' : '👁️' }}
-              </button>
-            </div>
+            <input
+              id="password"
+              v-model="password"
+              class="auth-field__input"
+              type="password"
+              placeholder="Mínimo 8 caracteres"
+              autocomplete="new-password"
+              required
+              minlength="8"
+            >
           </div>
 
           <div class="auth-field">
             <label class="auth-field__label" for="confirm">Confirmá la contraseña</label>
-            <div class="auth-field__password-wrap">
-              <input
-                id="confirm"
-                v-model="passwordConfirmation"
-                class="auth-field__input auth-field__input--password"
-                :type="showPasswordConfirmation ? 'text' : 'password'"
-                placeholder="Repetí tu contraseña"
-                autocomplete="new-password"
-                required
-              >
-              <button
-                type="button"
-                class="auth-field__toggle"
-                @click="showPasswordConfirmation = !showPasswordConfirmation"
-              >
-                {{ showPasswordConfirmation ? '🙈' : '👁️' }}
-              </button>
-            </div>
+            <input
+              id="confirm"
+              v-model="passwordConfirmation"
+              class="auth-field__input"
+              type="password"
+              placeholder="Repetí tu contraseña"
+              autocomplete="new-password"
+              required
+            >
           </div>
 
           <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
@@ -84,8 +66,6 @@ const token               = ref('')
 const email               = ref('')
 const password            = ref('')
 const passwordConfirmation = ref('')
-const showPassword        = ref(false)
-const showPasswordConfirmation = ref(false)
 const loading             = ref(false)
 const errorMessage        = ref('')
 const done                = ref(false)
@@ -202,26 +182,6 @@ async function submit() {
 
 .auth-field__input:focus {
   border-color: var(--color-primary);
-}
-
-.auth-field__password-wrap {
-  position: relative;
-}
-
-.auth-field__input--password {
-  padding-right: 2.5rem;
-}
-
-.auth-field__toggle {
-  position: absolute;
-  top: 50%;
-  right: .65rem;
-  transform: translateY(-50%);
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: .95rem;
-  line-height: 1;
 }
 
 .auth-error {

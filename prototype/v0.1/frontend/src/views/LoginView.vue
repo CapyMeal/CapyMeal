@@ -23,24 +23,15 @@
 
         <div class="auth-field">
           <label class="auth-field__label" for="password">Contraseña</label>
-          <div class="auth-field__password-wrap">
-            <input
-              id="password"
-              v-model="password"
-              class="auth-field__input auth-field__input--password"
-              :type="showPassword ? 'text' : 'password'"
-              placeholder="Tu contraseña"
-              autocomplete="current-password"
-              required
-            >
-            <button
-              type="button"
-              class="auth-field__toggle"
-              @click="showPassword = !showPassword"
-            >
-              {{ showPassword ? '🙈' : '👁️' }}
-            </button>
-          </div>
+          <input
+            id="password"
+            v-model="password"
+            class="auth-field__input"
+            type="password"
+            placeholder="Tu contraseña"
+            autocomplete="current-password"
+            required
+          >
         </div>
 
         <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
@@ -75,7 +66,6 @@ const router = useRouter()
 
 const email        = ref('')
 const password     = ref('')
-const showPassword = ref(false)
 const loading      = ref(false)
 const errorMessage = ref('')
 
@@ -172,26 +162,6 @@ async function submit() {
 
 .auth-field__input:focus {
   border-color: var(--color-primary);
-}
-
-.auth-field__password-wrap {
-  position: relative;
-}
-
-.auth-field__input--password {
-  padding-right: 2.5rem;
-}
-
-.auth-field__toggle {
-  position: absolute;
-  top: 50%;
-  right: .65rem;
-  transform: translateY(-50%);
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: .95rem;
-  line-height: 1;
 }
 
 .auth-error {
