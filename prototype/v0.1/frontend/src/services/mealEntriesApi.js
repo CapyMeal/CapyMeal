@@ -1,15 +1,40 @@
 import { clearAuthState, getToken } from '../stores/authStore'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+const REQUEST_TIMEOUT_MS = 20000
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    })
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      const timeoutError = new Error('La conexión está tardando demasiado. Intentá nuevamente.')
+      timeoutError.status = 0
+      throw timeoutError
+    }
+
+    const networkError = new Error('No pude conectar con el servidor. Intentá nuevamente.')
+    networkError.status = 0
+    throw networkError
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
 
 async function request(path, options = {}) {
   const token = getToken()
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
     ...options,
@@ -85,10 +110,10 @@ export async function exportMealEntriesPdf({ from, to }) {
   const query = params.toString()
   const url = `${API_BASE_URL}/api/meal-entries/export/pdf${query ? `?${query}` : ''}`
 
-  const response = await fetch(url, {
+  const response = await fetchWithTimeout(url, {
     headers: {
       Accept: 'application/pdf',
-      ...(getToken() ? { 'Authorization': `Bearer ${getToken()}` } : {}),
+      ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
     },
   })
 
