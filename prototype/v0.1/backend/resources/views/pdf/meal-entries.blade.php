@@ -15,11 +15,6 @@ function renderEmoji(string $text): string {
         $text
     );
 }
-
-function cleanMealValue(?string $text): string {
-    $value = trim((string) $text);
-    return preg_replace('/^\s*(desayuno|almuerzo|merienda|cena)\s*[:\-]?\s*/iu', '', $value) ?? $value;
-}
 @endphp
 
 <!DOCTYPE html>
@@ -34,24 +29,24 @@ function cleanMealValue(?string $text): string {
             background: #F5F5F7;
             color: #3F3F46;
             font-size: 11px;
-            padding: 14px 16px;
+            padding: 18px 20px;
         }
 
         /* ── Portada ── */
         .cover {
             text-align: center;
-            padding: 14px 0 10px;
-            margin-bottom: 10px;
+            padding: 20px 0 16px;
+            margin-bottom: 16px;
             border-bottom: 2px solid #F4B6D7;
         }
 
         .cover__chef {
-            width: 52px;
-            margin-bottom: 4px;
+            width: 64px;
+            margin-bottom: 6px;
         }
 
         .cover__title {
-            font-size: 19px;
+            font-size: 22px;
             font-weight: 700;
             color: #3F3F46;
             letter-spacing: -0.5px;
@@ -59,9 +54,9 @@ function cleanMealValue(?string $text): string {
         }
 
         .cover__tagline {
-            font-size: 9px;
+            font-size: 10px;
             color: #6B6B72;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .cover__badge {
@@ -69,8 +64,8 @@ function cleanMealValue(?string $text): string {
             background: #F4B6D7;
             color: #3F3F46;
             border-radius: 999px;
-            padding: 2px 10px;
-            font-size: 9px;
+            padding: 3px 12px;
+            font-size: 10px;
             font-weight: 700;
         }
 
@@ -79,32 +74,32 @@ function cleanMealValue(?string $text): string {
             background: #FFFFFF;
             border: 1.5px solid #EDE9F2;
             border-radius: 10px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             overflow: hidden;
             page-break-inside: avoid;
         }
 
         .day-card__header {
             background: linear-gradient(90deg, #F4B6D7 0%, #DCCCF4 100%);
-            padding: 4px 10px;
+            padding: 5px 12px;
         }
 
         .day-card__date {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             color: #3F3F46;
             text-transform: capitalize;
         }
 
         .day-card__body {
-            padding: 4px 10px;
+            padding: 5px 12px 6px;
         }
 
         /* ── Fila de comida ── */
         .meal-row {
             display: table;
             width: 100%;
-            padding: 2px 0;
+            padding: 4px 0;
             border-bottom: 1px solid #F0EBF5;
         }
 
@@ -114,20 +109,19 @@ function cleanMealValue(?string $text): string {
 
         .meal-row__icon-cell {
             display: table-cell;
-            width: 20px;
-            vertical-align: top;
-            padding-top: 1px;
+            width: 24px;
+            vertical-align: middle;
         }
 
         .meal-row__icon {
-            width: 14px;
-            height: 14px;
+            width: 18px;
+            height: 18px;
         }
 
         .meal-row__content {
             display: table-cell;
-            vertical-align: top;
-            padding-left: 5px;
+            vertical-align: middle;
+            padding-left: 6px;
         }
 
         .meal-row__label {
@@ -136,28 +130,28 @@ function cleanMealValue(?string $text): string {
             color: #A98274;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 0;
+            margin-bottom: 1px;
         }
 
         .meal-row__value {
-            font-size: 10px;
+            font-size: 11px;
             color: #3F3F46;
-            line-height: 1.2;
+            line-height: 1.3;
         }
 
         .meal-row__empty {
-            font-size: 9px;
+            font-size: 10px;
             color: #B0AABF;
             font-style: italic;
         }
 
         /* ── Recuerdo del día ── */
         .notes-row {
-            margin-top: 4px;
+            margin-top: 5px;
             background: #FDF6FB;
             border: 1px solid #F4B6D7;
             border-radius: 6px;
-            padding: 3px 8px;
+            padding: 4px 10px;
         }
 
         .notes-row__label {
@@ -166,13 +160,13 @@ function cleanMealValue(?string $text): string {
             color: #A98274;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 1px;
+            margin-bottom: 2px;
         }
 
         .notes-row__value {
-            font-size: 10px;
+            font-size: 11px;
             color: #3F3F46;
-            line-height: 1.2;
+            line-height: 1.4;
         }
 
         /* ── Sin resultados ── */
@@ -234,7 +228,7 @@ function cleanMealValue(?string $text): string {
                     <div class="meal-row__content">
                         <div class="meal-row__label">Desayuno</div>
                         @if ($entry->breakfast)
-                            <div class="meal-row__value">{!! renderEmoji(cleanMealValue($entry->breakfast)) !!}</div>
+                            <div class="meal-row__value">{!! renderEmoji($entry->breakfast) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -248,7 +242,7 @@ function cleanMealValue(?string $text): string {
                     <div class="meal-row__content">
                         <div class="meal-row__label">Almuerzo</div>
                         @if ($entry->lunch)
-                            <div class="meal-row__value">{!! renderEmoji(cleanMealValue($entry->lunch)) !!}</div>
+                            <div class="meal-row__value">{!! renderEmoji($entry->lunch) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -262,7 +256,7 @@ function cleanMealValue(?string $text): string {
                     <div class="meal-row__content">
                         <div class="meal-row__label">Merienda</div>
                         @if ($entry->snack)
-                            <div class="meal-row__value">{!! renderEmoji(cleanMealValue($entry->snack)) !!}</div>
+                            <div class="meal-row__value">{!! renderEmoji($entry->snack) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -276,7 +270,7 @@ function cleanMealValue(?string $text): string {
                     <div class="meal-row__content">
                         <div class="meal-row__label">Cena</div>
                         @if ($entry->dinner)
-                            <div class="meal-row__value">{!! renderEmoji(cleanMealValue($entry->dinner)) !!}</div>
+                            <div class="meal-row__value">{!! renderEmoji($entry->dinner) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -305,3 +299,4 @@ function cleanMealValue(?string $text): string {
 
 </body>
 </html>
+
