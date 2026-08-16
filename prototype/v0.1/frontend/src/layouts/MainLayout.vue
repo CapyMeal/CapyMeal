@@ -20,7 +20,7 @@ import BottomNavigation from '../components/layout/BottomNavigation.vue'
 <style scoped>
 .layout {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f8f2fa 0%, var(--color-background) 160px);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-lavender) 12%, var(--color-background)) 0%, var(--color-background) 160px);
 }
 
 .layout__header {
