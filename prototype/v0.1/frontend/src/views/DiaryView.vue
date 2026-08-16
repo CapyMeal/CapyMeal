@@ -5,16 +5,7 @@
       <h1 class="diary-heading__title">Mi Diario</h1>
     </div>
 
-    <div class="diary-filters">
-      <div class="diary-filters__field">
-        <label for="from-date">Desde</label>
-        <input id="from-date" v-model="fromDate" type="date">
-      </div>
-      <div class="diary-filters__field">
-        <label for="to-date">Hasta</label>
-        <input id="to-date" v-model="toDate" type="date">
-      </div>
-    </div>
+    <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
 
     <p v-if="errorMessage" class="diary-error">{{ errorMessage }}</p>
     <p v-if="loading" class="diary-loading">Cargando tu diario...</p>
@@ -44,9 +35,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import MainLayout from '../layouts/MainLayout.vue'
-import DiaryCard  from '../components/diary/DiaryCard.vue'
-import EmptyState from '../components/diary/EmptyState.vue'
+import MainLayout       from '../layouts/MainLayout.vue'
+import DiaryCard        from '../components/diary/DiaryCard.vue'
+import EmptyState       from '../components/diary/EmptyState.vue'
+import DateRangeFilter  from '../components/base/DateRangeFilter.vue'
 import { getMealEntries } from '../services/mealEntriesApi'
 
 const entries = ref([])
@@ -113,30 +105,6 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-}
-
-.diary-filters {
-  display: grid;
-  gap: var(--space-sm);
-  grid-template-columns: 1fr 1fr;
-  margin-bottom: var(--space-lg);
-}
-
-.diary-filters__field label {
-  display: block;
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 4px;
-}
-
-.diary-filters__field input {
-  width: 100%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text);
-  padding: var(--space-xs) var(--space-sm);
 }
 
 .diary-error {

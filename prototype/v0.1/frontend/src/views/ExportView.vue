@@ -5,16 +5,7 @@
       <h1 class="export-heading__title">Exportar PDF</h1>
     </div>
 
-    <div class="export-filters">
-      <div class="export-field">
-        <label for="export-from">Desde</label>
-        <input id="export-from" v-model="fromDate" type="date">
-      </div>
-      <div class="export-field">
-        <label for="export-to">Hasta</label>
-        <input id="export-to" v-model="toDate" type="date">
-      </div>
-    </div>
+    <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
 
     <p v-if="errorMessage" class="export-error">{{ errorMessage }}</p>
     <p v-if="loading" class="export-loading">Cargando registros para exportar...</p>
@@ -25,18 +16,21 @@
     />
 
     <div v-else-if="!loading" class="export-preview" id="print-section">
-      <article
+      <v-card
         v-for="{ date, entry } in filteredEntries"
         :key="date"
         class="export-card"
+        elevation="1"
       >
-        <h2>{{ formatDate(date) }}</h2>
-        <p><strong>☀️ Desayuno:</strong> {{ entry.breakfast || 'No registrado' }}</p>
-        <p><strong>🍝 Almuerzo:</strong> {{ entry.lunch || 'No registrado' }}</p>
-        <p><strong>🧁 Merienda:</strong> {{ entry.snack || 'No registrado' }}</p>
-        <p><strong>🌙 Cena:</strong> {{ entry.dinner || 'No registrado' }}</p>
-        <p v-if="entry.notes"><strong>📝 Recuerdo:</strong> {{ entry.notes }}</p>
-      </article>
+        <v-card-text>
+          <h2>{{ formatDate(date) }}</h2>
+          <p><strong>☀️ Desayuno:</strong> {{ entry.breakfast || 'No registrado' }}</p>
+          <p><strong>🍝 Almuerzo:</strong> {{ entry.lunch || 'No registrado' }}</p>
+          <p><strong>🧁 Merienda:</strong> {{ entry.snack || 'No registrado' }}</p>
+          <p><strong>🌙 Cena:</strong> {{ entry.dinner || 'No registrado' }}</p>
+          <p v-if="entry.notes"><strong>📝 Recuerdo:</strong> {{ entry.notes }}</p>
+        </v-card-text>
+      </v-card>
     </div>
 
     <CapyButton
@@ -52,9 +46,10 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import MainLayout from '../layouts/MainLayout.vue'
-import EmptyState from '../components/diary/EmptyState.vue'
-import CapyButton from '../components/base/CapyButton.vue'
+import MainLayout      from '../layouts/MainLayout.vue'
+import EmptyState      from '../components/diary/EmptyState.vue'
+import CapyButton      from '../components/base/CapyButton.vue'
+import DateRangeFilter from '../components/base/DateRangeFilter.vue'
 import { exportMealEntriesPdf, getMealEntries } from '../services/mealEntriesApi'
 
 const entries = ref([])
@@ -148,41 +143,13 @@ async function printPdf() {
   color: var(--color-title);
 }
 
-.export-filters {
-  display: grid;
-  gap: var(--space-sm);
-  grid-template-columns: 1fr 1fr;
-  margin-bottom: var(--space-lg);
-}
-
-.export-field label {
-  display: block;
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 4px;
-}
-
-.export-field input {
-  width: 100%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text);
-  padding: var(--space-xs) var(--space-sm);
-}
-
 .export-preview {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-.export-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+.export-card :deep(.v-card-text) {
   padding: var(--space-md);
 }
 
