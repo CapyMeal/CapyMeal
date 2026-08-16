@@ -1,29 +1,25 @@
 <template>
   <nav class="bottom-nav">
     <RouterLink to="/hoy" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <img :src="dayIcon" alt="Hoy" class="bottom-nav__icon-image">
+      <v-icon icon="mdi-calendar-today" size="26" />
       <span class="bottom-nav__label">Hoy</span>
     </RouterLink>
     <RouterLink to="/recuerdos" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <img :src="diaryIcon" alt="Diario" class="bottom-nav__icon-image">
+      <v-icon icon="mdi-notebook" size="26" />
       <span class="bottom-nav__label">Diario</span>
     </RouterLink>
     <RouterLink to="/exportar" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <img :src="pdfIcon" alt="PDF" class="bottom-nav__icon-image">
+      <v-icon icon="mdi-file-pdf-box" size="26" />
       <span class="bottom-nav__label">PDF</span>
     </RouterLink>
     <RouterLink to="/ajustes" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <img :src="settingsIcon" alt="Ajustes" class="bottom-nav__icon-image">
+      <v-icon icon="mdi-cog" size="26" />
       <span class="bottom-nav__label">Ajustes</span>
     </RouterLink>
   </nav>
 </template>
 
 <script setup>
-import dayIcon      from '../../assets/icons/hoy.png'
-import diaryIcon    from '../../assets/icons/diario.png'
-import pdfIcon      from '../../assets/icons/pdf.png'
-import settingsIcon from '../../assets/icons/ajustes.png'
 </script>
 
 <style scoped>
@@ -40,7 +36,7 @@ import settingsIcon from '../../assets/icons/ajustes.png'
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--color-border);
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, .06);
+  box-shadow: var(--shadow-sm);
 }
 
 .bottom-nav__item {
@@ -59,12 +55,6 @@ import settingsIcon from '../../assets/icons/ajustes.png'
 .bottom-nav__item--active {
   opacity: 1;
   color: var(--color-primary);
-}
-
-.bottom-nav__icon-image {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
 }
 
 .bottom-nav__label {
