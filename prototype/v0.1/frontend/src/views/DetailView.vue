@@ -37,76 +37,82 @@
       <!-- Modo lectura -->
       <template v-if="!editing">
         <div class="detail-meals">
-          <div v-for="meal in allMeals" :key="meal.key" class="detail-meal">
-            <p class="detail-meal__label">
-              <img
-                v-if="meal.iconImage"
-                :src="meal.iconImage"
-                :alt="meal.title"
-                class="detail-meal__icon-image"
-              >
-              <span v-else>{{ meal.icon }}</span> {{ meal.title }}
-            </p>
-            <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry[meal.key] }">
-              {{ entry[meal.key] || 'No registrado' }}
-            </p>
-            <div class="detail-meal__actions">
-              <CapyButton
-                variant="ghost"
-                :disabled="savingMealKey === meal.key"
-                @click="startMealEdit(meal.key)"
-              >
-                {{ editingMealKey === meal.key ? 'Editando...' : `Editar ${meal.title.toLowerCase()}` }}
-              </CapyButton>
-            </div>
-            <div v-if="editingMealKey === meal.key" class="detail-meal-editor">
-              <textarea
-                v-model="mealDraftValue"
-                class="detail-meal-editor__textarea"
-                rows="3"
-              />
-              <div class="detail-meal-editor__actions">
+          <v-card v-for="meal in allMeals" :key="meal.key" class="detail-meal" elevation="1">
+            <v-card-text>
+              <p class="detail-meal__label">
+                <img
+                  v-if="meal.iconImage"
+                  :src="meal.iconImage"
+                  :alt="meal.title"
+                  class="detail-meal__icon-image"
+                >
+                <span v-else>{{ meal.icon }}</span> {{ meal.title }}
+              </p>
+              <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry[meal.key] }">
+                {{ entry[meal.key] || 'No registrado' }}
+              </p>
+              <div class="detail-meal__actions">
                 <CapyButton
+                  variant="ghost"
                   :disabled="savingMealKey === meal.key"
-                  @click="saveSingleMeal(meal.key, meal.title)"
+                  @click="startMealEdit(meal.key)"
                 >
-                  {{ savingMealKey === meal.key ? 'Guardando...' : 'Guardar' }}
+                  {{ editingMealKey === meal.key ? 'Editando...' : `Editar ${meal.title.toLowerCase()}` }}
                 </CapyButton>
-                <CapyButton variant="ghost" @click="cancelMealEdit">Cancelar</CapyButton>
               </div>
-            </div>
-          </div>
-          <div class="detail-meal">
-            <p class="detail-meal__label">📝 Recuerdo del día</p>
-            <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry.notes }">
-              {{ entry.notes || 'No registrado' }}
-            </p>
-            <div class="detail-meal__actions">
-              <CapyButton
-                variant="ghost"
-                :disabled="savingMealKey === 'notes'"
-                @click="startMealEdit('notes')"
-              >
-                {{ editingMealKey === 'notes' ? 'Editando...' : 'Editar recuerdo' }}
-              </CapyButton>
-            </div>
-            <div v-if="editingMealKey === 'notes'" class="detail-meal-editor">
-              <textarea
-                v-model="mealDraftValue"
-                class="detail-meal-editor__textarea"
-                rows="3"
-              />
-              <div class="detail-meal-editor__actions">
+              <div v-if="editingMealKey === meal.key" class="detail-meal-editor">
+                <v-textarea
+                  v-model="mealDraftValue"
+                  rows="3"
+                  auto-grow
+                  density="compact"
+                />
+                <div class="detail-meal-editor__actions">
+                  <CapyButton
+                    :disabled="savingMealKey === meal.key"
+                    @click="saveSingleMeal(meal.key, meal.title)"
+                  >
+                    {{ savingMealKey === meal.key ? 'Guardando...' : 'Guardar' }}
+                  </CapyButton>
+                  <CapyButton variant="ghost" @click="cancelMealEdit">Cancelar</CapyButton>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
+          <v-card class="detail-meal" elevation="1">
+            <v-card-text>
+              <p class="detail-meal__label">📝 Recuerdo del día</p>
+              <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry.notes }">
+                {{ entry.notes || 'No registrado' }}
+              </p>
+              <div class="detail-meal__actions">
                 <CapyButton
+                  variant="ghost"
                   :disabled="savingMealKey === 'notes'"
-                  @click="saveSingleMeal('notes', 'recuerdo')"
+                  @click="startMealEdit('notes')"
                 >
-                  {{ savingMealKey === 'notes' ? 'Guardando...' : 'Guardar' }}
+                  {{ editingMealKey === 'notes' ? 'Editando...' : 'Editar recuerdo' }}
                 </CapyButton>
-                <CapyButton variant="ghost" @click="cancelMealEdit">Cancelar</CapyButton>
               </div>
-            </div>
-          </div>
+              <div v-if="editingMealKey === 'notes'" class="detail-meal-editor">
+                <v-textarea
+                  v-model="mealDraftValue"
+                  rows="3"
+                  auto-grow
+                  density="compact"
+                />
+                <div class="detail-meal-editor__actions">
+                  <CapyButton
+                    :disabled="savingMealKey === 'notes'"
+                    @click="saveSingleMeal('notes', 'recuerdo')"
+                  >
+                    {{ savingMealKey === 'notes' ? 'Guardando...' : 'Guardar' }}
+                  </CapyButton>
+                  <CapyButton variant="ghost" @click="cancelMealEdit">Cancelar</CapyButton>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
         </div>
 
         <div class="detail-actions">
@@ -351,11 +357,11 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
 }
 
 .detail-meal {
-  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+}
+
+.detail-meal :deep(.v-card-text) {
   padding: var(--space-md) var(--space-lg);
-  box-shadow: var(--shadow-sm);
 }
 
 .detail-meal__label {
@@ -391,16 +397,6 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
 
 .detail-meal-editor {
   margin-top: var(--space-sm);
-}
-
-.detail-meal-editor__textarea {
-  width: 100%;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-sm) var(--space-md);
-  color: var(--color-text);
-  resize: vertical;
 }
 
 .detail-meal-editor__actions {

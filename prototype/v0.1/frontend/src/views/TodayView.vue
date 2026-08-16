@@ -37,13 +37,14 @@
         </button>
 
         <div v-if="showDatePicker" class="today-header__date-panel">
-          <input
+          <v-text-field
             id="entry-date"
             v-model="selectedDate"
-            class="today-header__picker"
             type="date"
+            density="compact"
+            hide-details
             :max="todayISO"
-          >
+          />
           <div class="today-header__quick-dates">
             <button type="button" class="today-header__quick-btn" @click="setQuickDate(0)">Hoy</button>
             <button type="button" class="today-header__quick-btn" @click="setQuickDate(1)">Ayer</button>
@@ -54,8 +55,12 @@
 
       <!-- Feedback inline -->
       <p v-if="loading" class="today-status today-status--loading">Cargando…</p>
-      <p v-if="errorMessage" class="today-status today-status--error">{{ errorMessage }}</p>
-      <p v-if="successMessage" class="today-status today-status--success">{{ successMessage }}</p>
+      <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="today-status">
+        {{ errorMessage }}
+      </v-alert>
+      <v-alert v-if="successMessage" type="success" variant="tonal" density="compact" class="today-status">
+        {{ successMessage }}
+      </v-alert>
 
       <!-- Tarjetas de comida -->
       <div class="today-meals">
@@ -309,15 +314,6 @@ onMounted(() => loadEntryByDate(selectedDate.value))
   gap: var(--space-sm);
 }
 
-.today-header__picker {
-  width: 100%;
-  background: var(--color-background);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-}
-
 .today-header__quick-dates {
   display: flex;
   gap: var(--space-xs);
@@ -348,8 +344,6 @@ onMounted(() => loadEntryByDate(selectedDate.value))
 }
 
 .today-status--loading { color: var(--color-muted); }
-.today-status--error   { background: rgba(242,168,168,.18); color: #b94040; }
-.today-status--success { background: rgba(169,215,181,.18); color: #3a8050; }
 
 /* ── Tarjetas ───────────────────────────────── */
 .today-meals {
