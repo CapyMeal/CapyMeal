@@ -1,0 +1,24 @@
+/* Reemplaza la elevación default de Material (sombras grises, duras) por
+   las sombras cálidas de CapyMeal (--shadow-sm/--shadow-md en main.css).
+   Solo se tocan los niveles que la app realmente usa (1 y 2). */
+
+.v-theme--capymealLight.v-card.elevation-1,
+.v-theme--capymealDark.v-card.elevation-1,
+.v-theme--capymealLight.v-sheet.elevation-1,
+.v-theme--capymealDark.v-sheet.elevation-1 {
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.v-theme--capymealLight.v-card.elevation-2,
+.v-theme--capymealDark.v-card.elevation-2,
+.v-theme--capymealLight.v-sheet.elevation-2,
+.v-theme--capymealDark.v-sheet.elevation-2 {
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Los botones ya van con elevation: 0 por defecto (ver plugins/vuetify.js);
+   si algún v-btn puntual pide elevación, que use la sombra suave también. */
+.v-theme--capymealLight .v-btn.elevation-1,
+.v-theme--capymealDark .v-btn.elevation-1 {
+  box-shadow: var(--shadow-sm) !important;
+}

@@ -40,6 +40,15 @@
   /* Tipografía */
   --font-title: "Fredoka", "Nunito", sans-serif;
   --font-main:  "Inter", "Segoe UI", sans-serif;
+
+  /* Escala tipográfica — aproxima los tamaños que ya se usaban
+     hardcodeados en cada vista, ahora como tokens reutilizables */
+  --font-size-display:   2.2rem;
+  --font-size-title-lg:  1.8rem;
+  --font-size-title-md:  1.4rem;
+  --font-size-title-sm:  1.1rem;
+  --font-size-body:      .95rem;
+  --font-size-label:     .85rem;
 }
 
 :root[data-theme="dark"] {
