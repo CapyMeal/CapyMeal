@@ -66,9 +66,14 @@ async function submit() {
       body: JSON.stringify({ email: email.value }),
     })
     sent.value = true
-  } catch {
-    // Mostramos el mismo mensaje pase lo que pase (no exponer si el email existe)
-    sent.value = true
+  } catch (error) {
+    if (error.status === 429) {
+      errorMessage.value = error.message || 'Ya enviamos un enlace hace poco. Esperá un minuto antes de volver a intentarlo.'
+    } else if (error.status) {
+      errorMessage.value = error.message || 'Revisá el email ingresado e intentá de nuevo.'
+    } else {
+      errorMessage.value = 'No pudimos conectar. Revisá tu conexión e intentá de nuevo.'
+    }
   } finally {
     loading.value = false
   }

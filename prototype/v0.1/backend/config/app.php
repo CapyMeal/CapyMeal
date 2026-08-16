@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | URL de la SPA (Vue), usada para armar links que apuntan al frontend
+    | (por ejemplo el link de recuperación de contraseña). Distinta de
+    | APP_URL, que es la URL de esta misma API.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

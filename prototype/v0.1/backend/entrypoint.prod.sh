@@ -7,6 +7,7 @@ APP_NAME=CapyMeal
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=${APP_URL:-http://localhost:8000}
+APP_LOCALE=es
 APP_KEY=
 
 LOG_CHANNEL=stderr
@@ -26,6 +27,11 @@ SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 
 FRONTEND_URL=${FRONTEND_URL:-*}
+
+MAIL_MAILER=${MAIL_MAILER:-log}
+RESEND_API_KEY=${RESEND_API_KEY:-}
+MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-hello@capymeal.app}
+MAIL_FROM_NAME=CapyMeal
 EOF
 
 mkdir -p storage/framework/sessions \

@@ -17,7 +17,18 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const text = await response.text()
-    const error = new Error(`API ${response.status}: ${text}`)
+    let data = null
+
+    try {
+      data = text ? JSON.parse(text) : null
+    } catch {
+      // respuesta no-JSON (ej. error de servidor/proxy), seguimos con data = null
+    }
+
+    const message = data?.message
+      || Object.values(data?.errors || {})[0]?.[0]
+      || `API ${response.status}: ${text}`
+    const error = new Error(message)
     error.status = response.status
     throw error
   }

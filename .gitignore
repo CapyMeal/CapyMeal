@@ -1,10 +1,7 @@
 ### dotenv ###
 .env
-
-### Jsonnet ###
-# Dependency directories
-vendor/
-
+*.env
+!.env.example
 
 ### Laravel ###
 /vendor/
@@ -361,3 +358,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code local session settings
+.claude/

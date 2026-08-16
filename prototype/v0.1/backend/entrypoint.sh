@@ -14,6 +14,7 @@ APP_NAME=CapyMeal
 APP_ENV=${APP_ENV:-local}
 APP_DEBUG=${APP_DEBUG:-true}
 APP_URL=${APP_URL:-http://localhost:8000}
+APP_LOCALE=es
 APP_KEY=
 
 LOG_CHANNEL=stack
@@ -29,6 +30,13 @@ DB_PASSWORD=${DB_PASSWORD:-capymeal}
 CACHE_STORE=database
 SESSION_DRIVER=database
 QUEUE_CONNECTION=database
+
+FRONTEND_URL=${FRONTEND_URL:-http://localhost:5174}
+
+MAIL_MAILER=${MAIL_MAILER:-log}
+RESEND_API_KEY=${RESEND_API_KEY:-}
+MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-hello@capymeal.local}
+MAIL_FROM_NAME=CapyMeal
 EOF
 
 php artisan key:generate --force --no-interaction

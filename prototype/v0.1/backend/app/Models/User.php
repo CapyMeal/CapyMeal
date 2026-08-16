@@ -36,4 +36,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\MealEntry::class);
     }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
 }

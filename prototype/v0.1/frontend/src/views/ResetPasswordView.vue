@@ -4,7 +4,15 @@
 
       <img src="../assets/illustrations/Chef.png" alt="Capi" class="auth-card__capi">
 
-      <template v-if="!done">
+      <template v-if="!hasLinkParams">
+        <h1 class="auth-card__title">Enlace inválido 🔒</h1>
+        <p class="auth-card__subtitle">
+          Este enlace de recuperación no es válido. Pedí uno nuevo desde
+          <RouterLink to="/olvide-contrasena" class="auth-switch__link">¿Olvidaste tu contraseña?</RouterLink>
+        </p>
+      </template>
+
+      <template v-else-if="!done">
         <h1 class="auth-card__title">Nueva contraseña 🔒</h1>
         <p class="auth-card__subtitle">Elegí una contraseña nueva para tu cuenta.</p>
 
@@ -69,10 +77,12 @@ const passwordConfirmation = ref('')
 const loading             = ref(false)
 const errorMessage        = ref('')
 const done                = ref(false)
+const hasLinkParams       = ref(true)
 
 onMounted(() => {
   token.value = route.query.token ?? ''
   email.value = route.query.email ?? ''
+  hasLinkParams.value = Boolean(token.value && email.value)
 })
 
 async function submit() {

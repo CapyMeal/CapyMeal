@@ -41,6 +41,11 @@ services:
       DB_DATABASE:   capymeal
       DB_USERNAME:   capymeal
       DB_PASSWORD:   capymeal
+      FRONTEND_URL:  http://localhost:5174
+      MAIL_MAILER:   ${MAIL_MAILER:-log}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-hello@capymeal.local}
+      MAIL_FROM_NAME: CapyMeal
 
   frontend:
     build:
