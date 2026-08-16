@@ -10,6 +10,15 @@
     <p v-if="errorMessage" class="export-error">{{ errorMessage }}</p>
     <p v-if="loading" class="export-loading">Cargando registros para exportar...</p>
 
+    <CapyButton
+      v-if="!loading && filteredEntries.length > 0"
+      class="export-button"
+      :disabled="exporting"
+      @click="printPdf"
+    >
+      {{ exporting ? 'Preparando PDF...' : '🩷 Descargar PDF' }}
+    </CapyButton>
+
     <EmptyState
       v-else-if="filteredEntries.length === 0"
       message="No encontré registros para esas fechas."
@@ -32,15 +41,6 @@
         </v-card-text>
       </v-card>
     </div>
-
-    <CapyButton
-      v-if="!loading && filteredEntries.length > 0"
-      class="export-button"
-      :disabled="exporting"
-      @click="printPdf"
-    >
-      {{ exporting ? 'Preparando PDF...' : '🩷 Descargar PDF' }}
-    </CapyButton>
   </MainLayout>
 </template>
 
@@ -165,7 +165,7 @@ async function printPdf() {
 }
 
 .export-button {
-  margin-top: var(--space-lg);
+  margin-bottom: var(--space-lg);
 }
 
 .export-error {
