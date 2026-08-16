@@ -16,9 +16,13 @@
             <p class="settings-item__desc">{{ isDark ? 'Oscuro' : 'Claro' }}</p>
           </div>
         </div>
-        <button class="settings-toggle" :class="{ 'settings-toggle--on': isDark }" @click="toggleTheme">
-          <span class="settings-toggle__thumb" />
-        </button>
+        <v-switch
+          :model-value="isDark"
+          color="primary"
+          hide-details
+          density="compact"
+          @update:model-value="toggleTheme"
+        />
       </div>
 
       <hr class="settings-divider" />
@@ -67,17 +71,22 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTheme } from 'vuetify'
 import MainLayout from '../layouts/MainLayout.vue'
 import { logout, currentUser } from '../stores/authStore'
 
-const router  = useRouter()
-const isDark  = ref(document.documentElement.getAttribute('data-theme') === 'dark')
+const router      = useRouter()
+const vuetifyTheme = useTheme()
+const isDark      = ref(document.documentElement.getAttribute('data-theme') === 'dark')
 
-function toggleTheme() {
-  isDark.value = !isDark.value
+function toggleTheme(value) {
+  isDark.value = value
   const theme = isDark.value ? 'dark' : 'light'
   document.documentElement.setAttribute('data-theme', theme)
   localStorage.setItem('capymeal-theme', theme)
+  // data-theme/localStorage siguen siendo la fuente de verdad; Vuetify
+  // solo se mantiene sincronizado con eso.
+  vuetifyTheme.change(isDark.value ? 'capymealDark' : 'capymealLight')
 }
 
 async function handleLogout() {
@@ -174,38 +183,5 @@ async function handleLogout() {
   border: none;
   border-top: 1px solid var(--color-border);
   margin: 0;
-}
-
-/* Toggle switch */
-.settings-toggle {
-  flex-shrink: 0;
-  width: 48px;
-  height: 28px;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  background: var(--color-border);
-  position: relative;
-  transition: background .25s ease;
-}
-
-.settings-toggle--on {
-  background: var(--color-primary);
-}
-
-.settings-toggle__thumb {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: white;
-  transition: transform .25s ease;
-  box-shadow: 0 1px 4px rgba(0,0,0,.2);
-}
-
-.settings-toggle--on .settings-toggle__thumb {
-  transform: translateX(20px);
 }
 </style>
