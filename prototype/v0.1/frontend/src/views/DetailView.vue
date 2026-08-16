@@ -36,7 +36,7 @@
 
       <!-- Modo lectura -->
       <template v-if="!editing">
-        <div class="detail-meals">
+        <div class="detail-meals detail-meals--with-bar">
           <v-card v-for="meal in allMeals" :key="meal.key" class="detail-meal" elevation="1">
             <v-card-text>
               <p class="detail-meal__label">
@@ -115,18 +115,18 @@
           </v-card>
         </div>
 
-        <div class="detail-actions">
+        <StickyActionBar>
           <CapyButton @click="startEdit">✏️ Editar</CapyButton>
           <CapyButton :disabled="exportingPdf" variant="ghost" @click="exportDayPdf">
             {{ exportingPdf ? 'Preparando PDF...' : '📄 Exportar este día' }}
           </CapyButton>
           <CapyButton variant="ghost" @click="confirmingDelete = true">🗑 Eliminar</CapyButton>
-        </div>
+        </StickyActionBar>
       </template>
 
       <!-- Modo edición -->
       <template v-else>
-        <div class="detail-edit-meals">
+        <div class="detail-edit-meals detail-edit-meals--with-bar">
           <MealCard :icon-image="breakfastIcon" title="Desayuno"      placeholder="¿Qué desayunaste?"  v-model="form.breakfast" />
           <MealCard :icon-image="lunchIcon" title="Almuerzo"      placeholder="¿Qué almorzaste?"   v-model="form.lunch"      />
           <MealCard :icon-image="snackIcon" title="Merienda"      placeholder="¿Merendaste algo?"  v-model="form.snack"     />
@@ -134,10 +134,10 @@
           <MealCard icon="📝" title="Recuerdo del día" placeholder="¿Hubo algo especial?" v-model="form.notes" />
         </div>
 
-        <div class="detail-actions">
+        <StickyActionBar>
           <CapyButton @click="saveEdit">🩷 Guardar cambios</CapyButton>
           <CapyButton variant="ghost" @click="cancelEdit">Cancelar</CapyButton>
-        </div>
+        </StickyActionBar>
       </template>
     </template>
 
@@ -147,9 +147,10 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import MainLayout from '../layouts/MainLayout.vue'
-import MealCard   from '../components/meal/MealCard.vue'
-import EmptyState from '../components/diary/EmptyState.vue'
+import MainLayout      from '../layouts/MainLayout.vue'
+import MealCard        from '../components/meal/MealCard.vue'
+import EmptyState      from '../components/diary/EmptyState.vue'
+import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton from '../components/base/CapyButton.vue'
 import breakfastIcon from '../assets/icons/desayuno.png'
 import lunchIcon from '../assets/icons/almuerzo.png'
@@ -413,10 +414,9 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   margin-bottom: var(--space-xl);
 }
 
-.detail-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+.detail-meals--with-bar,
+.detail-edit-meals--with-bar {
+  margin-bottom: 90px;
 }
 
 /* Confirmar eliminar */

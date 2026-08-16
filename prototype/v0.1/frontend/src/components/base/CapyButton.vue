@@ -39,6 +39,7 @@ const vuetifyVariant = computed(() => ({
   font-weight: 600;
   letter-spacing: .01em;
   text-transform: none;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
 }
 
 .capy-button--primary,
@@ -49,5 +50,32 @@ const vuetifyVariant = computed(() => ({
 .capy-button--ghost {
   border-color: var(--color-border) !important;
   color: var(--color-text) !important;
+}
+
+.capy-button:hover {
+  transform: translateY(-2px);
+}
+
+.capy-button--primary:hover,
+.capy-button--danger:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.capy-button--ghost:hover {
+  border-color: var(--color-primary) !important;
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent) !important;
+}
+
+.capy-button:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capy-button {
+    transition: none;
+  }
+  .capy-button:hover {
+    transform: none;
+  }
 }
 </style>

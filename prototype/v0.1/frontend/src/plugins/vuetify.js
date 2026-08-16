@@ -59,7 +59,7 @@ export default createVuetify({
   },
   defaults: {
     VBtn: {
-      rounded: 'xl',
+      rounded: 'lg',
       elevation: 0,
     },
     VCard: {

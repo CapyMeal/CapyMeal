@@ -63,7 +63,7 @@
       </v-alert>
 
       <!-- Tarjetas de comida -->
-      <div class="today-meals">
+      <div class="today-meals today-meals--with-bar">
         <MealCard
           v-for="meal in mealFields"
           :key="meal.key"
@@ -78,10 +78,11 @@
         />
       </div>
 
-      <!-- Acción principal -->
-      <CapyButton class="today-save" :disabled="loading" @click="saveDay">
-        🩷 Guardar mi día
-      </CapyButton>
+      <StickyActionBar>
+        <CapyButton :disabled="loading" @click="saveDay">
+          🩷 Guardar mi día
+        </CapyButton>
+      </StickyActionBar>
 
     </template>
 
@@ -91,9 +92,10 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import MainLayout  from '../layouts/MainLayout.vue'
-import MealCard    from '../components/meal/MealCard.vue'
-import CapyButton  from '../components/base/CapyButton.vue'
+import MainLayout      from '../layouts/MainLayout.vue'
+import MealCard        from '../components/meal/MealCard.vue'
+import StickyActionBar from '../components/base/StickyActionBar.vue'
+import CapyButton      from '../components/base/CapyButton.vue'
 import { getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
 import breakfastIcon from '../assets/icons/desayuno.png'
@@ -351,6 +353,10 @@ onMounted(() => loadEntryByDate(selectedDate.value))
   flex-direction: column;
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
+}
+
+.today-meals--with-bar {
+  margin-bottom: 90px;
 }
 
 /* ── Botón principal ────────────────────────── */
