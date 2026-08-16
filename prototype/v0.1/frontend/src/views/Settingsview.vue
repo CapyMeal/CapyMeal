@@ -29,7 +29,7 @@
 
       <!-- Sobre CapyMeal -->
       <div class="settings-item settings-item--static">
-        <span class="settings-item__icon">🐹</span>
+        <img src="../assets/icons/capy2.png" alt="Capi" class="settings-item__capi">
         <div>
           <p class="settings-item__label">Sobre CapyMeal</p>
           <p class="settings-item__desc">Un lugar tranquilo para guardar los pequeños momentos alrededor de la comida.</p>
@@ -149,6 +149,14 @@ async function handleLogout() {
 }
 
 .settings-item--static .settings-item__icon {
+  margin-top: 2px;
+}
+
+.settings-item__capi {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
   margin-top: 2px;
 }
 

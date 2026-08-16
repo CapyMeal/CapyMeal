@@ -5,7 +5,7 @@
     <div v-if="saved" class="confirmation">
       <img src="../assets/icons/capy2.png" alt="Capi" class="confirmation__capi">
       <p class="confirmation__message">
-        Listo 🌸<br>
+        Listo 🍂<br>
         <span>Este día ya forma parte de tu diario.</span>
       </p>
       <div class="confirmation__actions">
@@ -22,7 +22,7 @@
         <div class="today-header__capi-row">
           <img src="../assets/icons/capy2.png" alt="Capi" class="today-header__avatar">
           <div>
-            <p class="today-header__greeting">Hola, {{ currentUser?.name?.split(' ')[0] }} 🌸</p>
+            <p class="today-header__greeting">Hola, {{ currentUser?.name?.split(' ')[0] }} 🍂</p>
             <p class="today-header__date">{{ formattedDate }}</p>
           </div>
         </div>
@@ -80,7 +80,7 @@
 
       <StickyActionBar>
         <CapyButton :disabled="loading" @click="saveDay">
-          🩷 Guardar mi día
+          🤎 Guardar mi día
         </CapyButton>
       </StickyActionBar>
 

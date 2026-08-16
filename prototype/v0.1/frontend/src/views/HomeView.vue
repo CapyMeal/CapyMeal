@@ -17,7 +17,7 @@
       </div>
 
       <CapyButton class="splash__btn" @click="$router.push('/hoy')">
-        🌸 Comenzar
+        🍂 Comenzar
       </CapyButton>
     </div>
   </div>

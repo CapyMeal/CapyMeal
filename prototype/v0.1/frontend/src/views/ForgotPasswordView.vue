@@ -1,7 +1,7 @@
 <template>
   <AuthLayout>
     <AuthCard
-      :title="sent ? '¡Listo! 🌸' : '¿Olvidaste tu contraseña? 🔑'"
+      :title="sent ? '¡Listo! 🍂' : '¿Olvidaste tu contraseña? 🔑'"
       :subtitle="sent
         ? 'Si existe una cuenta con ese email, vas a recibir un enlace en los próximos minutos. Revisá también la carpeta de spam.'
         : 'Ingresá tu email y te mandamos un enlace para recuperarla.'"

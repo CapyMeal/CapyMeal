@@ -1,6 +1,6 @@
 <template>
   <AuthLayout>
-    <AuthCard title="Crear cuenta 🐹" subtitle="Tu diario de comidas te espera.">
+    <AuthCard title="Crear cuenta 🌱" subtitle="Tu diario de comidas te espera.">
       <form class="auth-form" @submit.prevent="submit">
         <v-text-field
           v-model="name"
@@ -43,7 +43,7 @@
         </v-alert>
 
         <CapyButton class="auth-submit" :disabled="loading" type="submit">
-          {{ loading ? 'Creando cuenta…' : '🌸 Crear mi cuenta' }}
+          {{ loading ? 'Creando cuenta…' : '🍂 Crear mi cuenta' }}
         </CapyButton>
       </form>
 

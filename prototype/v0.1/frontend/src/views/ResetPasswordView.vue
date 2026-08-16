@@ -49,7 +49,7 @@
 
     <AuthCard
       v-else
-      title="¡Todo listo! 🌸"
+      title="¡Todo listo! 🍂"
       subtitle="Tu contraseña fue actualizada. Ya podés iniciar sesión."
     >
       <template #footer>

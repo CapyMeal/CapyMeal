@@ -1,6 +1,6 @@
 <template>
   <div class="empty-state">
-    <p class="empty-state__emoji">🐹</p>
+    <img src="../../assets/illustrations/CapyDiaryComfy.png" alt="Capi" class="empty-state__capi">
     <p class="empty-state__message">{{ message }}</p>
     <CapyButton v-if="actionLabel" @click="$emit('action')">
       {{ actionLabel }}
@@ -29,8 +29,10 @@ defineEmits(['action'])
   padding: var(--space-xl) 0;
 }
 
-.empty-state__emoji {
-  font-size: 3.5rem;
+.empty-state__capi {
+  width: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(105,73,49,.2));
 }
 
 .empty-state__message {

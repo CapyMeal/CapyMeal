@@ -3,7 +3,7 @@
 
     <!-- Confirmar eliminar -->
     <div v-if="confirmingDelete" class="detail-confirm">
-      <p class="detail-confirm__emoji">🐹</p>
+      <img src="../assets/icons/capy2.png" alt="Capi" class="detail-confirm__capi">
       <p class="detail-confirm__message">¿Segura que querés eliminar este recuerdo?</p>
       <div class="detail-confirm__actions">
         <CapyButton variant="danger" @click="deleteEntry">Sí, eliminar</CapyButton>
@@ -135,7 +135,7 @@
         </div>
 
         <StickyActionBar>
-          <CapyButton @click="saveEdit">🩷 Guardar cambios</CapyButton>
+          <CapyButton @click="saveEdit">🤎 Guardar cambios</CapyButton>
           <CapyButton variant="ghost" @click="cancelEdit">Cancelar</CapyButton>
         </StickyActionBar>
       </template>
@@ -429,7 +429,7 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   padding: var(--space-xl) 0;
 }
 
-.detail-confirm__emoji    { font-size: 3.5rem; }
+.detail-confirm__capi     { width: 96px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(105,73,49,.2)); }
 .detail-confirm__message  { font-size: 1.1rem; color: var(--color-title); font-weight: 600; }
 .detail-confirm__actions  { display: flex; flex-direction: column; gap: var(--space-sm); width: 100%; }
 </style>

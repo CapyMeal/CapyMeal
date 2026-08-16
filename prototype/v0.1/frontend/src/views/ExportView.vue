@@ -16,7 +16,7 @@
       :disabled="exporting"
       @click="printPdf"
     >
-      {{ exporting ? 'Preparando PDF...' : '🩷 Descargar PDF' }}
+      {{ exporting ? 'Preparando PDF...' : '🤎 Descargar PDF' }}
     </CapyButton>
 
     <EmptyState
