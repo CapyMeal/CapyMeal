@@ -1,5 +1,5 @@
 <template>
-  <div class="meal-card" :class="{ 'meal-card--saving': saving, 'meal-card--saved': justSaved }">
+  <v-card class="meal-card" :class="{ 'meal-card--saving': saving, 'meal-card--saved': justSaved }" elevation="1">
     <div class="meal-card__header">
       <div class="meal-card__icon-wrap">
         <img
@@ -22,7 +22,7 @@
       @input="$emit('update:modelValue', $event.target.value)"
       @blur="onBlur"
     />
-  </div>
+  </v-card>
 </template>
 
 <script setup>
@@ -49,17 +49,14 @@ function onBlur() {
 
 <style scoped>
 .meal-card {
-  background: var(--color-surface);
   border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
   padding: var(--space-lg);
-  box-shadow: var(--shadow-sm);
   transition: border-color .25s ease, box-shadow .25s ease;
 }
 
 .meal-card--saved {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(244,182,215,.18);
+  box-shadow: 0 0 0 3px rgba(244,182,215,.18) !important;
 }
 
 .meal-card__header {

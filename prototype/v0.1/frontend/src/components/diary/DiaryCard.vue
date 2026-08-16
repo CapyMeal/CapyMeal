@@ -1,18 +1,20 @@
 <template>
-  <RouterLink :to="`/recuerdos/${date}`" class="diary-card">
-    <p class="diary-card__date">{{ formattedDate }}</p>
+  <v-card :to="`/recuerdos/${date}`" class="diary-card" elevation="1" hover>
+    <v-card-text>
+      <p class="diary-card__date">{{ formattedDate }}</p>
 
-    <ul class="diary-card__meals">
-      <li v-for="meal in filledMeals" :key="meal.key" class="diary-card__meal">
-        <span class="diary-card__meal-icon">{{ meal.icon }}</span>
-        <span class="diary-card__meal-text">{{ meal.value }}</span>
-      </li>
-    </ul>
+      <ul class="diary-card__meals">
+        <li v-for="meal in filledMeals" :key="meal.key" class="diary-card__meal">
+          <span class="diary-card__meal-icon">{{ meal.icon }}</span>
+          <span class="diary-card__meal-text">{{ meal.value }}</span>
+        </li>
+      </ul>
 
-    <p v-if="entry.notes" class="diary-card__notes">
-      📝 {{ entry.notes }}
-    </p>
-  </RouterLink>
+      <p v-if="entry.notes" class="diary-card__notes">
+        📝 {{ entry.notes }}
+      </p>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
@@ -49,18 +51,18 @@ const formattedDate = computed(() => {
 <style scoped>
 .diary-card {
   display: block;
-  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  box-shadow: var(--shadow-sm);
   transition: box-shadow .2s ease, transform .15s ease;
   text-decoration: none;
 }
 
 .diary-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md) !important;
   transform: translateY(-2px);
+}
+
+.diary-card :deep(.v-card-text) {
+  padding: var(--space-lg);
 }
 
 .diary-card__date {
