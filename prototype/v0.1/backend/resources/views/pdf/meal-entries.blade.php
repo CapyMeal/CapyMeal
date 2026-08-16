@@ -1,5 +1,21 @@
-{{-- Convierte emoji Unicode a imágenes Twemoji para DomPDF --}}
+{{-- Incrusta los iconos locales como base64: DomPDF 3 no puede leer
+     rutas de archivo locales (chroot) de forma confiable, y pedirse a
+     si mismo la URL publica via HTTP se traba porque `php artisan
+     serve` atiende una sola request a la vez (deadlock). Leer el
+     archivo directo evita ambos problemas. Se cachea en memoria para
+     no releer el mismo archivo por cada fila/dia. --}}
 @php
+function iconDataUri(string $filename): string {
+    static $cache = [];
+
+    if (!isset($cache[$filename])) {
+        $path = public_path('images/' . $filename);
+        $cache[$filename] = 'data:image/png;base64,' . base64_encode(file_get_contents($path));
+    }
+
+    return $cache[$filename];
+}
+
 function renderEmoji(string $text): string {
     return preg_replace_callback(
         '/(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]|\x{2B50}|\x{2B55})(?:\x{200D}(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]))*\x{FE0F}?/u',
@@ -29,14 +45,14 @@ function renderEmoji(string $text): string {
             background: #F5F5F7;
             color: #3F3F46;
             font-size: 11px;
-            padding: 18px 20px;
+            padding: 14px 18px;
         }
 
         /* ── Portada ── */
         .cover {
             text-align: center;
-            padding: 20px 0 16px;
-            margin-bottom: 16px;
+            padding: 14px 0 10px;
+            margin-bottom: 10px;
             border-bottom: 2px solid #F4B6D7;
         }
 
@@ -74,14 +90,14 @@ function renderEmoji(string $text): string {
             background: #FFFFFF;
             border: 1.5px solid #EDE9F2;
             border-radius: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             overflow: hidden;
             page-break-inside: avoid;
         }
 
         .day-card__header {
             background: linear-gradient(90deg, #F4B6D7 0%, #DCCCF4 100%);
-            padding: 5px 12px;
+            padding: 3px 10px;
         }
 
         .day-card__date {
@@ -92,14 +108,14 @@ function renderEmoji(string $text): string {
         }
 
         .day-card__body {
-            padding: 5px 12px 6px;
+            padding: 3px 10px;
         }
 
         /* ── Fila de comida ── */
         .meal-row {
             display: table;
             width: 100%;
-            padding: 4px 0;
+            padding: 2px 0;
             border-bottom: 1px solid #F0EBF5;
         }
 
@@ -109,13 +125,13 @@ function renderEmoji(string $text): string {
 
         .meal-row__icon-cell {
             display: table-cell;
-            width: 24px;
+            width: 22px;
             vertical-align: middle;
         }
 
         .meal-row__icon {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
         }
 
         .meal-row__content {
@@ -130,7 +146,6 @@ function renderEmoji(string $text): string {
             color: #A98274;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 1px;
         }
 
         .meal-row__value {
@@ -147,11 +162,11 @@ function renderEmoji(string $text): string {
 
         /* ── Recuerdo del día ── */
         .notes-row {
-            margin-top: 5px;
+            margin-top: 3px;
             background: #FDF6FB;
             border: 1px solid #F4B6D7;
             border-radius: 6px;
-            padding: 4px 10px;
+            padding: 3px 10px;
         }
 
         .notes-row__label {
@@ -197,7 +212,7 @@ function renderEmoji(string $text): string {
 
     {{-- Portada --}}
     <div class="cover">
-        <img class="cover__chef" src="{{ public_path('images/Chef.png') }}" alt="Capi">
+        <img class="cover__chef" src="{{ iconDataUri('Chef.png') }}" alt="Capi">
         <div class="cover__title">CapyMeal</div>
         <div class="cover__tagline">Las comidas pasan. Los recuerdos quedan.</div>
         <span class="cover__badge">
@@ -223,7 +238,7 @@ function renderEmoji(string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ public_path('images/desayuno.png') }}" alt="Desayuno">
+                        <img class="meal-row__icon" src="{{ iconDataUri('desayuno.png') }}" alt="Desayuno">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Desayuno</div>
@@ -237,7 +252,7 @@ function renderEmoji(string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ public_path('images/almuerzo.png') }}" alt="Almuerzo">
+                        <img class="meal-row__icon" src="{{ iconDataUri('almuerzo.png') }}" alt="Almuerzo">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Almuerzo</div>
@@ -251,7 +266,7 @@ function renderEmoji(string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ public_path('images/merienda.png') }}" alt="Merienda">
+                        <img class="meal-row__icon" src="{{ iconDataUri('merienda.png') }}" alt="Merienda">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Merienda</div>
@@ -265,7 +280,7 @@ function renderEmoji(string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ public_path('images/cena.png') }}" alt="Cena">
+                        <img class="meal-row__icon" src="{{ iconDataUri('cena.png') }}" alt="Cena">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Cena</div>
@@ -288,7 +303,7 @@ function renderEmoji(string $text): string {
         </div>
     @empty
         <div class="empty-state">
-            <img class="empty-state__chef" src="{{ public_path('images/Chef.png') }}" alt="Capi">
+            <img class="empty-state__chef" src="{{ iconDataUri('Chef.png') }}" alt="Capi">
             <p>No hay registros para ese rango.</p>
         </div>
     @endforelse
