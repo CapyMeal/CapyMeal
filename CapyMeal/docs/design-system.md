@@ -40,35 +40,35 @@ Capi acompaña.
 
 ---
 
-# 3. Paleta de colores
+# 3. Paleta de colores — "Tierra"
 
-## 🌸 Capy Pink
+## 🟤 Terracota
 
 Uso:
 Botones principales, acciones positivas, detalles importantes.
 
 Color:
-`#F4B6D7`
+`#96684A`
 
 ---
 
-## 💜 Capy Lavender
+## 🟡 Mostaza
 
 Uso:
-Mensajes de Capi, estados especiales, fondos suaves.
+Mensajes de Capi, estados especiales, acentos puntuales.
 
 Color:
-`#DCCCF4`
+`#C9A66B`
 
 ---
 
-## 🩶 Cloud Gray
+## 🏜️ Arena
 
 Uso:
 Fondos generales de la aplicación.
 
 Color:
-`#F5F5F7`
+`#F2EAE0`
 
 ---
 
@@ -78,7 +78,7 @@ Uso:
 Detalles cálidos, ilustraciones, elementos naturales.
 
 Color:
-`#A98274`
+`#A9805F`
 
 ---
 
@@ -88,7 +88,7 @@ Uso:
 Contenido principal.
 
 Color:
-`#3F3F46`
+`#362B22`
 
 ---
 

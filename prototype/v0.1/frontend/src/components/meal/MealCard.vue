@@ -56,7 +56,7 @@ function onBlur() {
 
 .meal-card--saved {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(244,182,215,.18) !important;
+  box-shadow: 0 0 0 3px rgba(150,104,74,.22) !important;
 }
 
 .meal-card__header {
@@ -99,7 +99,7 @@ function onBlur() {
   font-size: .8rem;
   font-weight: 700;
   color: var(--color-primary);
-  background: rgba(244,182,215,.15);
+  background: rgba(150,104,74,.18);
   border-radius: 999px;
   padding: .15rem .5rem;
   transition: opacity .3s ease;

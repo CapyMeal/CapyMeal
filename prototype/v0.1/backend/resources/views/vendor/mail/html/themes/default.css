@@ -11,7 +11,7 @@ body *:not(html):not(style):not(br):not(tr):not(code) {
 body {
     -webkit-text-size-adjust: none;
     background-color: #ffffff;
-    color: #3F3F46;
+    color: #362B22;
     height: 100%;
     line-height: 1.4;
     margin: 0;
@@ -28,7 +28,7 @@ blockquote {
 }
 
 a {
-    color: #A98274;
+    color: #96684A;
 }
 
 a img {
@@ -38,7 +38,7 @@ a img {
 /* Typography */
 
 h1 {
-    color: #3F3F46;
+    color: #362B22;
     font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
     font-size: 20px;
     font-weight: bold;
@@ -81,7 +81,7 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #F5F5F7;
+    background-color: #F2EAE0;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -104,7 +104,7 @@ img {
 }
 
 .header a {
-    color: #3F3F46;
+    color: #362B22;
     font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
     font-size: 22px;
     font-weight: bold;
@@ -127,9 +127,9 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #F5F5F7;
-    border-bottom: 1px solid #F5F5F7;
-    border-top: 1px solid #F5F5F7;
+    background-color: #F2EAE0;
+    border-bottom: 1px solid #F2EAE0;
+    border-top: 1px solid #F2EAE0;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -140,7 +140,7 @@ img {
     -premailer-cellspacing: 0;
     -premailer-width: 570px;
     background-color: #ffffff;
-    border-color: #EDE9F2;
+    border-color: #DED2C0;
     border-radius: 20px;
     border-width: 1px;
     box-shadow: 0 6px 24px rgba(164, 130, 116, 0.13);
@@ -156,7 +156,7 @@ img {
 /* Subcopy */
 
 .subcopy {
-    border-top: 1px solid #EDE9F2;
+    border-top: 1px solid #DED2C0;
     margin-top: 25px;
     padding-top: 25px;
 }
@@ -178,13 +178,13 @@ img {
 }
 
 .footer p {
-    color: #6B6B72;
+    color: #6E6156;
     font-size: 12px;
     text-align: center;
 }
 
 .footer a {
-    color: #6B6B72;
+    color: #6E6156;
     text-decoration: underline;
 }
 
@@ -233,7 +233,7 @@ img {
 .button {
     -webkit-text-size-adjust: none;
     border-radius: 24px;
-    color: #2B1A2A;
+    color: #FBF7F1;
     display: inline-block;
     overflow: hidden;
     text-decoration: none;
@@ -242,11 +242,11 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #F4B6D7;
-    border-bottom: 8px solid #F4B6D7;
-    border-left: 18px solid #F4B6D7;
-    border-right: 18px solid #F4B6D7;
-    border-top: 8px solid #F4B6D7;
+    background-color: #96684A;
+    border-bottom: 8px solid #96684A;
+    border-left: 18px solid #96684A;
+    border-right: 18px solid #96684A;
+    border-top: 8px solid #96684A;
 }
 
 .button-green,

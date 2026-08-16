@@ -42,8 +42,8 @@ function renderEmoji(string $text): string {
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            background: #F5F5F7;
-            color: #3F3F46;
+            background: #F2EAE0;
+            color: #362B22;
             font-size: 11px;
             padding: 14px 18px;
         }
@@ -53,7 +53,7 @@ function renderEmoji(string $text): string {
             text-align: center;
             padding: 14px 0 10px;
             margin-bottom: 10px;
-            border-bottom: 2px solid #F4B6D7;
+            border-bottom: 2px solid #96684A;
         }
 
         .cover__chef {
@@ -64,21 +64,21 @@ function renderEmoji(string $text): string {
         .cover__title {
             font-size: 22px;
             font-weight: 700;
-            color: #3F3F46;
+            color: #362B22;
             letter-spacing: -0.5px;
             margin-bottom: 3px;
         }
 
         .cover__tagline {
             font-size: 10px;
-            color: #6B6B72;
+            color: #6E6156;
             margin-bottom: 8px;
         }
 
         .cover__badge {
             display: inline-block;
-            background: #F4B6D7;
-            color: #3F3F46;
+            background: #96684A;
+            color: #FBF7F1;
             border-radius: 999px;
             padding: 3px 12px;
             font-size: 10px;
@@ -88,7 +88,7 @@ function renderEmoji(string $text): string {
         /* ── Tarjeta de día ── */
         .day-card {
             background: #FFFFFF;
-            border: 1.5px solid #EDE9F2;
+            border: 1.5px solid #DED2C0;
             border-radius: 10px;
             margin-bottom: 5px;
             overflow: hidden;
@@ -96,14 +96,14 @@ function renderEmoji(string $text): string {
         }
 
         .day-card__header {
-            background: linear-gradient(90deg, #F4B6D7 0%, #DCCCF4 100%);
+            background: linear-gradient(90deg, #96684A 0%, #C9A66B 100%);
             padding: 3px 10px;
         }
 
         .day-card__date {
             font-size: 12px;
             font-weight: 700;
-            color: #3F3F46;
+            color: #FBF7F1;
             text-transform: capitalize;
         }
 
@@ -116,7 +116,7 @@ function renderEmoji(string $text): string {
             display: table;
             width: 100%;
             padding: 2px 0;
-            border-bottom: 1px solid #F0EBF5;
+            border-bottom: 1px solid #EDE3D3;
         }
 
         .meal-row:last-child {
@@ -143,28 +143,28 @@ function renderEmoji(string $text): string {
         .meal-row__label {
             font-size: 8px;
             font-weight: 700;
-            color: #A98274;
+            color: #96684A;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
         .meal-row__value {
             font-size: 11px;
-            color: #3F3F46;
+            color: #362B22;
             line-height: 1.3;
         }
 
         .meal-row__empty {
             font-size: 10px;
-            color: #B0AABF;
+            color: #A79C8E;
             font-style: italic;
         }
 
         /* ── Recuerdo del día ── */
         .notes-row {
             margin-top: 3px;
-            background: #FDF6FB;
-            border: 1px solid #F4B6D7;
+            background: #F7F0E4;
+            border: 1px solid #96684A;
             border-radius: 6px;
             padding: 3px 10px;
         }
@@ -172,7 +172,7 @@ function renderEmoji(string $text): string {
         .notes-row__label {
             font-size: 8px;
             font-weight: 700;
-            color: #A98274;
+            color: #96684A;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 2px;
@@ -180,7 +180,7 @@ function renderEmoji(string $text): string {
 
         .notes-row__value {
             font-size: 11px;
-            color: #3F3F46;
+            color: #362B22;
             line-height: 1.4;
         }
 
@@ -188,7 +188,7 @@ function renderEmoji(string $text): string {
         .empty-state {
             text-align: center;
             padding: 40px 20px;
-            color: #B0AABF;
+            color: #A79C8E;
         }
 
         .empty-state__chef {
@@ -202,9 +202,9 @@ function renderEmoji(string $text): string {
             text-align: center;
             margin-top: 16px;
             padding-top: 10px;
-            border-top: 1px solid #EDE9F2;
+            border-top: 1px solid #DED2C0;
             font-size: 9px;
-            color: #B0AABF;
+            color: #A79C8E;
         }
     </style>
 </head>

@@ -154,15 +154,15 @@ async function handleLogout() {
 
 .settings-item--danger {
   cursor: pointer;
-  color: #b94040;
+  color: #B5453C;
 }
 
 .settings-item--danger .settings-item__label {
-  color: #b94040;
+  color: #B5453C;
 }
 
 .settings-item--danger:hover {
-  background: rgba(242,168,168,.1);
+  background: rgba(227,150,140,.15);
 }
 
 .settings-item__label {

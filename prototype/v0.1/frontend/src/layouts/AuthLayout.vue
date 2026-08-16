@@ -13,11 +13,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #fdf6fb 0%, var(--color-background) 100%);
+  background: linear-gradient(180deg, #FBF3E6 0%, var(--color-background) 100%);
   padding: var(--space-xl);
 }
 
 :root[data-theme="dark"] .auth-page {
-  background: linear-gradient(180deg, #352f3d 0%, var(--color-background) 100%);
+  background: linear-gradient(180deg, #2C2116 0%, var(--color-background) 100%);
 }
 </style>

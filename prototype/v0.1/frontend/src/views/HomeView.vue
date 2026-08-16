@@ -33,7 +33,7 @@ import CapyButton from '../components/base/CapyButton.vue'
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #fdf6fb 0%, var(--color-background) 100%);
+  background: linear-gradient(180deg, #FBF3E6 0%, var(--color-background) 100%);
   padding: var(--space-xl);
 }
 

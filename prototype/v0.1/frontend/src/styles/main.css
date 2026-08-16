@@ -1,24 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
+/* Vuetify envuelve todo su CSS en @layer vuetify-components. Por las
+   reglas de cascada, CSS sin layer le gana a CSS con layer sin importar
+   la especificidad -- asi que nuestro reset (abajo, en @layer reset)
+   necesita declararse con menor prioridad que el layer de Vuetify,
+   o le pisa el padding/margin interno a sus componentes (inputs,
+   cards, etc). El orden de esta lista es el orden de prioridad: el
+   ultimo gana. */
+@layer reset, vuetify-components;
+
 :root {
-  /* Colores — design-system.md */
-  --color-primary:        #F4B6D7;
-  --color-primary-hover:  #e89ec3;
-  --color-lavender:       #DCCCF4;
-  --color-brown:          #A98274;
+  /* Colores — paleta "Tierra" (design-system.md) */
+  --color-primary:        #96684A;
+  --color-primary-hover:  #7D5339;
+  --color-lavender:       #C9A66B; /* acento mostaza — antes lavanda */
+  --color-brown:          #A9805F;
 
-  --color-background: #F5F5F7;
-  --color-surface:    #FFFFFF;
+  --color-background: #F2EAE0;
+  --color-surface:    #FBF7F1;
 
-  --color-text:   #3F3F46;
-  --color-title:  #3F3F46;
-  --color-muted:  #6B6B72;
+  --color-text:   #362B22;
+  --color-title:  #362B22;
+  --color-muted:  #6E6156;
 
-  --color-border: #EDE9F2;
+  --color-border: #DED2C0;
 
-  --color-success: #A9D7B5;
-  --color-warning: #F7D7A8;
-  --color-danger:  #F2A8A8;
+  --color-success: #A3C79A;
+  --color-warning: #F0C888;
+  --color-danger:  #E3968C;
 
   /* Bordes */
   --radius-sm: 12px;
@@ -26,8 +35,8 @@
   --radius-lg: 32px;
 
   /* Sombras */
-  --shadow-sm: 0 2px 12px rgba(164,130,116,.09);
-  --shadow-md: 0 6px 24px rgba(164,130,116,.13);
+  --shadow-sm: 0 2px 12px rgba(105,73,49,.12);
+  --shadow-md: 0 6px 24px rgba(105,73,49,.17);
 
   /* Espaciado */
   --space-xs:  .5rem;
@@ -52,23 +61,25 @@
 }
 
 :root[data-theme="dark"] {
-  --color-background: #2B2831;
-  --color-surface:    #3A3642;
-  --color-text:       #E8E3EF;
-  --color-title:      #FFFFFF;
-  --color-muted:      #B0AABF;
+  --color-background: #22190F;
+  --color-surface:    #2C2116;
+  --color-text:       #F1E4D3;
+  --color-title:      #F8EFE2;
+  --color-muted:      #B7A68D;
 
-  --color-primary:        #F4B6D7;
-  --color-primary-hover:  #F9CDE4;
+  --color-primary:        #D9A45C;
+  --color-primary-hover:  #E6BC80;
 
-  --color-border: #4A4654;
+  --color-border: #3F3121;
 }
 
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+@layer reset {
+  * {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+  }
 }
 
 body{
@@ -110,7 +121,7 @@ input:focus-visible,
 textarea:focus-visible,
 a:focus-visible {
   outline:none;
-  box-shadow:0 0 0 3px rgba(239,166,200,.35);
+  box-shadow:0 0 0 3px rgba(150,104,74,.4);
 }
 
 @media (min-width: 768px){

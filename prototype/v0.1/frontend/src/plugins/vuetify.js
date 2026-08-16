@@ -10,40 +10,40 @@ import { createVuetify } from 'vuetify'
 const capymealLight = {
   dark: false,
   colors: {
-    primary:    '#F4B6D7',
-    secondary:  '#DCCCF4', // --color-lavender
-    tertiary:   '#A98274', // --color-brown
-    background: '#F5F5F7',
-    surface:    '#FFFFFF',
-    'on-primary':    '#2B1A2A',
-    'on-secondary':  '#3F3F46',
-    'on-background': '#3F3F46',
-    'on-surface':    '#3F3F46',
-    success: '#A9D7B5',
-    warning: '#F7D7A8',
-    error:   '#F2A8A8',
-    'on-error': '#3F3F46',
-    outline: '#EDE9F2',
+    primary:    '#96684A',
+    secondary:  '#C9A66B', // --color-lavender (acento mostaza)
+    tertiary:   '#A9805F', // --color-brown
+    background: '#F2EAE0',
+    surface:    '#FBF7F1',
+    'on-primary':    '#FBF7F1',
+    'on-secondary':  '#362B22',
+    'on-background': '#362B22',
+    'on-surface':    '#362B22',
+    success: '#A3C79A',
+    warning: '#F0C888',
+    error:   '#E3968C',
+    'on-error': '#362B22',
+    outline: '#DED2C0',
   },
 }
 
 const capymealDark = {
   dark: true,
   colors: {
-    primary:    '#F4B6D7',
-    secondary:  '#DCCCF4',
-    tertiary:   '#A98274',
-    background: '#2B2831',
-    surface:    '#3A3642',
-    'on-primary':    '#2B1A2A',
-    'on-secondary':  '#2B1A2A',
-    'on-background': '#E8E3EF',
-    'on-surface':    '#E8E3EF',
-    success: '#A9D7B5',
-    warning: '#F7D7A8',
-    error:   '#F2A8A8',
-    'on-error': '#2B1A2A',
-    outline: '#4A4654',
+    primary:    '#D9A45C',
+    secondary:  '#C9A66B',
+    tertiary:   '#A9805F',
+    background: '#22190F',
+    surface:    '#2C2116',
+    'on-primary':    '#22190F',
+    'on-secondary':  '#22190F',
+    'on-background': '#F1E4D3',
+    'on-surface':    '#F1E4D3',
+    success: '#A3C79A',
+    warning: '#F0C888',
+    error:   '#E3968C',
+    'on-error': '#22190F',
+    outline: '#3F3121',
   },
 }
 

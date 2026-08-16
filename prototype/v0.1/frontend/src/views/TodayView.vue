@@ -271,7 +271,7 @@ onMounted(() => loadEntryByDate(selectedDate.value))
   height: 56px;
   object-fit: contain;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FFF0F8, #F8EEFF);
+  background: linear-gradient(135deg, #F1DFC9, #E8D2B0);
   padding: 4px;
 }
 
@@ -332,7 +332,7 @@ onMounted(() => loadEntryByDate(selectedDate.value))
 
 .today-header__quick-btn:hover {
   border-color: var(--color-primary);
-  background: rgba(244,182,215,.1);
+  background: rgba(150,104,74,.12);
 }
 
 /* ── Estado inline ──────────────────────────── */
@@ -373,7 +373,7 @@ onMounted(() => loadEntryByDate(selectedDate.value))
   height: 96px;
   object-fit: contain;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FFF0F8, #F8EEFF);
+  background: linear-gradient(135deg, #F1DFC9, #E8D2B0);
   padding: 8px;
 }
 
