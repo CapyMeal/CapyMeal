@@ -1,84 +1,67 @@
 <template>
-  <div class="auth-page">
-    <div class="auth-card">
-
-      <img src="../assets/illustrations/Chef.png" alt="Capi" class="auth-card__capi">
-
-      <h1 class="auth-card__title">Crear cuenta 🐹</h1>
-      <p class="auth-card__subtitle">Tu diario de comidas te espera.</p>
-
+  <AuthLayout>
+    <AuthCard title="Crear cuenta 🐹" subtitle="Tu diario de comidas te espera.">
       <form class="auth-form" @submit.prevent="submit">
-        <div class="auth-field">
-          <label class="auth-field__label" for="name">Nombre</label>
-          <input
-            id="name"
-            v-model="name"
-            class="auth-field__input"
-            type="text"
-            placeholder="¿Cómo te llamás?"
-            autocomplete="name"
-            required
-          >
-        </div>
+        <v-text-field
+          v-model="name"
+          label="Nombre"
+          type="text"
+          placeholder="¿Cómo te llamás?"
+          autocomplete="name"
+          required
+        />
 
-        <div class="auth-field">
-          <label class="auth-field__label" for="email">Email</label>
-          <input
-            id="email"
-            v-model="email"
-            class="auth-field__input"
-            type="email"
-            placeholder="tu@email.com"
-            autocomplete="email"
-            required
-          >
-        </div>
+        <v-text-field
+          v-model="email"
+          label="Email"
+          type="email"
+          placeholder="tu@email.com"
+          autocomplete="email"
+          required
+        />
 
-        <div class="auth-field">
-          <label class="auth-field__label" for="password">Contraseña</label>
-          <input
-            id="password"
-            v-model="password"
-            class="auth-field__input"
-            type="password"
-            placeholder="Mínimo 8 caracteres"
-            autocomplete="new-password"
-            required
-          >
-        </div>
+        <v-text-field
+          v-model="password"
+          label="Contraseña"
+          type="password"
+          placeholder="Mínimo 8 caracteres"
+          autocomplete="new-password"
+          required
+        />
 
-        <div class="auth-field">
-          <label class="auth-field__label" for="password-confirm">Repetir contraseña</label>
-          <input
-            id="password-confirm"
-            v-model="passwordConfirm"
-            class="auth-field__input"
-            type="password"
-            placeholder="Repetí tu contraseña"
-            autocomplete="new-password"
-            required
-          >
-        </div>
+        <v-text-field
+          v-model="passwordConfirm"
+          label="Repetir contraseña"
+          type="password"
+          placeholder="Repetí tu contraseña"
+          autocomplete="new-password"
+          required
+        />
 
-        <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
+        <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact">
+          {{ errorMessage }}
+        </v-alert>
 
         <CapyButton class="auth-submit" :disabled="loading" type="submit">
           {{ loading ? 'Creando cuenta…' : '🌸 Crear mi cuenta' }}
         </CapyButton>
       </form>
 
-      <p class="auth-switch">
-        ¿Ya tenés cuenta?
-        <RouterLink to="/login" class="auth-switch__link">Entrá</RouterLink>
-      </p>
-
-    </div>
-  </div>
+      <template #footer>
+        <p>
+          ¿Ya tenés cuenta?
+          <RouterLink to="/login">Entrá</RouterLink>
+        </p>
+      </template>
+    </AuthCard>
+  </AuthLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import AuthLayout from '../layouts/AuthLayout.vue'
+import AuthCard   from '../components/auth/AuthCard.vue'
 import CapyButton from '../components/base/CapyButton.vue'
 import { register } from '../stores/authStore'
 
@@ -117,105 +100,8 @@ async function submit() {
 </script>
 
 <style scoped>
-.auth-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, #fdf6fb 0%, var(--color-background) 100%);
-  padding: var(--space-xl);
-}
-
-.auth-card {
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-2xl) var(--space-xl);
-  box-shadow: var(--shadow-md);
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--space-md);
-}
-
-.auth-card__capi {
-  width: 90px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(169,130,116,.2));
-}
-
-.auth-card__title {
-  font-family: var(--font-title);
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--color-title);
-}
-
-.auth-card__subtitle {
-  font-size: .9rem;
-  color: var(--color-muted);
-}
-
-.auth-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  margin-top: var(--space-sm);
-}
-
-.auth-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  text-align: left;
-}
-
-.auth-field__label {
-  font-size: .85rem;
-  font-weight: 600;
-  color: var(--color-title);
-}
-
-.auth-field__input {
-  width: 100%;
-  background: var(--color-background);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-sm) var(--space-md);
-  color: var(--color-text);
-  outline: none;
-  transition: border-color .2s;
-}
-
-.auth-field__input:focus {
-  border-color: var(--color-primary);
-}
-
-.auth-error {
-  font-size: .85rem;
-  color: #b94040;
-  background: rgba(242,168,168,.15);
-  border-radius: var(--radius-sm);
-  padding: .5rem var(--space-md);
-  text-align: left;
-}
-
 .auth-submit {
   width: 100%;
   margin-top: var(--space-xs);
-}
-
-.auth-switch {
-  font-size: .85rem;
-  color: var(--color-muted);
-}
-
-.auth-switch__link {
-  color: var(--color-primary);
-  font-weight: 700;
 }
 </style>
