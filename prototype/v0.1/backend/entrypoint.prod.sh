@@ -8,7 +8,7 @@ APP_ENV=production
 APP_DEBUG=false
 APP_URL=${APP_URL:-http://localhost:8000}
 APP_LOCALE=es
-APP_KEY=
+APP_KEY=${APP_KEY:-}
 
 LOG_CHANNEL=stderr
 LOG_LEVEL=error
@@ -30,6 +30,10 @@ FRONTEND_URL=${FRONTEND_URL:-*}
 
 MAIL_MAILER=${MAIL_MAILER:-log}
 RESEND_API_KEY=${RESEND_API_KEY:-}
+MAIL_HOST=${MAIL_HOST:-}
+MAIL_PORT=${MAIL_PORT:-587}
+MAIL_USERNAME=${MAIL_USERNAME:-}
+MAIL_PASSWORD=${MAIL_PASSWORD:-}
 MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-hello@capymeal.app}
 MAIL_FROM_NAME=CapyMeal
 EOF
@@ -41,7 +45,16 @@ mkdir -p storage/framework/sessions \
   storage/logs \
   bootstrap/cache
 
-php artisan key:generate --force --no-interaction
+# Solo generamos una key nueva si Render no nos dio una ya (si la
+# tenemos, hay que preservarla: cambiarla invalida las sesiones/tokens
+# encriptados de los usuarios en cada deploy).
+if [ -z "${APP_KEY:-}" ]; then
+    echo "🔑 No hay APP_KEY, generando una nueva..."
+    php artisan key:generate --force --no-interaction
+else
+    echo "🔑 Usando la APP_KEY existente de Render"
+fi
+
 php artisan package:discover --ansi
 
 echo "🌸 Ejecutando migraciones..."

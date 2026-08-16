@@ -15,7 +15,7 @@ APP_ENV=${APP_ENV:-local}
 APP_DEBUG=${APP_DEBUG:-true}
 APP_URL=${APP_URL:-http://localhost:8000}
 APP_LOCALE=es
-APP_KEY=
+APP_KEY=${APP_KEY:-}
 
 LOG_CHANNEL=stack
 LOG_LEVEL=debug
@@ -35,11 +35,17 @@ FRONTEND_URL=${FRONTEND_URL:-http://localhost:5174}
 
 MAIL_MAILER=${MAIL_MAILER:-log}
 RESEND_API_KEY=${RESEND_API_KEY:-}
+MAIL_HOST=${MAIL_HOST:-}
+MAIL_PORT=${MAIL_PORT:-587}
+MAIL_USERNAME=${MAIL_USERNAME:-}
+MAIL_PASSWORD=${MAIL_PASSWORD:-}
 MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-hello@capymeal.local}
 MAIL_FROM_NAME=CapyMeal
 EOF
 
-php artisan key:generate --force --no-interaction
+if [ -z "${APP_KEY:-}" ]; then
+    php artisan key:generate --force --no-interaction
+fi
 
 echo "🌸 Ejecutando migraciones..."
 php artisan migrate --force --no-interaction
