@@ -53,6 +53,22 @@
         </div>
       </div>
 
+      <!-- Aviso de dia salteado -->
+      <v-alert
+        v-if="showGapBanner"
+        type="warning"
+        variant="tonal"
+        density="compact"
+        class="today-status today-gap-banner"
+      >
+        <div class="today-gap-banner__text">
+          Tu último recuerdo fue el {{ gapDateFormatted }}. ¿Seguimos desde ahí?
+        </div>
+        <CapyButton variant="ghost" class="today-gap-banner__button" @click="goToGap">
+          Seguir desde ahí
+        </CapyButton>
+      </v-alert>
+
       <!-- Feedback inline -->
       <p v-if="loading" class="today-status today-status--loading">Cargando…</p>
       <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="today-status">
@@ -96,7 +112,7 @@ import MainLayout      from '../layouts/MainLayout.vue'
 import MealCard        from '../components/meal/MealCard.vue'
 import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
-import { getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
+import { getMealEntries, getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
 import breakfastIcon from '../assets/icons/desayuno.png'
 import lunchIcon     from '../assets/icons/almuerzo.png'
@@ -125,6 +141,7 @@ const loadingFieldKey = ref('')
 const errorMessage   = ref('')
 const successMessage = ref('')
 const savedFields    = ref(new Set())
+const lastRecordedDate = ref(null)
 
 const mealFields = [
   { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno',  placeholder: 'Ej: café con leche y tostadas' },
@@ -140,6 +157,26 @@ const formattedDate = computed(() => {
     weekday: 'long',
     day:     'numeric',
     month:   'long',
+  })
+})
+
+const yesterdayISO = formatDateISO(shiftDays(today, -1))
+
+// Solo tiene sentido sugerir "seguir desde ahi" mientras se esta mirando
+// el dia de hoy: si el ultimo recuerdo es de hoy o ayer no hay hueco real,
+// y si el usuario ya cambio de fecha, ya esta resolviendo el hueco solo.
+const showGapBanner = computed(() =>
+  lastRecordedDate.value
+  && lastRecordedDate.value < yesterdayISO
+  && selectedDate.value === todayISO
+)
+
+const gapDateFormatted = computed(() => {
+  if (!lastRecordedDate.value) return ''
+  const [year, month, day] = lastRecordedDate.value.split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('es-AR', {
+    day:   'numeric',
+    month: 'long',
   })
 })
 
@@ -166,6 +203,16 @@ async function loadEntryByDate(date) {
     errorMessage.value = 'No pude cargar ese día. Intentá nuevamente.'
   } finally {
     loading.value = false
+  }
+}
+
+async function loadLastRecordedDate() {
+  try {
+    const entries = await getMealEntries()
+    if (entries.length === 0) { lastRecordedDate.value = null; return }
+    lastRecordedDate.value = entries.map((e) => e.date).sort().at(-1)
+  } catch {
+    lastRecordedDate.value = null
   }
 }
 
@@ -238,6 +285,13 @@ function setQuickDate(daysAgo) {
   showDatePicker.value = false
 }
 
+function goToGap() {
+  if (!lastRecordedDate.value) return
+  const [year, month, day] = lastRecordedDate.value.split('-').map(Number)
+  selectedDate.value = formatDateISO(shiftDays(new Date(year, month - 1, day), 1))
+  showDatePicker.value = false
+}
+
 function shiftDays(baseDate, days) {
   const d = new Date(baseDate)
   d.setDate(d.getDate() + days)
@@ -252,7 +306,10 @@ function formatDateISO(date) {
 }
 
 watch(selectedDate, (newDate) => loadEntryByDate(newDate))
-onMounted(() => loadEntryByDate(selectedDate.value))
+onMounted(() => {
+  loadEntryByDate(selectedDate.value)
+  loadLastRecordedDate()
+})
 </script>
 
 <style scoped>
@@ -346,6 +403,22 @@ onMounted(() => loadEntryByDate(selectedDate.value))
 }
 
 .today-status--loading { color: var(--color-muted); }
+
+.today-gap-banner :deep(.v-alert__content) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.today-gap-banner__text {
+  font-size: .9rem;
+}
+
+.today-gap-banner__button {
+  align-self: flex-start;
+  width: auto !important;
+  min-width: 0;
+}
 
 /* ── Tarjetas ───────────────────────────────── */
 .today-meals {
