@@ -8,7 +8,7 @@
     <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
 
     <p v-if="errorMessage" class="diary-error">{{ errorMessage }}</p>
-    <p v-if="loading" class="diary-loading">Cargando tu diario...</p>
+    <CapyLoader v-if="loading" message="Cargando tu diario..." />
 
     <EmptyState
       v-else-if="entries.length === 0"
@@ -39,6 +39,7 @@ import MainLayout       from '../layouts/MainLayout.vue'
 import DiaryCard        from '../components/diary/DiaryCard.vue'
 import EmptyState       from '../components/diary/EmptyState.vue'
 import DateRangeFilter  from '../components/base/DateRangeFilter.vue'
+import CapyLoader       from '../components/base/CapyLoader.vue'
 import { getMealEntries } from '../services/mealEntriesApi'
 
 const entries = ref([])
@@ -113,9 +114,4 @@ onMounted(async () => {
   color: var(--color-danger);
 }
 
-.diary-loading {
-  font-size: .88rem;
-  margin-bottom: var(--space-md);
-  opacity: .8;
-}
 </style>

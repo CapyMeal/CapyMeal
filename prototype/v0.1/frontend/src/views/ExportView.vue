@@ -8,7 +8,7 @@
     <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
 
     <p v-if="errorMessage" class="export-error">{{ errorMessage }}</p>
-    <p v-if="loading" class="export-loading">Cargando registros para exportar...</p>
+    <CapyLoader v-if="loading" message="Cargando registros para exportar..." />
 
     <CapyButton
       v-if="!loading && filteredEntries.length > 0"
@@ -50,6 +50,7 @@ import MainLayout      from '../layouts/MainLayout.vue'
 import EmptyState      from '../components/diary/EmptyState.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import DateRangeFilter from '../components/base/DateRangeFilter.vue'
+import CapyLoader      from '../components/base/CapyLoader.vue'
 import { exportMealEntriesPdf, getMealEntries } from '../services/mealEntriesApi'
 
 const entries = ref([])
@@ -174,9 +175,4 @@ async function printPdf() {
   color: var(--color-danger);
 }
 
-.export-loading {
-  font-size: .88rem;
-  margin-bottom: var(--space-md);
-  opacity: .8;
-}
 </style>

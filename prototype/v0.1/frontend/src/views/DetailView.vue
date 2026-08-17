@@ -11,9 +11,7 @@
       </div>
     </div>
 
-    <div v-else-if="loading" class="detail-loading">
-      Cargando el detalle del día...
-    </div>
+    <CapyLoader v-else-if="loading" message="Cargando el detalle del día..." />
 
     <!-- No encontrado -->
     <EmptyState
@@ -152,6 +150,7 @@ import MealCard        from '../components/meal/MealCard.vue'
 import EmptyState      from '../components/diary/EmptyState.vue'
 import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton from '../components/base/CapyButton.vue'
+import CapyLoader from '../components/base/CapyLoader.vue'
 import breakfastIcon from '../assets/icons/desayuno.png'
 import lunchIcon from '../assets/icons/almuerzo.png'
 import snackIcon from '../assets/icons/merienda.png'
@@ -343,11 +342,6 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   font-size: .9rem;
   margin-bottom: var(--space-md);
   color: var(--color-danger);
-}
-
-.detail-loading {
-  font-size: .9rem;
-  opacity: .8;
 }
 
 .detail-meals {
