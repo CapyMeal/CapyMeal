@@ -89,6 +89,19 @@ body{
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
+  position: relative;
+}
+
+/* Doodle de fondo: fijo, sin repetir (no es un patron perfectamente
+   seamless), muy sutil para no competir con el contenido. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url('../assets/icons/patronFondo.png') no-repeat center / cover;
+  opacity: .05;
+  pointer-events: none;
+  z-index: 0;
 }
 
 h1, h2, h3 {
@@ -108,6 +121,8 @@ a{
 
 #app{
   min-height:100vh;
+  position: relative;
+  z-index: 1;
 }
 
 button,
