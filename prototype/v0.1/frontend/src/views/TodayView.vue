@@ -3,7 +3,7 @@
 
     <!-- Confirmación de Capi -->
     <div v-if="saved" class="confirmation">
-      <img src="../assets/icons/capy2.png" alt="Capi" class="confirmation__capi">
+      <img src="../assets/icons/diaGuardado.png" alt="Capi" class="confirmation__capi">
       <p class="confirmation__message">
         Listo 🍂<br>
         <span>Este día ya forma parte de tu diario.</span>
@@ -375,12 +375,9 @@ onMounted(() => loadEntryByDate(selectedDate.value))
 }
 
 .confirmation__capi {
-  width: 96px;
-  height: 96px;
+  width: 160px;
   object-fit: contain;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #F1DFC9, #E8D2B0);
-  padding: 8px;
+  filter: drop-shadow(0 4px 12px rgba(105,73,49,.2));
 }
 
 .confirmation__message {

@@ -1,6 +1,6 @@
 <template>
   <div class="empty-state">
-    <img src="../../assets/icons/capy2.png" alt="Capi" class="empty-state__capi">
+    <img src="../../assets/icons/estadoVacio.png" alt="Capi" class="empty-state__capi">
     <p class="empty-state__message">{{ message }}</p>
     <CapyButton v-if="actionLabel" @click="$emit('action')">
       {{ actionLabel }}
@@ -30,7 +30,7 @@ defineEmits(['action'])
 }
 
 .empty-state__capi {
-  width: 120px;
+  width: 200px;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(105,73,49,.2));
 }
