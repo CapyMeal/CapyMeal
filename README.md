@@ -23,14 +23,14 @@ No busca controlar calorías ni imponer objetivos nutricionales. Su propósito e
 
 ## Tecnologías
 
-| | |
+| Capa | Tecnología |
 |---|---|
-| **Frontend** | Vue 3 + Vite, Vuetify (Material Design 3) |
-| **Backend**  | Laravel 12, Laravel Sanctum |
-| **Base de datos** | PostgreSQL |
-| **PDF** | DomPDF |
-| **Email** | SMTP (Brevo) / Resend |
-| **Deploy** | Render (backend) + Vercel (frontend) + Neon (Postgres) |
+| Frontend | Vue 3 + Vite, Vuetify (Material Design 3) |
+| Backend  | Laravel 12, Laravel Sanctum |
+| Base de datos | PostgreSQL |
+| PDF | DomPDF |
+| Email | SMTP (Brevo) / Resend |
+| Deploy | Render (backend) + Vercel (frontend) + Neon (Postgres) |
 
 Para levantar el proyecto localmente con Docker, ver la [guía de desarrollo](prototype/v0.1/README.md).
 
