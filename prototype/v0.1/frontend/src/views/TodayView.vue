@@ -70,7 +70,7 @@
       </v-alert>
 
       <!-- Feedback inline -->
-      <p v-if="loading" class="today-status today-status--loading">Cargando…</p>
+      <CapyLoader v-if="loading" message="Cargando…" />
       <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="today-status">
         {{ errorMessage }}
       </v-alert>
@@ -112,6 +112,7 @@ import MainLayout      from '../layouts/MainLayout.vue'
 import MealCard        from '../components/meal/MealCard.vue'
 import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
+import CapyLoader      from '../components/base/CapyLoader.vue'
 import { getMealEntries, getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
 import breakfastIcon from '../assets/icons/desayuno.png'
@@ -181,7 +182,13 @@ const gapDateFormatted = computed(() => {
 })
 
 async function loadEntryByDate(date) {
-  if (!date) { resetFormFields(); return }
+  // Se limpia el formulario de entrada, antes de esperar la respuesta:
+  // si no, mientras carga el dia nuevo se siguen viendo las comidas del
+  // dia anterior debajo del "Cargando...", como si no hubiera cambiado
+  // de dia todavia.
+  resetFormFields()
+
+  if (!date) { return }
 
   loading.value      = true
   errorMessage.value = ''
@@ -199,7 +206,7 @@ async function loadEntryByDate(date) {
       notes:     entry.notes     || '',
     })
   } catch (error) {
-    if (error.status === 404) { resetFormFields(); return }
+    if (error.status === 404) { return }
     errorMessage.value = 'No pude cargar ese día. Intentá nuevamente.'
   } finally {
     loading.value = false
@@ -263,10 +270,16 @@ function resetFormFields() {
 }
 
 function resetForm() {
+  // "Registrar otro día" avanza al día siguiente al que se acaba de
+  // guardar (util para ponerse al dia con varias fechas atrasadas),
+  // sin pasarse de hoy.
+  const [year, month, day] = selectedDate.value.split('-').map(Number)
+  const nextDate = formatDateISO(shiftDays(new Date(year, month - 1, day), 1))
+
   resetFormFields()
-  saved.value       = false
-  savedFields.value = new Set()
-  selectedDate.value = todayISO
+  saved.value        = false
+  savedFields.value  = new Set()
+  selectedDate.value = nextDate > todayISO ? todayISO : nextDate
 }
 
 function goToDiary() {
@@ -401,8 +414,6 @@ onMounted(() => {
   border-radius: var(--radius-sm);
   padding: .5rem var(--space-md);
 }
-
-.today-status--loading { color: var(--color-muted); }
 
 .today-gap-banner :deep(.v-alert__content) {
   display: flex;
