@@ -87,31 +87,51 @@ function renderEmoji(string $text): string {
             padding: 14px 18px;
         }
 
-        /* ── Portada ── */
+        /* ── Portada ──
+           Fila unica (icono + titulo/tagline + badge) en vez de todo
+           apilado -- ahorra alto de pagina para que entren mas dias. */
         .cover {
-            text-align: center;
-            padding: 14px 0 10px;
-            margin-bottom: 10px;
+            display: table;
+            width: 100%;
+            padding: 6px 0;
+            margin-bottom: 8px;
             border-bottom: 2px solid #96684A;
         }
 
+        .cover__chef-cell {
+            display: table-cell;
+            width: 34px;
+            vertical-align: middle;
+        }
+
         .cover__chef {
-            width: 64px;
-            margin-bottom: 6px;
+            width: 30px;
+        }
+
+        .cover__info {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: left;
+            padding-left: 8px;
         }
 
         .cover__title {
-            font-size: 22px;
+            font-size: 15px;
             font-weight: 700;
             color: #362B22;
             letter-spacing: -0.5px;
-            margin-bottom: 3px;
         }
 
         .cover__tagline {
-            font-size: 10px;
+            font-size: 8px;
             color: #6E6156;
-            margin-bottom: 8px;
+        }
+
+        .cover__badge-cell {
+            display: table-cell;
+            width: 130px;
+            vertical-align: middle;
+            text-align: right;
         }
 
         .cover__badge {
@@ -119,9 +139,10 @@ function renderEmoji(string $text): string {
             background: #96684A;
             color: #FBF7F1;
             border-radius: 999px;
-            padding: 3px 12px;
-            font-size: 10px;
+            padding: 3px 10px;
+            font-size: 9px;
             font-weight: 700;
+            white-space: nowrap;
         }
 
         /* ── Tarjeta de día ── */
@@ -253,16 +274,22 @@ function renderEmoji(string $text): string {
 
     {{-- Portada --}}
     <div class="cover">
-        <img class="cover__chef" src="{{ iconDataUri('Chef.png') }}" alt="Capi">
-        <div class="cover__title">CapyMeal</div>
-        <div class="cover__tagline">Las comidas pasan. Los recuerdos quedan.</div>
-        <span class="cover__badge">
-            @if ($from || $to)
-                {{ $from ?? '...' }} → {{ $to ?? 'hoy' }}
-            @else
-                Todos los registros
-            @endif
-        </span>
+        <div class="cover__chef-cell">
+            <img class="cover__chef" src="{{ iconDataUri('Chef.png') }}" alt="Capi">
+        </div>
+        <div class="cover__info">
+            <div class="cover__title">CapyMeal</div>
+            <div class="cover__tagline">Las comidas pasan. Los recuerdos quedan.</div>
+        </div>
+        <div class="cover__badge-cell">
+            <span class="cover__badge">
+                @if ($from || $to)
+                    {{ $from ?? '...' }} → {{ $to ?? 'hoy' }}
+                @else
+                    Todos los registros
+                @endif
+            </span>
+        </div>
     </div>
 
     {{-- Entradas --}}
