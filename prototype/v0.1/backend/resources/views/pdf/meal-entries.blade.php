@@ -16,6 +16,37 @@ function iconDataUri(string $filename): string {
     return $cache[$filename];
 }
 
+// Los PNG de Twemoji se bajan una sola vez y quedan en disco: pegarle a
+// la CDN por cada emoji en cada PDF fue lo que hizo lenta/pesada la
+// exportacion la vez anterior que se probo esto. Con el archivo ya
+// cacheado, las siguientes exportaciones no vuelven a tocar la red.
+function emojiDataUri(string $filename): ?string {
+    static $memCache = [];
+
+    if (array_key_exists($filename, $memCache)) {
+        return $memCache[$filename];
+    }
+
+    $cachePath = storage_path('app/emoji-cache/' . $filename . '.png');
+
+    if (!is_file($cachePath)) {
+        $url      = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/' . $filename . '.png';
+        $contents = @file_get_contents($url);
+
+        if ($contents === false) {
+            return $memCache[$filename] = null;
+        }
+
+        if (!is_dir(dirname($cachePath))) {
+            mkdir(dirname($cachePath), 0755, true);
+        }
+
+        file_put_contents($cachePath, $contents);
+    }
+
+    return $memCache[$filename] = 'data:image/png;base64,' . base64_encode(file_get_contents($cachePath));
+}
+
 function renderEmoji(string $text): string {
     return preg_replace_callback(
         '/(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]|\x{2B50}|\x{2B55})(?:\x{200D}(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]))*\x{FE0F}?/u',
@@ -26,7 +57,15 @@ function renderEmoji(string $text): string {
                 fn($cp) => $cp !== 0xFE0F
             ));
             $filename = implode('-', array_map(fn($cp) => strtolower(dechex($cp)), $codepoints));
-            return '<img src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/assets/72x72/' . $filename . '.png" width="13" height="13" style="vertical-align:middle;margin:0 1px;">';
+            $dataUri  = emojiDataUri($filename);
+
+            // Si la descarga falla (CDN caida, sin red), se deja el
+            // emoji como texto plano en vez de mostrar un icono roto.
+            if ($dataUri === null) {
+                return $m[0];
+            }
+
+            return '<img src="' . $dataUri . '" width="13" height="13" style="vertical-align:middle;margin:0 1px;">';
         },
         $text
     );
@@ -296,7 +335,7 @@ function renderEmoji(string $text): string {
 
                 @if ($entry->notes)
                     <div class="notes-row">
-                        <div class="notes-row__label">📝 Recuerdo del día</div>
+                        <div class="notes-row__label">{!! renderEmoji('📝 Recuerdo del día') !!}</div>
                         <div class="notes-row__value">{!! renderEmoji($entry->notes) !!}</div>
                     </div>
                 @endif

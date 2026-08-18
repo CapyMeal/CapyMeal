@@ -5,4 +5,5 @@ storage/logs/*.log
 storage/framework/cache/
 storage/framework/sessions/
 storage/framework/views/
+storage/app/emoji-cache/
 bootstrap/cache/
