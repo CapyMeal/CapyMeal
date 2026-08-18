@@ -17,6 +17,7 @@ Route::post('/reset-password',  [PasswordResetController::class, 'reset'])->midd
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me',      [AuthController::class, 'me']);
+    Route::put('/me/avatar', [AuthController::class, 'updateAvatar']);
 
     Route::get('/meal-entries',             [MealEntryController::class, 'index']);
     Route::get('/meal-entries/export/pdf',  [MealEntryController::class, 'exportPdf']);

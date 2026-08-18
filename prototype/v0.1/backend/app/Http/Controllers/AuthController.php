@@ -5,10 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    // Avatares ilustrados disponibles para elegir (ademas de Gravatar,
+    // que es el default cuando 'avatar' es null). Mantener en sync con
+    // las opciones que muestra Settingsview.vue en el frontend.
+    private const AVAILABLE_AVATARS = ['capy1', 'capy2', 'capy3'];
+
     public function register(Request $request)
     {
         $data = $request->validate([
@@ -17,7 +23,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user  = User::create($data);
+        $user  = User::create($data)->fresh();
         $token = $user->createToken('capymeal')->plainTextToken;
 
         return response()->json([
@@ -60,5 +66,16 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return response()->json($request->user());
+    }
+
+    public function updateAvatar(Request $request)
+    {
+        $data = $request->validate([
+            'avatar' => ['nullable', 'string', Rule::in(self::AVAILABLE_AVATARS)],
+        ]);
+
+        $request->user()->update(['avatar' => $data['avatar'] ?? null]);
+
+        return response()->json($request->user()->fresh());
     }
 }
