@@ -96,7 +96,9 @@ function renderEmoji(string $text): string {
         }
 
         .day-card__header {
-            background: linear-gradient(90deg, #96684A 0%, #C9A66B 100%);
+            /* DomPDF no renderiza linear-gradient() de forma confiable
+               (queda transparente) -- color solido en su lugar. */
+            background: #96684A;
             padding: 3px 10px;
         }
 
