@@ -27,6 +27,40 @@
 
       <hr class="settings-divider" />
 
+      <!-- Avatar -->
+      <div class="settings-item settings-item--static">
+        <div class="settings-avatar-picker">
+          <p class="settings-item__label">Avatar</p>
+          <p v-if="avatarError" class="settings-avatar-picker__error">{{ avatarError }}</p>
+          <div class="settings-avatar-picker__options">
+            <button
+              type="button"
+              class="settings-avatar-picker__option"
+              :class="{ 'settings-avatar-picker__option--active': !currentUser?.avatar }"
+              :disabled="savingAvatar"
+              title="Gravatar"
+              @click="selectAvatar(null)"
+            >
+              <UserAvatar :avatar="null" :email="currentUser?.email" :size="44" />
+            </button>
+            <button
+              v-for="option in avatarOptions"
+              :key="option.value"
+              type="button"
+              class="settings-avatar-picker__option"
+              :class="{ 'settings-avatar-picker__option--active': currentUser?.avatar === option.value }"
+              :disabled="savingAvatar"
+              :title="option.label"
+              @click="selectAvatar(option.value)"
+            >
+              <UserAvatar :avatar="option.value" :size="44" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <hr class="settings-divider" />
+
       <!-- Sobre CapyMeal -->
       <div class="settings-item settings-item--static">
         <img src="../assets/icons/capy2.png" alt="Capi" class="settings-item__capi">
@@ -49,7 +83,7 @@
       <!-- Cuenta -->
       <div class="settings-item">
         <div class="settings-item__info">
-          <span class="settings-item__icon">👤</span>
+          <UserAvatar :avatar="currentUser?.avatar" :email="currentUser?.email" :size="32" />
           <div>
             <p class="settings-item__label">{{ currentUser?.name }}</p>
             <p class="settings-item__desc">{{ currentUser?.email }}</p>
@@ -73,11 +107,37 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 import MainLayout from '../layouts/MainLayout.vue'
-import { logout, currentUser } from '../stores/authStore'
+import UserAvatar  from '../components/base/UserAvatar.vue'
+import { logout, currentUser, updateAvatar } from '../stores/authStore'
 
 const router      = useRouter()
 const vuetifyTheme = useTheme()
 const isDark      = ref(document.documentElement.getAttribute('data-theme') === 'dark')
+
+const avatarOptions = [
+  { value: 'capy1', label: 'Capi con mate' },
+  { value: 'capy2', label: 'Capi con flor' },
+  { value: 'capy3', label: 'Capi' },
+]
+const savingAvatar  = ref(false)
+const avatarError   = ref('')
+
+async function selectAvatar(value) {
+  if (savingAvatar.value || currentUser.value?.avatar === value || (!value && !currentUser.value?.avatar)) {
+    return
+  }
+
+  savingAvatar.value = true
+  avatarError.value  = ''
+
+  try {
+    await updateAvatar(value)
+  } catch {
+    avatarError.value = 'No pude guardar el avatar. Intentá nuevamente.'
+  } finally {
+    savingAvatar.value = false
+  }
+}
 
 function toggleTheme(value) {
   isDark.value = value
@@ -191,5 +251,41 @@ async function handleLogout() {
   border: none;
   border-top: 1px solid var(--color-border);
   margin: 0;
+}
+
+.settings-avatar-picker {
+  width: 100%;
+}
+
+.settings-avatar-picker__error {
+  font-size: .8rem;
+  color: var(--color-danger);
+  margin-top: 2px;
+  margin-bottom: var(--space-xs);
+}
+
+.settings-avatar-picker__options {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.settings-avatar-picker__option {
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  padding: 2px;
+  cursor: pointer;
+  line-height: 0;
+  transition: border-color .2s ease, opacity .2s ease;
+}
+
+.settings-avatar-picker__option:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.settings-avatar-picker__option--active {
+  border-color: var(--color-primary);
 }
 </style>

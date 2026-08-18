@@ -85,3 +85,30 @@ export async function logout() {
   }
   clear()
 }
+
+export async function updateAvatar(avatar) {
+  const response = await fetch(`${API_BASE_URL}/api/me/avatar`, {
+    method:  'PUT',
+    headers: {
+      'Content-Type':  'application/json',
+      'Accept':        'application/json',
+      'Authorization': `Bearer ${state.token}`,
+    },
+    body: JSON.stringify({ avatar }),
+  })
+
+  const raw = await response.text()
+  const data = raw ? JSON.parse(raw) : null
+
+  if (!response.ok) {
+    const message = data?.message
+      || Object.values(data?.errors || {})[0]?.[0]
+      || 'No pude actualizar el avatar.'
+    const error = new Error(message)
+    error.status = response.status
+    throw error
+  }
+
+  persist(state.token, data)
+  return data
+}

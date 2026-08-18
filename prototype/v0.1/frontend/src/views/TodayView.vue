@@ -20,7 +20,7 @@
       <!-- Encabezado -->
       <div class="today-header">
         <div class="today-header__capi-row">
-          <img src="../assets/icons/capy2.png" alt="Capi" class="today-header__avatar">
+          <UserAvatar :avatar="currentUser?.avatar" :email="currentUser?.email" :size="56" />
           <div>
             <p class="today-header__greeting">Hola, {{ currentUser?.name?.split(' ')[0] }} 🍂</p>
             <p class="today-header__date">{{ formattedDate }}</p>
@@ -113,6 +113,7 @@ import MealCard        from '../components/meal/MealCard.vue'
 import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
+import UserAvatar      from '../components/base/UserAvatar.vue'
 import { getMealEntries, getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
 import breakfastIcon from '../assets/icons/desayuno.png'
@@ -336,15 +337,6 @@ onMounted(() => {
   align-items: center;
   gap: var(--space-md);
   margin-bottom: var(--space-sm);
-}
-
-.today-header__avatar {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #F1DFC9, #E8D2B0);
-  padding: 4px;
 }
 
 .today-header__greeting {
