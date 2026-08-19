@@ -14,10 +14,12 @@
         <v-text-field
           v-model="password"
           label="Contraseña"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
+          :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
           placeholder="Tu contraseña"
           autocomplete="current-password"
           required
+          @click:append-inner="showPassword = !showPassword"
         />
 
         <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact">
@@ -25,7 +27,7 @@
         </v-alert>
 
         <CapyButton class="auth-submit" :disabled="loading" type="submit">
-          {{ loading ? 'Entrando…' : '🍂 Entrar' }}
+          {{ loadingButtonLabel }}
         </CapyButton>
       </form>
 
@@ -43,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AuthCard   from '../components/auth/AuthCard.vue'
@@ -54,12 +56,25 @@ const router = useRouter()
 
 const email        = ref('')
 const password     = ref('')
+const showPassword = ref(false)
 const loading      = ref(false)
 const errorMessage = ref('')
+const slowLogin     = ref(false)
+
+const loadingButtonLabel = computed(() => {
+  if (!loading.value) return '🍂 Entrar'
+  return slowLogin.value ? 'Despertando a Capi… 🦫' : 'Entrando…'
+})
 
 async function submit() {
   loading.value      = true
   errorMessage.value = ''
+  slowLogin.value    = false
+
+  // El backend gratuito de Render "duerme" tras un rato sin uso y tarda
+  // unos segundos en despertar en el primer pedido -- este aviso evita
+  // que parezca que la app se colgó mientras eso pasa.
+  const slowTimer = setTimeout(() => { slowLogin.value = true }, 4000)
 
   try {
     await login({ email: email.value, password: password.value })
@@ -67,6 +82,7 @@ async function submit() {
   } catch (error) {
     errorMessage.value = error.message || 'No pude iniciar sesión. Intentá nuevamente.'
   } finally {
+    clearTimeout(slowTimer)
     loading.value = false
   }
 }

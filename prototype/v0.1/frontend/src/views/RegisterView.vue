@@ -23,19 +23,23 @@
         <v-text-field
           v-model="password"
           label="Contraseña"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
+          :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
           placeholder="Mínimo 8 caracteres"
           autocomplete="new-password"
           required
+          @click:append-inner="showPassword = !showPassword"
         />
 
         <v-text-field
           v-model="passwordConfirm"
           label="Repetir contraseña"
-          type="password"
+          :type="showPasswordConfirm ? 'text' : 'password'"
+          :append-inner-icon="showPasswordConfirm ? 'mdi-eye-off' : 'mdi-eye'"
           placeholder="Repetí tu contraseña"
           autocomplete="new-password"
           required
+          @click:append-inner="showPasswordConfirm = !showPasswordConfirm"
         />
 
         <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact">
@@ -43,7 +47,7 @@
         </v-alert>
 
         <CapyButton class="auth-submit" :disabled="loading" type="submit">
-          {{ loading ? 'Creando cuenta…' : '🍂 Crear mi cuenta' }}
+          {{ loadingButtonLabel }}
         </CapyButton>
       </form>
 
@@ -58,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AuthCard   from '../components/auth/AuthCard.vue'
@@ -67,12 +71,20 @@ import { register } from '../stores/authStore'
 
 const router = useRouter()
 
-const name            = ref('')
-const email           = ref('')
-const password        = ref('')
-const passwordConfirm = ref('')
-const loading         = ref(false)
-const errorMessage    = ref('')
+const name                = ref('')
+const email                = ref('')
+const password              = ref('')
+const passwordConfirm       = ref('')
+const showPassword         = ref(false)
+const showPasswordConfirm  = ref(false)
+const loading              = ref(false)
+const errorMessage         = ref('')
+const slowLogin             = ref(false)
+
+const loadingButtonLabel = computed(() => {
+  if (!loading.value) return '🍂 Crear mi cuenta'
+  return slowLogin.value ? 'Despertando a Capi… 🦫' : 'Creando cuenta…'
+})
 
 async function submit() {
   if (password.value !== passwordConfirm.value) {
@@ -82,6 +94,11 @@ async function submit() {
 
   loading.value      = true
   errorMessage.value = ''
+  slowLogin.value    = false
+
+  // Ver LoginView.vue: el backend gratuito de Render tarda unos
+  // segundos en despertar si estuvo inactivo.
+  const slowTimer = setTimeout(() => { slowLogin.value = true }, 4000)
 
   try {
     await register({
@@ -94,6 +111,7 @@ async function submit() {
   } catch (error) {
     errorMessage.value = error.message || 'No pude crear la cuenta. Intentá nuevamente.'
   } finally {
+    clearTimeout(slowTimer)
     loading.value = false
   }
 }
