@@ -24,27 +24,19 @@
 }
 
 /* ── Espaciado de v-text-field ──
-   Un v-text-field de Vuetify se arma con tres piezas separadas (el
-   input, el label que hace de placeholder en reposo, y el ícono de
-   append-inner), cada una con su propio margin/padding leído de una
-   custom property interna (--v-field-padding-start) que en esta
-   versión de Vuetify (4.x) no se estaba resolviendo bien en
-   producción -- quedaban todas pegadas al borde. Se fuerza el
-   espaciado final de las tres piezas acá, con !important y sin
-   depender de esa cadena de variables. Un solo lugar: corrige todos
-   los v-text-field de la app a la vez, sin importar en qué vista
-   estén. */
-.v-field__input {
-  padding-inline-start: 20px !important;
-  padding-inline-end: 20px !important;
-}
-
-.v-label.v-field-label {
-  margin-inline-start: 20px !important;
-}
-
-.v-field__append-inner {
-  padding-inline-end: 16px !important;
+   Un v-text-field de Vuetify arma el input, el label (que hace de
+   placeholder en reposo) y el "corte" del borde donde se apoya el
+   label activo -- todo a partir de una sola custom property interna
+   (--v-field-padding-start) que en esta versión de Vuetify (4.x) no
+   se estaba resolviendo bien en producción. Forzar el padding/margin
+   final de cada pieza por separado (como se intentó antes) las
+   descoordina entre sí: el texto del label queda en un lugar pero el
+   corte del borde se sigue calculando para la posición vieja, y el
+   label termina "saliéndose" del recuadro. Se fuerza la variable
+   original en cambio, para que TODO lo que la usa quede consistente. */
+.v-field {
+  --v-field-padding-start: 20px !important;
+  --v-field-padding-end: 20px !important;
 }
 
 /* El ícono de mostrar/ocultar contraseña (PasswordField.vue) usaba
