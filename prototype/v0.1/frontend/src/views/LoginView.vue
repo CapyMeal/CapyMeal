@@ -11,15 +11,11 @@
           required
         />
 
-        <v-text-field
+        <PasswordField
           v-model="password"
           label="Contraseña"
-          :type="showPassword ? 'text' : 'password'"
-          :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
           placeholder="Tu contraseña"
           autocomplete="current-password"
-          required
-          @click:append-inner="showPassword = !showPassword"
         />
 
         <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact">
@@ -47,16 +43,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import AuthLayout from '../layouts/AuthLayout.vue'
-import AuthCard   from '../components/auth/AuthCard.vue'
-import CapyButton from '../components/base/CapyButton.vue'
+import AuthLayout    from '../layouts/AuthLayout.vue'
+import AuthCard      from '../components/auth/AuthCard.vue'
+import CapyButton    from '../components/base/CapyButton.vue'
+import PasswordField from '../components/base/PasswordField.vue'
 import { login } from '../stores/authStore'
 
 const router = useRouter()
 
 const email        = ref('')
 const password     = ref('')
-const showPassword = ref(false)
 const loading      = ref(false)
 const errorMessage = ref('')
 const slowLogin     = ref(false)

@@ -23,35 +23,32 @@
   box-shadow: var(--shadow-sm) !important;
 }
 
-/* El texto escrito en un v-text-field quedaba pegado al borde
-   izquierdo (padding-left: 0px confirmado con DevTools). Causa: en
-   esta versión de Vuetify la clase .v-field__input queda puesta
-   directamente sobre el <input>, y compite ahí mismo con la regla
-   :where(input.v-field__input) { padding: 0 } de Vuetify -- probar
-   con la custom property --v-field-padding-start no alcanzó a
-   ganarle. Se fuerza el padding final directamente, con !important,
-   para no depender de esa cadena de variables/especificidad. */
+/* ── Espaciado de v-text-field ──
+   Un v-text-field de Vuetify se arma con tres piezas separadas (el
+   input, el label que hace de placeholder en reposo, y el ícono de
+   append-inner), cada una con su propio margin/padding leído de una
+   custom property interna (--v-field-padding-start) que en esta
+   versión de Vuetify (4.x) no se estaba resolviendo bien en
+   producción -- quedaban todas pegadas al borde. Se fuerza el
+   espaciado final de las tres piezas acá, con !important y sin
+   depender de esa cadena de variables. Un solo lugar: corrige todos
+   los v-text-field de la app a la vez, sin importar en qué vista
+   estén. */
 .v-field__input {
   padding-inline-start: 20px !important;
   padding-inline-end: 20px !important;
 }
 
-/* El label en reposo (el que hace de placeholder cuando el campo
-   esta vacio y sin foco) es un elemento aparte del input, con su
-   propio margin-inline-start -- tambien depende de la variable de
-   Vuetify que no alcanzaba a resolverse, asi que quedaba pegado al
-   borde aunque el input ya estuviera arreglado. */
 .v-label.v-field-label {
   margin-inline-start: 20px !important;
 }
 
-/* El ícono de mostrar/ocultar contraseña usaba el tamaño default de
-   Vuetify (24px) y quedaba grande y pegado al borde derecho -- se
-   achica y se le da el mismo aire que al texto del lado izquierdo. */
 .v-field__append-inner {
   padding-inline-end: 16px !important;
 }
 
+/* El ícono de mostrar/ocultar contraseña (PasswordField.vue) usaba
+   el tamaño default de Vuetify (24px) y se veía grande. */
 .v-field__append-inner .v-icon {
   font-size: 20px !important;
 }

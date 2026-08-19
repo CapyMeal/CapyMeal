@@ -20,26 +20,18 @@
           required
         />
 
-        <v-text-field
+        <PasswordField
           v-model="password"
           label="Contraseña"
-          :type="showPassword ? 'text' : 'password'"
-          :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
           placeholder="Mínimo 8 caracteres"
           autocomplete="new-password"
-          required
-          @click:append-inner="showPassword = !showPassword"
         />
 
-        <v-text-field
+        <PasswordField
           v-model="passwordConfirm"
           label="Repetir contraseña"
-          :type="showPasswordConfirm ? 'text' : 'password'"
-          :append-inner-icon="showPasswordConfirm ? 'mdi-eye-off' : 'mdi-eye'"
           placeholder="Repetí tu contraseña"
           autocomplete="new-password"
-          required
-          @click:append-inner="showPasswordConfirm = !showPasswordConfirm"
         />
 
         <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact">
@@ -64,22 +56,21 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import AuthLayout from '../layouts/AuthLayout.vue'
-import AuthCard   from '../components/auth/AuthCard.vue'
-import CapyButton from '../components/base/CapyButton.vue'
+import AuthLayout    from '../layouts/AuthLayout.vue'
+import AuthCard      from '../components/auth/AuthCard.vue'
+import CapyButton    from '../components/base/CapyButton.vue'
+import PasswordField from '../components/base/PasswordField.vue'
 import { register } from '../stores/authStore'
 
 const router = useRouter()
 
-const name                = ref('')
-const email                = ref('')
-const password              = ref('')
-const passwordConfirm       = ref('')
-const showPassword         = ref(false)
-const showPasswordConfirm  = ref(false)
-const loading              = ref(false)
-const errorMessage         = ref('')
-const slowLogin             = ref(false)
+const name             = ref('')
+const email             = ref('')
+const password           = ref('')
+const passwordConfirm    = ref('')
+const loading            = ref(false)
+const errorMessage       = ref('')
+const slowLogin          = ref(false)
 
 const loadingButtonLabel = computed(() => {
   if (!loading.value) return '🍂 Crear mi cuenta'

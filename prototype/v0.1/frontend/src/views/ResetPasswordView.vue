@@ -18,27 +18,19 @@
       subtitle="Elegí una contraseña nueva para tu cuenta."
     >
       <form class="auth-form" @submit.prevent="submit">
-        <v-text-field
+        <PasswordField
           v-model="password"
           label="Nueva contraseña"
-          :type="showPassword ? 'text' : 'password'"
-          :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
           placeholder="Mínimo 8 caracteres"
           autocomplete="new-password"
-          required
           minlength="8"
-          @click:append-inner="showPassword = !showPassword"
         />
 
-        <v-text-field
+        <PasswordField
           v-model="passwordConfirmation"
           label="Confirmá la contraseña"
-          :type="showPasswordConfirm ? 'text' : 'password'"
-          :append-inner-icon="showPasswordConfirm ? 'mdi-eye-off' : 'mdi-eye'"
           placeholder="Repetí tu contraseña"
           autocomplete="new-password"
-          required
-          @click:append-inner="showPasswordConfirm = !showPasswordConfirm"
         />
 
         <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact">
@@ -66,20 +58,19 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import AuthLayout from '../layouts/AuthLayout.vue'
-import AuthCard   from '../components/auth/AuthCard.vue'
-import CapyButton from '../components/base/CapyButton.vue'
+import AuthLayout    from '../layouts/AuthLayout.vue'
+import AuthCard      from '../components/auth/AuthCard.vue'
+import CapyButton    from '../components/base/CapyButton.vue'
+import PasswordField from '../components/base/PasswordField.vue'
 import { apiFetch } from '../services/mealEntriesApi'
 
 const route = useRoute()
 
-const token               = ref('')
-const email               = ref('')
-const password            = ref('')
+const token                = ref('')
+const email                = ref('')
+const password             = ref('')
 const passwordConfirmation = ref('')
-const showPassword        = ref(false)
-const showPasswordConfirm = ref(false)
-const loading             = ref(false)
+const loading              = ref(false)
 const errorMessage        = ref('')
 const done                = ref(false)
 const hasLinkParams       = ref(true)
