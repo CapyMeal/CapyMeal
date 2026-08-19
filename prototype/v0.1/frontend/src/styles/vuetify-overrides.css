@@ -22,3 +22,14 @@
 .v-theme--capymealDark .v-btn.elevation-1 {
   box-shadow: var(--shadow-sm) !important;
 }
+
+/* El padding-inline-start del texto escrito en un v-text-field
+   (--v-field-padding-start, definida por Vuetify) a veces no se
+   aplicaba una vez que el campo tenía foco/texto -- quedaba pegado
+   al borde izquierdo, aunque en reposo (mostrando el label) se veía
+   bien. Se fuerza acá, sin @layer, para que siempre gane sin
+   depender del orden exacto de los layers internos de Vuetify. */
+.v-field {
+  --v-field-padding-start: 16px;
+  --v-field-padding-end: 16px;
+}
