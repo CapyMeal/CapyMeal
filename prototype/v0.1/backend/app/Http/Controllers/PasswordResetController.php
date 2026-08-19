@@ -15,7 +15,22 @@ class PasswordResetController extends Controller
             'email' => 'required|email',
         ]);
 
-        $status = Password::sendResetLink($data);
+        try {
+            $status = Password::sendResetLink($data);
+        } catch (\Throwable $e) {
+            // Password::sendResetLink() manda el mail de forma sincrónica
+            // (QUEUE_CONNECTION=sync): si el SMTP falla (credenciales,
+            // remitente no verificado en Brevo, etc.) la excepción llega
+            // hasta acá sin capturar y el usuario veía un "Server Error"
+            // en inglés sin ninguna pista de la causa real. Se loguea la
+            // excepción real (queda en los logs de Render) y se responde
+            // con un mensaje claro en español.
+            report($e);
+
+            return response()->json([
+                'message' => 'No pudimos enviar el email en este momento. Intentá de nuevo en un rato.',
+            ], 500);
+        }
 
         if ($status === Password::RESET_THROTTLED) {
             return response()->json([
