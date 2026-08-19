@@ -32,6 +32,17 @@
    ganarle. Se fuerza el padding final directamente, con !important,
    para no depender de esa cadena de variables/especificidad. */
 .v-field__input {
-  padding-inline-start: 16px !important;
+  padding-inline-start: 20px !important;
+  padding-inline-end: 20px !important;
+}
+
+/* El ícono de mostrar/ocultar contraseña usaba el tamaño default de
+   Vuetify (24px) y quedaba grande y pegado al borde derecho -- se
+   achica y se le da el mismo aire que al texto del lado izquierdo. */
+.v-field__append-inner {
   padding-inline-end: 16px !important;
+}
+
+.v-field__append-inner .v-icon {
+  font-size: 20px !important;
 }
