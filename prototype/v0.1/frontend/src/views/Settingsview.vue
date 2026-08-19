@@ -221,6 +221,10 @@ async function handleLogout() {
 }
 
 .settings-item--danger {
+  /* Solo tiene icono + texto (sin control a la derecha, a diferencia
+     de las otras filas), así que se centran juntos en vez de heredar
+     el justify-content: space-between que los separa a los extremos. */
+  justify-content: center;
   cursor: pointer;
   color: #B5453C;
 }
