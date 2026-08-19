@@ -1,6 +1,7 @@
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
+import { getInitialTheme } from '../utils/theme'
 
 // Estos valores son copia de los tokens de ../styles/main.css (los mismos
 // hex, en el mismo orden). Vuetify necesita colores concretos para sus
@@ -47,7 +48,7 @@ const capymealDark = {
   },
 }
 
-const savedTheme = localStorage.getItem('capymeal-theme') || 'dark'
+const savedTheme = getInitialTheme()
 
 export default createVuetify({
   theme: {
