@@ -194,6 +194,12 @@ async function handleLogout() {
 }
 
 .settings-item--static {
+  /* Estas filas son icono + texto nomas, sin control a la derecha
+     (a diferencia de "Tema"), pero heredaban el mismo
+     justify-content: space-between de .settings-item -- con texto
+     corto (ej. "Versión") quedaba un hueco grande en el medio en vez
+     de agrupar todo a la izquierda. */
+  justify-content: flex-start;
   align-items: flex-start;
 }
 
