@@ -1,8 +1,10 @@
 <?php
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,5 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // El mensaje por defecto de Laravel para esto es "Unauthenticated."
+        // (hardcodeado, no pasa por los archivos de lang) -- se traduce
+        // acá explícitamente para que no aparezca en inglés en la app.
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Tu sesión expiró. Volvé a iniciar sesión.',
+                ], 401);
+            }
+        });
     })->create();
