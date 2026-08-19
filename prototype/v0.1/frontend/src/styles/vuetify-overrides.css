@@ -36,6 +36,15 @@
   padding-inline-end: 20px !important;
 }
 
+/* El label en reposo (el que hace de placeholder cuando el campo
+   esta vacio y sin foco) es un elemento aparte del input, con su
+   propio margin-inline-start -- tambien depende de la variable de
+   Vuetify que no alcanzaba a resolverse, asi que quedaba pegado al
+   borde aunque el input ya estuviera arreglado. */
+.v-label.v-field-label {
+  margin-inline-start: 20px !important;
+}
+
 /* El ícono de mostrar/ocultar contraseña usaba el tamaño default de
    Vuetify (24px) y quedaba grande y pegado al borde derecho -- se
    achica y se le da el mismo aire que al texto del lado izquierdo. */
