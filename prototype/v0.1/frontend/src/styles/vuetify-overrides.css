@@ -46,6 +46,23 @@
   padding-inline-end: 20px !important;
 }
 
+/* Vuetify renderiza DOS labels superpuestos por campo (uno para el
+   estado en reposo, otro para el estado flotante con foco/valor),
+   alternando cuál se ve con visibility -- cada uno tiene su propia
+   regla de margen y hay que forzar los dos por separado. El de
+   variante "outlined" flotante (.v-field-label--floating) tiene más
+   especificidad que la variable genérica de arriba y le gana. */
+.v-field--variant-outlined .v-label.v-field-label--floating {
+  margin-inline-start: 20px !important;
+}
+
+/* El label en reposo (el que se ve al entrar a la pantalla, sin
+   tocar nada) es el elemento OTRO -- confirmado con computed styles
+   reales que seguía en 0px aunque el flotante ya estuviera bien. */
+.v-label.v-field-label {
+  margin-inline-start: 20px !important;
+}
+
 /* El ícono de mostrar/ocultar contraseña (PasswordField.vue) usaba
    el tamaño default de Vuetify (24px) y se veía grande. */
 .v-field__append-inner .v-icon {
