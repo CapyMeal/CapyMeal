@@ -28,15 +28,22 @@
    placeholder en reposo) y el "corte" del borde donde se apoya el
    label activo -- todo a partir de una sola custom property interna
    (--v-field-padding-start) que en esta versión de Vuetify (4.x) no
-   se estaba resolviendo bien en producción. Forzar el padding/margin
-   final de cada pieza por separado (como se intentó antes) las
-   descoordina entre sí: el texto del label queda en un lugar pero el
-   corte del borde se sigue calculando para la posición vieja, y el
-   label termina "saliéndose" del recuadro. Se fuerza la variable
-   original en cambio, para que TODO lo que la usa quede consistente. */
+   se estaba resolviendo bien en producción. Forzarla acá (en vez de
+   parchear cada pieza suelta) mantiene el label y el corte del borde
+   coordinados entre sí -- confirmado que arregla esas dos piezas. */
 .v-field {
   --v-field-padding-start: 20px !important;
   --v-field-padding-end: 20px !important;
+}
+
+/* El <input> real, sin embargo, tiene ADEMÁS su propia regla interna
+   (:where(input.v-field__input) { padding: 0 }) que le sigue ganando
+   a la variable de arriba -- confirmado con dos rondas de pruebas
+   reales. Sin este segundo empujón puntual, el label y el borde se
+   ven bien pero el texto tipeado queda pegado igual. */
+.v-field__input {
+  padding-inline-start: 20px !important;
+  padding-inline-end: 20px !important;
 }
 
 /* El ícono de mostrar/ocultar contraseña (PasswordField.vue) usaba
