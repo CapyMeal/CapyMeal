@@ -68,3 +68,18 @@
 .v-field__append-inner .v-icon {
   font-size: 20px !important;
 }
+
+/* El borde del notch (el "corte" donde se apoya el label activo) hace un
+   fade de opacidad de 250ms al aparecer/desaparecer. En ciertas GPUs reales
+   ese fade deja un resto del borde pintado que no se termina de limpiar --
+   se ve como una línea cruzando el label ("Email", "Contraseña"), aunque
+   el layout calculado (getBoundingClientRect, computed opacity) sea
+   correcto -- confirmado con la propia usuaria comparando sus valores
+   reales de consola contra los míos: coincidían exacto, pero en su pantalla
+   la línea seguía visible. No se pudo reproducir en Chromium sin GPU real
+   (Docker/headless), consistente con un glitch de composición, no de CSS.
+   Sacar la transición evita que el navegador prometa esa capa. */
+.v-field--variant-outlined .v-field__outline__notch::before,
+.v-field--variant-outlined .v-field__outline__notch::after {
+  transition: none !important;
+}
