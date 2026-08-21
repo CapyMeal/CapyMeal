@@ -67,7 +67,7 @@ export default createVuetify({
       rounded: 'lg',
     },
     VTextField: {
-      variant: 'outlined',
+      variant: 'filled',
       rounded: 'lg',
       color: 'primary',
     },

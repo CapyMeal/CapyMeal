@@ -49,10 +49,11 @@
 /* Vuetify renderiza DOS labels superpuestos por campo (uno para el
    estado en reposo, otro para el estado flotante con foco/valor),
    alternando cuál se ve con visibility -- cada uno tiene su propia
-   regla de margen y hay que forzar los dos por separado. El de
-   variante "outlined" flotante (.v-field-label--floating) tiene más
-   especificidad que la variable genérica de arriba y le gana. */
-.v-field--variant-outlined .v-label.v-field-label--floating {
+   regla de margen y hay que forzar los dos por separado. La regla de
+   label flotante (.v-field-label--floating) tiene más especificidad
+   que la variable genérica de arriba y le gana, sea cual sea la
+   variante del campo (filled, outlined, etc). */
+.v-label.v-field-label--floating {
   margin-inline-start: 20px !important;
 }
 
@@ -67,19 +68,4 @@
    el tamaño default de Vuetify (24px) y se veía grande. */
 .v-field__append-inner .v-icon {
   font-size: 20px !important;
-}
-
-/* El borde del notch (el "corte" donde se apoya el label activo) hace un
-   fade de opacidad de 250ms al aparecer/desaparecer. En ciertas GPUs reales
-   ese fade deja un resto del borde pintado que no se termina de limpiar --
-   se ve como una línea cruzando el label ("Email", "Contraseña"), aunque
-   el layout calculado (getBoundingClientRect, computed opacity) sea
-   correcto -- confirmado con la propia usuaria comparando sus valores
-   reales de consola contra los míos: coincidían exacto, pero en su pantalla
-   la línea seguía visible. No se pudo reproducir en Chromium sin GPU real
-   (Docker/headless), consistente con un glitch de composición, no de CSS.
-   Sacar la transición evita que el navegador prometa esa capa. */
-.v-field--variant-outlined .v-field__outline__notch::before,
-.v-field--variant-outlined .v-field__outline__notch::after {
-  transition: none !important;
 }
