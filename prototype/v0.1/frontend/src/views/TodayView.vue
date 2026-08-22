@@ -31,12 +31,14 @@
         <button
           type="button"
           class="today-header__date-toggle"
+          :aria-expanded="showDatePicker"
+          aria-controls="today-date-panel"
           @click="showDatePicker = !showDatePicker"
         >
           📅 {{ showDatePicker ? 'Cerrar' : 'Cambiar día' }}
         </button>
 
-        <div v-if="showDatePicker" class="today-header__date-panel">
+        <div v-if="showDatePicker" id="today-date-panel" class="today-header__date-panel">
           <v-text-field
             id="entry-date"
             v-model="selectedDate"

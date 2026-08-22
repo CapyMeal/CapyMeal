@@ -16,6 +16,7 @@
     </div>
     <textarea
       class="meal-card__textarea"
+      :aria-label="title"
       :placeholder="placeholder"
       :value="modelValue"
       rows="3"
