@@ -6,8 +6,8 @@ use App\Http\Controllers\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas públicas de autenticación
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
+Route::post('/login',    [AuthController::class, 'login'])->middleware('throttle:6,1');
 
 // Recuperación de contraseña
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])->middleware('throttle:6,1');

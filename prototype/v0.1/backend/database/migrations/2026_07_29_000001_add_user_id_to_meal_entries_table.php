@@ -9,8 +9,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Limpia registros sin dueño (solo en desarrollo)
-        DB::table('meal_entries')->delete();
+        // Limpia registros sin dueño -- solo tiene sentido en desarrollo
+        // (antes de que existiera user_id no había datos reales todavía).
+        // El guard evita que un re-run accidental (migrate:fresh, replay)
+        // borre datos reales si esto llegara a correr de nuevo en producción.
+        if (!app()->environment('production')) {
+            DB::table('meal_entries')->delete();
+        }
 
         Schema::table('meal_entries', function (Blueprint $table) {
             $table->dropUnique(['date']);
