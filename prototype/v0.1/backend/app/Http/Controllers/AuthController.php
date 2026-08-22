@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -77,5 +78,35 @@ class AuthController extends Controller
         $request->user()->update(['avatar' => $data['avatar'] ?? null]);
 
         return response()->json($request->user()->fresh());
+    }
+
+    public function destroy(Request $request)
+    {
+        $data = $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($data['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'password' => ['La contraseña no es correcta.'],
+            ]);
+        }
+
+        DB::transaction(function () use ($user) {
+            // password_reset_tokens se indexa por email, no por user_id --
+            // sin esto, un token de recuperación viejo quedaría huerfano
+            // para ese email despues de borrar la cuenta.
+            DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+
+            // personal_access_tokens (Sanctum) es polimorfico, sin FK/cascade
+            // -- a diferencia de meal_entries, hay que revocarlos a mano.
+            $user->tokens()->delete();
+
+            $user->delete();
+        });
+
+        return response()->json(null, 204);
     }
 }

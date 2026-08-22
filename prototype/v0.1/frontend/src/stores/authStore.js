@@ -86,6 +86,34 @@ export async function logout() {
   clear()
 }
 
+export async function deleteAccount(password) {
+  const response = await fetch(`${API_BASE_URL}/api/me`, {
+    method:  'DELETE',
+    headers: {
+      'Content-Type':  'application/json',
+      'Accept':        'application/json',
+      'Authorization': `Bearer ${state.token}`,
+    },
+    body: JSON.stringify({ password }),
+  })
+
+  if (!response.ok) {
+    const raw = await response.text()
+    const data = raw ? JSON.parse(raw) : null
+    const message = data?.message
+      || Object.values(data?.errors || {})[0]?.[0]
+      || 'No pude eliminar la cuenta.'
+    const error = new Error(message)
+    error.status = response.status
+    throw error
+  }
+
+  // A diferencia de logout(), acá no se llama clear() si falla -- la
+  // cuenta sigue existiendo y hay que poder reintentar sin perder la
+  // sesión.
+  clear()
+}
+
 export async function updateAvatar(avatar) {
   const response = await fetch(`${API_BASE_URL}/api/me/avatar`, {
     method:  'PUT',

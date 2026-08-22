@@ -67,6 +67,7 @@
         <div>
           <p class="settings-item__label">Sobre CapyMeal</p>
           <p class="settings-item__desc">Un lugar tranquilo para guardar los pequeños momentos alrededor de la comida.</p>
+          <router-link to="/privacidad" class="settings-item__link">Política de privacidad</router-link>
         </div>
       </div>
 
@@ -98,6 +99,31 @@
         <p class="settings-item__label">Cerrar sesión</p>
       </div>
 
+      <hr class="settings-divider" />
+
+      <div v-if="!confirmingDeleteAccount" class="settings-item settings-item--danger" @click="confirmingDeleteAccount = true">
+        <span class="settings-item__icon">🗑</span>
+        <p class="settings-item__label">Eliminar mi cuenta</p>
+      </div>
+
+      <div v-else class="settings-delete-account">
+        <p class="settings-delete-account__warning">
+          Esto borra tu cuenta y todo tu diario para siempre. No se puede deshacer.
+        </p>
+        <PasswordField
+          v-model="deletePassword"
+          label="Confirmá tu contraseña"
+          autocomplete="current-password"
+        />
+        <p v-if="deleteError" class="settings-delete-account__error">{{ deleteError }}</p>
+        <div class="settings-delete-account__actions">
+          <CapyButton variant="danger" :disabled="deletingAccount" @click="handleDeleteAccount">
+            {{ deletingAccount ? 'Eliminando...' : 'Sí, eliminar mi cuenta' }}
+          </CapyButton>
+          <CapyButton variant="ghost" :disabled="deletingAccount" @click="cancelDeleteAccount">Cancelar</CapyButton>
+        </div>
+      </div>
+
     </div>
   </MainLayout>
 </template>
@@ -108,7 +134,10 @@ import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 import MainLayout from '../layouts/MainLayout.vue'
 import UserAvatar  from '../components/base/UserAvatar.vue'
-import { logout, currentUser, updateAvatar } from '../stores/authStore'
+import PasswordField from '../components/base/PasswordField.vue'
+import CapyButton  from '../components/base/CapyButton.vue'
+import { logout, currentUser, updateAvatar, deleteAccount } from '../stores/authStore'
+import { isNetworkError } from '../services/mealEntriesApi'
 
 const router      = useRouter()
 const vuetifyTheme = useTheme()
@@ -152,6 +181,38 @@ function toggleTheme(value) {
 async function handleLogout() {
   await logout()
   router.push('/login')
+}
+
+const confirmingDeleteAccount = ref(false)
+const deletePassword = ref('')
+const deletingAccount = ref(false)
+const deleteError = ref('')
+
+function cancelDeleteAccount() {
+  confirmingDeleteAccount.value = false
+  deletePassword.value = ''
+  deleteError.value = ''
+}
+
+async function handleDeleteAccount() {
+  if (!deletePassword.value) {
+    deleteError.value = 'Ingresá tu contraseña para confirmar.'
+    return
+  }
+
+  deletingAccount.value = true
+  deleteError.value = ''
+
+  try {
+    await deleteAccount(deletePassword.value)
+    router.push('/login')
+  } catch (error) {
+    deleteError.value = isNetworkError(error)
+      ? 'No se pudo eliminar: estás sin conexión.'
+      : error.message
+  } finally {
+    deletingAccount.value = false
+  }
 }
 </script>
 
@@ -255,6 +316,38 @@ async function handleLogout() {
   color: var(--color-text);
   opacity: .7;
   line-height: 1.5;
+}
+
+.settings-item__link {
+  display: inline-block;
+  margin-top: var(--space-xs);
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.settings-delete-account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+}
+
+.settings-delete-account__warning {
+  font-size: .85rem;
+  color: #B5453C;
+  line-height: 1.5;
+}
+
+.settings-delete-account__error {
+  font-size: .82rem;
+  color: var(--color-danger);
+}
+
+.settings-delete-account__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .settings-divider {
