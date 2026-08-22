@@ -5,6 +5,16 @@
       <span class="layout__brand">CapyMeal</span>
     </header>
 
+    <v-alert
+      v-if="!isOnline"
+      type="warning"
+      variant="tonal"
+      density="compact"
+      class="layout__offline-banner"
+    >
+      Estás sin conexión. Podés ver tu diario, pero los cambios no se van a guardar hasta que vuelva la señal.
+    </v-alert>
+
     <main class="layout__content">
       <slot />
     </main>
@@ -15,6 +25,9 @@
 
 <script setup>
 import BottomNavigation from '../components/layout/BottomNavigation.vue'
+import { useOnlineStatus } from '../utils/useOnlineStatus'
+
+const { isOnline } = useOnlineStatus()
 </script>
 
 <style scoped>
@@ -36,6 +49,11 @@ import BottomNavigation from '../components/layout/BottomNavigation.vue'
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
+}
+
+.layout__offline-banner {
+  max-width: 600px;
+  margin: var(--space-md) auto 0;
 }
 
 .layout__content {

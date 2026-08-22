@@ -40,7 +40,7 @@ import DiaryCard        from '../components/diary/DiaryCard.vue'
 import EmptyState       from '../components/diary/EmptyState.vue'
 import DateRangeFilter  from '../components/base/DateRangeFilter.vue'
 import CapyLoader       from '../components/base/CapyLoader.vue'
-import { getMealEntries } from '../services/mealEntriesApi'
+import { getMealEntries, isNetworkError } from '../services/mealEntriesApi'
 
 const entries = ref([])
 const loading = ref(false)
@@ -72,8 +72,14 @@ onMounted(async () => {
       date: entry.date,
       entry,
     }))
-  } catch {
-    errorMessage.value = 'No pude cargar el diario. Intentá nuevamente.'
+  } catch (error) {
+    // Nota: si el service worker ya tenía este pedido cacheado (visita
+    // previa con conexión), la respuesta se sirve desde el caché y este
+    // catch ni se dispara. Solo llega hasta acá si nunca se había cargado
+    // nada en este dispositivo.
+    errorMessage.value = isNetworkError(error)
+      ? 'No pude cargar el diario: estás sin conexión.'
+      : 'No pude cargar el diario. Intentá nuevamente.'
   } finally {
     loading.value = false
   }

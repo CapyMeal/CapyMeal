@@ -114,7 +114,7 @@ import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
 import UserAvatar      from '../components/base/UserAvatar.vue'
-import { getMealEntries, getMealEntry, upsertMealEntry } from '../services/mealEntriesApi'
+import { getMealEntries, getMealEntry, upsertMealEntry, isNetworkError } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
 import breakfastIcon from '../assets/icons/desayuno.png'
 import lunchIcon     from '../assets/icons/almuerzo.png'
@@ -237,8 +237,10 @@ async function saveDay() {
   try {
     await upsertMealEntry({ date: selectedDate.value, ...form })
     saved.value = true
-  } catch {
-    errorMessage.value = 'No pude guardar este día. Intentá nuevamente.'
+  } catch (error) {
+    errorMessage.value = isNetworkError(error)
+      ? 'No se pudo guardar: estás sin conexión.'
+      : 'No pude guardar este día. Intentá nuevamente.'
   } finally {
     loading.value = false
   }
@@ -259,8 +261,10 @@ async function saveSingleField(fieldKey) {
       next.delete(fieldKey)
       savedFields.value = next
     }, 2500)
-  } catch {
-    // auto-save silencioso: no mostrar error para no interrumpir
+  } catch (error) {
+    errorMessage.value = isNetworkError(error)
+      ? 'No se pudo guardar automáticamente: estás sin conexión.'
+      : 'No pude guardar ese cambio. Intentá nuevamente.'
   } finally {
     loadingFieldKey.value = ''
   }

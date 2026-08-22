@@ -40,6 +40,14 @@ async function request(path, options = {}) {
   return response.json()
 }
 
+// Un fallo de red (fetch no llega a completarse, ej. sin conexión) tira un
+// TypeError sin .status; cualquier error con .status vino de una respuesta
+// HTTP real del servidor. Sirve para distinguir "estás sin conexión" de un
+// error de verdad en las vistas que lo necesitan.
+export function isNetworkError(error) {
+  return error?.status === undefined
+}
+
 export function getMealEntry(date) {
   return request(`/api/meal-entries/${date}`)
 }

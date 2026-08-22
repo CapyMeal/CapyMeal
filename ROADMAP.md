@@ -41,7 +41,8 @@
        no para reimportar)
 
 📱 Fase 7 — App móvil
-    🔜 PWA instalable (manifest + service worker, sin offline todavía)
+    ✅ PWA instalable (manifest + service worker, con caché de lectura offline
+       del diario; las escrituras todavía necesitan conexión)
     🔜 Recordatorio diario — el mecanismo más directo para retención ("que
        vuelvan todos los días"); en iOS depende de que la PWA ya esté agregada
        a la pantalla de inicio, y solo desde iOS 16.4

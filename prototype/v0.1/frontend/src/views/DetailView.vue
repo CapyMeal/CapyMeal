@@ -160,6 +160,7 @@ import {
   exportMealEntriesPdf,
   getMealEntry,
   upsertMealEntry,
+  isNetworkError,
 } from '../services/mealEntriesApi'
 
 const route  = useRoute()
@@ -229,8 +230,10 @@ async function saveEdit() {
 
     entry.value = { ...form }
     editing.value = false
-  } catch {
-    errorMessage.value = 'No pude guardar los cambios. Intentá nuevamente.'
+  } catch (error) {
+    errorMessage.value = isNetworkError(error)
+      ? 'No se pudo guardar: estás sin conexión.'
+      : 'No pude guardar los cambios. Intentá nuevamente.'
   }
 }
 
@@ -240,8 +243,10 @@ async function deleteEntry() {
   try {
     await deleteMealEntry(dateKey)
     router.push('/recuerdos')
-  } catch {
-    errorMessage.value = 'No pude eliminar este día. Intentá nuevamente.'
+  } catch (error) {
+    errorMessage.value = isNetworkError(error)
+      ? 'No se pudo eliminar: estás sin conexión.'
+      : 'No pude eliminar este día. Intentá nuevamente.'
   }
 }
 
@@ -254,7 +259,9 @@ async function loadEntry() {
       entry.value = null
       return
     }
-    errorMessage.value = 'No pude cargar este día. Intentá nuevamente.'
+    errorMessage.value = isNetworkError(error)
+      ? 'Estás sin conexión — no pude cargar este día.'
+      : 'No pude cargar este día. Intentá nuevamente.'
   } finally {
     loading.value = false
   }
@@ -304,8 +311,10 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
       [fieldKey]: value,
     }
     cancelMealEdit()
-  } catch {
-    errorMessage.value = `No pude guardar ${fieldLabel.toLowerCase()}. Intentá nuevamente.`
+  } catch (error) {
+    errorMessage.value = isNetworkError(error)
+      ? 'No se pudo guardar: estás sin conexión.'
+      : `No pude guardar ${fieldLabel.toLowerCase()}. Intentá nuevamente.`
   } finally {
     savingMealKey.value = ''
   }
