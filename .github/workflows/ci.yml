@@ -14,7 +14,7 @@ jobs:
       run:
         working-directory: prototype/v0.1/backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -47,7 +47,7 @@ jobs:
       run:
         working-directory: prototype/v0.1/frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node
         uses: actions/setup-node@v4
