@@ -2,7 +2,9 @@
 
 $frontendUrl = env('FRONTEND_URL');
 
-$allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+// 4173 es el puerto default de "vite preview" (necesario para probar la PWA:
+// el service worker no se registra corriendo "vite dev" en 5173/5174).
+$allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:4173'];
 
 if ($frontendUrl) {
     $allowedOrigins[] = rtrim($frontendUrl, '/');
