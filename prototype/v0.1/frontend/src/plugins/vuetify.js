@@ -1,4 +1,7 @@
-import 'vuetify/styles'
+// vite-plugin-vuetify (autoImport: true, en vite.config.js) ya importa el
+// CSS de cada componente de Vuetify que se usa -- importar 'vuetify/styles'
+// acá además traía TODO el CSS del framework entero, duplicado con lo que
+// ya autoimportaba cada componente.
 import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
 import { getInitialTheme } from '../utils/theme'
