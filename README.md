@@ -1,6 +1,10 @@
+<div align="center">
+
 # CapyMeal
 
 ### 🍂 Tu diario de comidas con la calma de un carpincho.
+
+</div>
 
 CapyMeal es una aplicación web para registrar las comidas diarias de forma simple, agradable y visualmente acogedora.
 
@@ -8,7 +12,6 @@ No busca controlar calorías ni imponer objetivos nutricionales. Su propósito e
 
 🔗 **App en vivo:** [capy-meal.vercel.app](https://capy-meal.vercel.app)
 
----
 
 ## Características
 
@@ -19,7 +22,6 @@ No busca controlar calorías ni imponer objetivos nutricionales. Su propósito e
 - ✅ Identidad visual cálida basada en carpinchos, con tema claro y oscuro
 - ✅ Diseño Material Design 3, paleta "Tierra"
 
----
 
 ## Tecnologías
 
@@ -34,7 +36,6 @@ No busca controlar calorías ni imponer objetivos nutricionales. Su propósito e
 
 Para levantar el proyecto localmente con Docker, ver la [guía de desarrollo](prototype/v0.1/README.md).
 
----
 
 ## Capi 🤎
 
