@@ -1,13 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
-/* Vuetify envuelve todo su CSS en @layer vuetify-components. Por las
-   reglas de cascada, CSS sin layer le gana a CSS con layer sin importar
-   la especificidad -- asi que nuestro reset (abajo, en @layer reset)
-   necesita declararse con menor prioridad que el layer de Vuetify,
-   o le pisa el padding/margin interno a sus componentes (inputs,
-   cards, etc). El orden de esta lista es el orden de prioridad: el
-   ultimo gana. */
-@layer reset, vuetify-components;
+/* Vuetify (v4) envuelve su CSS en CINCO layers propios -- vuetify-core,
+   vuetify-components, vuetify-overrides, vuetify-utilities, vuetify-final
+   (en ese orden) -- no uno solo como se asumia antes acá. El padding/margin
+   interno de sus componentes (inputs, etc) vive en vuetify-core, el primero
+   de todos. Para que nuestro reset universal (abajo, @layer reset) quede
+   con MENOR prioridad que TODOS los layers de Vuetify (y no le pise el
+   padding-top a los inputs, por ejemplo), esta declaración tiene que
+   ejecutarse antes de que se inyecte el CSS de Vuetify -- el nombre de un
+   @layer queda ordenado la primera vez que aparece en toda la cascada, sin
+   importar en qué archivo. Por eso `main.css` se importa antes que
+   `plugins/vuetify.js` en `main.js`: así "reset" es el primer layer que
+   el navegador ve, y por lo tanto el de menor prioridad, sin depender de
+   listar a mano los nombres internos de Vuetify (que podrían cambiar en
+   una futura versión). */
+@layer reset;
 
 :root {
   /* Colores — paleta "Tierra" (design-system.md) */
@@ -117,6 +124,15 @@ textarea{
 a{
   color:inherit;
   text-decoration:none;
+}
+
+/* Edge le agrega su propio ícono nativo de "mostrar contraseña" a los
+   input[type=password] -- se suma al ícono que ya pone PasswordField.vue
+   y quedan dos ojitos superpuestos. Chrome/Firefox no tienen este pseudo-
+   elemento, así que esto no les afecta en nada. */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
 }
 
 #app{
