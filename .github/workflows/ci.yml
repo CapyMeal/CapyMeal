@@ -37,6 +37,9 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+      - name: Lint (Pint)
+        run: composer lint
+
       - name: Run tests
         run: php artisan test
 
@@ -58,6 +61,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
 
       - name: Build
         run: npm run build
