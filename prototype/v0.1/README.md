@@ -1,17 +1,20 @@
+<div align="center">
+  
 # 🐹 CapyMeal — Guía de desarrollo
 
 Todo lo que necesitás para levantar el proyecto desde cero.
 
----
+</div>
 
-## Requisitos
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Git
+### Requisitos
+
+  - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  - Git
 
 Nada más. No necesitás instalar PHP, Node ni PostgreSQL en tu máquina.
 
----
+
 
 ## Levantar el proyecto
 
@@ -23,9 +26,9 @@ docker compose up --build
 ```
 
 La **primera vez** tarda unos minutos porque:
-- Descarga las imágenes de Docker
-- Instala Laravel en el contenedor del backend
-- Ejecuta las migraciones automáticamente
+  - Descarga las imágenes de Docker
+  - Instala Laravel en el contenedor del backend
+  - Ejecuta las migraciones automáticamente
 
 A partir de la segunda vez es mucho más rápido:
 
@@ -33,7 +36,7 @@ A partir de la segunda vez es mucho más rápido:
 docker compose up
 ```
 
----
+
 
 ## URLs
 
@@ -43,7 +46,7 @@ docker compose up
 | Backend API | http://localhost:8080       |
 | PostgreSQL  | localhost:5433              |
 
----
+
 
 ## Estructura del stack
 
@@ -58,7 +61,7 @@ docker-compose.yml
 Los servicios se comunican entre sí por red interna de Docker.
 El frontend llama a la API en `http://localhost:8080`.
 
----
+
 
 ## Comandos útiles
 
@@ -81,20 +84,20 @@ docker compose down
 docker compose down -v
 ```
 
----
+
 
 ## Branching
 
 ```
-main              ← producción
-  └── dev         ← integración
+main                                 ← producción
+  └── dev                            ← integración
         └── feature/nombre-feature   ← desarrollo
 ```
 
 Siempre trabajar en una rama `feature/` que sale de `dev`.
 Nunca commitear directo a `main` ni a `dev`.
 
----
+
 
 ## Notas
 
