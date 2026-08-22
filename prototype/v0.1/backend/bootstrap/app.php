@@ -27,4 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 401);
             }
         });
+
+        \Sentry\Laravel\Integration::handles($exceptions);
     })->create();
