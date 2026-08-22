@@ -5,6 +5,12 @@
      archivo directo evita ambos problemas. Se cachea en memoria para
      no releer el mismo archivo por cada fila/dia. --}}
 @php
+// Guardadas detras de function_exists: esta vista puede renderizarse mas
+// de una vez dentro del mismo proceso de PHP (ej. el suite de tests, que
+// corre todos los tests con "php artisan test" en un solo proceso) -- sin
+// el guard, la segunda vez que Blade evalua este bloque, PHP explota con
+// "Cannot redeclare function".
+if (!function_exists('iconDataUri')) {
 function iconDataUri(string $filename): string {
     static $cache = [];
 
@@ -15,7 +21,9 @@ function iconDataUri(string $filename): string {
 
     return $cache[$filename];
 }
+}
 
+if (!function_exists('emojiDataUri')) {
 // Los PNG de Twemoji se bajan una sola vez y quedan en disco: pegarle a
 // la CDN por cada emoji en cada PDF fue lo que hizo lenta/pesada la
 // exportacion la vez anterior que se probo esto. Con el archivo ya
@@ -46,7 +54,9 @@ function emojiDataUri(string $filename): ?string {
 
     return $memCache[$filename] = 'data:image/png;base64,' . base64_encode(file_get_contents($cachePath));
 }
+}
 
+if (!function_exists('renderEmoji')) {
 function renderEmoji(string $text): string {
     return preg_replace_callback(
         '/(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]|\x{2B50}|\x{2B55})(?:\x{200D}(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]))*\x{FE0F}?/u',
@@ -69,6 +79,7 @@ function renderEmoji(string $text): string {
         },
         $text
     );
+}
 }
 @endphp
 
