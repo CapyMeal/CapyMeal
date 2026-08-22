@@ -19,16 +19,16 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user  = User::create($data)->fresh();
+        $user = User::create($data)->fresh();
         $token = $user->createToken('capymeal')->plainTextToken;
 
         return response()->json([
-            'user'  => $user,
+            'user' => $user,
             'token' => $token,
         ], 201);
     }
@@ -36,13 +36,13 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $data = $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
         $user = User::where('email', $data['email'])->first();
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['El email o la contraseña son incorrectos.'],
             ]);
@@ -52,7 +52,7 @@ class AuthController extends Controller
         $token = $user->createToken('capymeal')->plainTextToken;
 
         return response()->json([
-            'user'  => $user,
+            'user' => $user,
             'token' => $token,
         ]);
     }
@@ -88,7 +88,7 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        if (!Hash::check($data['password'], $user->password)) {
+        if (! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'password' => ['La contraseña no es correcta.'],
             ]);

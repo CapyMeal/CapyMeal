@@ -48,8 +48,8 @@ class PasswordResetController extends Controller
     public function reset(Request $request)
     {
         $data = $request->validate([
-            'token'    => 'required|string',
-            'email'    => 'required|email',
+            'token' => 'required|string',
+            'email' => 'required|email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 

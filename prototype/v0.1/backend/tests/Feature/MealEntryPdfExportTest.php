@@ -13,7 +13,7 @@ class MealEntryPdfExportTest extends TestCase
 
     private function authHeader(User $user): array
     {
-        return ['Authorization' => 'Bearer ' . $user->createToken('capymeal')->plainTextToken];
+        return ['Authorization' => 'Bearer '.$user->createToken('capymeal')->plainTextToken];
     }
 
     public function test_user_can_export_pdf_of_their_entries(): void

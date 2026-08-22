@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MealEntry;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -22,12 +22,12 @@ class MealEntryController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'date'      => 'required|date',
+            'date' => 'required|date',
             'breakfast' => 'nullable|string',
-            'lunch'     => 'nullable|string',
-            'snack'     => 'nullable|string',
-            'dinner'    => 'nullable|string',
-            'notes'     => 'nullable|string',
+            'lunch' => 'nullable|string',
+            'snack' => 'nullable|string',
+            'dinner' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
         // Un registro por usuario y fecha
@@ -39,7 +39,7 @@ class MealEntryController extends Controller
 
         $normalized = $this->normalizeEntryFields($data);
 
-        if (!$this->hasAtLeastOneFilledField($normalized)) {
+        if (! $this->hasAtLeastOneFilledField($normalized)) {
             throw ValidationException::withMessages([
                 'entry' => ['Tenés que completar al menos una comida o recuerdo antes de guardar.'],
             ]);
@@ -56,15 +56,15 @@ class MealEntryController extends Controller
 
         $data = $request->validate([
             'breakfast' => 'nullable|string',
-            'lunch'     => 'nullable|string',
-            'snack'     => 'nullable|string',
-            'dinner'    => 'nullable|string',
-            'notes'     => 'nullable|string',
+            'lunch' => 'nullable|string',
+            'snack' => 'nullable|string',
+            'dinner' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
         $normalized = $this->normalizeEntryFields($data);
 
-        if (!$this->hasAtLeastOneFilledField($normalized)) {
+        if (! $this->hasAtLeastOneFilledField($normalized)) {
             throw ValidationException::withMessages([
                 'entry' => ['No se puede guardar un registro vacío.'],
             ]);
@@ -86,27 +86,27 @@ class MealEntryController extends Controller
     {
         $validated = $request->validate([
             'from' => 'nullable|date',
-            'to'   => 'nullable|date|after_or_equal:from',
+            'to' => 'nullable|date|after_or_equal:from',
         ]);
 
         $query = $request->user()->mealEntries()->orderBy('date');
 
-        if (!empty($validated['from'])) {
+        if (! empty($validated['from'])) {
             $query->whereDate('date', '>=', $validated['from']);
         }
 
-        if (!empty($validated['to'])) {
+        if (! empty($validated['to'])) {
             $query->whereDate('date', '<=', $validated['to']);
         }
 
         $entries = $query->get();
 
-        \Carbon\Carbon::setLocale('es');
+        Carbon::setLocale('es');
 
         $pdf = Pdf::loadView('pdf.meal-entries', [
             'entries' => $entries,
-            'from'    => $validated['from'] ?? null,
-            'to'      => $validated['to'] ?? null,
+            'from' => $validated['from'] ?? null,
+            'to' => $validated['to'] ?? null,
         ])->setOptions(['isRemoteEnabled' => true]);
 
         return $pdf->download('capymeal-diario.pdf');
@@ -126,7 +126,7 @@ class MealEntryController extends Controller
     private function hasAtLeastOneFilledField(array $data): bool
     {
         foreach (['breakfast', 'lunch', 'snack', 'dinner', 'notes'] as $field) {
-            if (!empty($data[$field])) {
+            if (! empty($data[$field])) {
                 return true;
             }
         }

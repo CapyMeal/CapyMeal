@@ -2,14 +2,12 @@
 
 namespace App\Notifications;
 
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ResetPasswordNotification extends Notification
 {
-    public function __construct(protected string $token)
-    {
-    }
+    public function __construct(protected string $token) {}
 
     public function via(object $notifiable): array
     {
@@ -19,8 +17,8 @@ class ResetPasswordNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $url = rtrim((string) config('app.frontend_url'), '/')
-            . '/reset-password?token=' . $this->token
-            . '&email=' . urlencode($notifiable->email);
+            .'/reset-password?token='.$this->token
+            .'&email='.urlencode($notifiable->email);
 
         $expireMinutes = config('auth.passwords.users.expire', 60);
 
@@ -31,6 +29,6 @@ class ResetPasswordNotification extends Notification
             ->action('Elegir nueva contraseña', $url)
             ->line("Este enlace vence en {$expireMinutes} minutos.")
             ->line('Si vos no pediste esto, podés ignorar este email tranquilamente — tu contraseña sigue siendo la misma.')
-            ->salutation('Con cariño, 🤎' . "\n" . 'El equipo de CapyMeal');
+            ->salutation('Con cariño, 🤎'."\n".'El equipo de CapyMeal');
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
         // (antes de que existiera user_id no había datos reales todavía).
         // El guard evita que un re-run accidental (migrate:fresh, replay)
         // borre datos reales si esto llegara a correr de nuevo en producción.
-        if (!app()->environment('production')) {
+        if (! app()->environment('production')) {
             DB::table('meal_entries')->delete();
         }
 

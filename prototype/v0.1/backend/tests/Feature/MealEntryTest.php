@@ -13,7 +13,7 @@ class MealEntryTest extends TestCase
 
     private function authHeader(User $user): array
     {
-        return ['Authorization' => 'Bearer ' . $user->createToken('capymeal')->plainTextToken];
+        return ['Authorization' => 'Bearer '.$user->createToken('capymeal')->plainTextToken];
     }
 
     public function test_user_can_list_own_entries_ordered_by_date_desc(): void
