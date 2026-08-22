@@ -48,6 +48,10 @@
           ¿Ya tenés cuenta?
           <RouterLink to="/login">Entrá</RouterLink>
         </p>
+        <p class="auth-card__legal">
+          Al registrarte, aceptás nuestra
+          <RouterLink to="/privacidad">Política de privacidad</RouterLink>.
+        </p>
       </template>
     </AuthCard>
   </AuthLayout>
@@ -112,5 +116,10 @@ async function submit() {
 .auth-submit {
   width: 100%;
   margin-top: var(--space-xs);
+}
+
+.auth-card__legal {
+  font-size: .78rem;
+  opacity: .8;
 }
 </style>

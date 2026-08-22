@@ -11,12 +11,14 @@ import DiaryView            from '../views/DiaryView.vue'
 import DetailView           from '../views/DetailView.vue'
 import ExportView           from '../views/ExportView.vue'
 import SettingsView         from '../views/Settingsview.vue'
+import PrivacyPolicyView    from '../views/PrivacyPolicyView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
 
   routes: [
     { path: '/',                   name: 'splash',          component: HomeView                                    },
+    { path: '/privacidad',         name: 'privacy',         component: PrivacyPolicyView                           },
     { path: '/login',              name: 'login',           component: LoginView,          meta: { guest: true }  },
     { path: '/registro',           name: 'register',        component: RegisterView,       meta: { guest: true }  },
     { path: '/olvide-contrasena',  name: 'forgot-password', component: ForgotPasswordView, meta: { guest: true }  },
