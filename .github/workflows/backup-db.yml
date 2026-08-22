@@ -15,7 +15,7 @@ on:
 jobs:
   backup:
     runs-on: ubuntu-latest
-    container: postgres:16-alpine
+    container: postgres:18-alpine
     steps:
       - name: Compute backup name
         id: meta
