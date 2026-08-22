@@ -1,0 +1,34 @@
+name: Backup Neon DB
+
+# El plan Free de Neon solo permite volver atrás hasta 6 horas (point-in-time
+# restore). Esto guarda un dump completo todos los días como artifact del
+# repo (30 días de historial), para tener margen real ante un bug o una
+# migración que rompa datos y no se note el mismo día.
+#
+# Para restaurar un dump: pg_restore --clean --if-exists -d "$DATABASE_URL" backup.dump
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 6am UTC = 3am hora Argentina
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    container: postgres:16-alpine
+    steps:
+      - name: Compute backup name
+        id: meta
+        run: echo "name=capymeal-db-$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Dump database
+        run: pg_dump "$DATABASE_URL" --format=custom --file=backup.dump
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.name }}
+          path: backup.dump
+          retention-days: 30
