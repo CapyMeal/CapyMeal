@@ -24,7 +24,7 @@
       message="No encontré registros para esas fechas."
     />
 
-    <div v-else-if="!loading" class="export-preview" id="print-section">
+    <div v-else-if="!loading" id="print-section" class="export-preview">
       <v-card
         v-for="{ date, entry } in filteredEntries"
         :key="date"

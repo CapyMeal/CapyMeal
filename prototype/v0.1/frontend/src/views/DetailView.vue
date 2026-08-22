@@ -125,11 +125,11 @@
       <!-- Modo edición -->
       <template v-else>
         <div class="detail-edit-meals detail-edit-meals--with-bar">
-          <MealCard :icon-image="breakfastIcon" title="Desayuno"      placeholder="¿Qué desayunaste?"  v-model="form.breakfast" />
-          <MealCard :icon-image="lunchIcon" title="Almuerzo"      placeholder="¿Qué almorzaste?"   v-model="form.lunch"      />
-          <MealCard :icon-image="snackIcon" title="Merienda"      placeholder="¿Merendaste algo?"  v-model="form.snack"     />
-          <MealCard :icon-image="dinnerIcon" title="Cena"          placeholder="¿Qué cenaste?"      v-model="form.dinner"    />
-          <MealCard icon="📝" title="Recuerdo del día" placeholder="¿Hubo algo especial?" v-model="form.notes" />
+          <MealCard v-model="form.breakfast" :icon-image="breakfastIcon"      title="Desayuno"  placeholder="¿Qué desayunaste?" />
+          <MealCard v-model="form.lunch" :icon-image="lunchIcon"      title="Almuerzo"   placeholder="¿Qué almorzaste?"      />
+          <MealCard v-model="form.snack" :icon-image="snackIcon"      title="Merienda"  placeholder="¿Merendaste algo?"     />
+          <MealCard v-model="form.dinner" :icon-image="dinnerIcon"          title="Cena"      placeholder="¿Qué cenaste?"    />
+          <MealCard v-model="form.notes" icon="📝" title="Recuerdo del día" placeholder="¿Hubo algo especial?" />
         </div>
 
         <StickyActionBar>

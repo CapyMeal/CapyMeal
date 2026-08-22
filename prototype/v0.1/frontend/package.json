@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "format": "prettier --write src/"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -17,6 +19,11 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.7",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "eslint": "^10.9.0",
+    "eslint-plugin-vue": "^10.10.0",
+    "globals": "^17.11.0",
+    "prettier": "^3.9.6",
     "vite": "^8.1.1",
     "vite-plugin-pwa": "^1.3.0",
     "vite-plugin-vuetify": "^2.1.3"

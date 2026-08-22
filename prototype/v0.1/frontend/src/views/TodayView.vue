@@ -85,13 +85,13 @@
         <MealCard
           v-for="meal in mealFields"
           :key="meal.key"
+          v-model="form[meal.key]"
           :icon="meal.icon"
           :icon-image="meal.iconImage"
           :title="meal.title"
           :placeholder="meal.placeholder"
           :saving="loadingFieldKey === meal.key"
           :just-saved="savedFields.has(meal.key)"
-          v-model="form[meal.key]"
           @save-field="saveSingleField(meal.key)"
         />
       </div>
