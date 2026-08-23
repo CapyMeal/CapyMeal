@@ -24,7 +24,7 @@ jobs:
           coverage: none
 
       - name: Cache Composer packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: prototype/v0.1/backend/vendor
           key: composer-${{ hashFiles('prototype/v0.1/backend/composer.lock') }}
