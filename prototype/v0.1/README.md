@@ -54,8 +54,8 @@ docker compose up
 docker-compose.yml
 │
 ├── frontend/   → Vue 3 + Vite   (Node 20)
-├── backend/    → Laravel 11     (PHP 8.2)
-└── db          → PostgreSQL 16
+├── backend/    → Laravel 12     (PHP 8.2)
+└── db          → PostgreSQL 18
 ```
 
 Los servicios se comunican entre sí por red interna de Docker.
@@ -82,20 +82,32 @@ docker compose down
 
 # Detener y borrar la base de datos (reset completo)
 docker compose down -v
+
+# Tests del backend
+docker exec -it capymeal-backend php artisan test
+
+# Lint (no modifica nada, solo reporta)
+docker exec -it capymeal-backend composer lint
+docker exec -it capymeal-frontend npm run lint
+
+# Lint (aplica los arreglos automáticos)
+docker exec -it capymeal-backend composer format
+docker exec -it capymeal-frontend npm run format
 ```
+
+Todo esto corre también solo en cada push/PR vía GitHub Actions.
 
 
 
 ## Branching
 
 ```
-main                                 ← producción
-  └── dev                            ← integración
-        └── feature/nombre-feature   ← desarrollo
+dev                                  ← producción (Render y Vercel deployan desde acá)
+  └── feature/nombre-feature         ← desarrollo
 ```
 
+`main` existe pero no se usa para deployar -- `dev` es la rama real de producción.
 Siempre trabajar en una rama `feature/` que sale de `dev`.
-Nunca commitear directo a `main` ni a `dev`.
 
 
 

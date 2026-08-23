@@ -27,14 +27,27 @@ No busca controlar calorías ni imponer objetivos nutricionales. Su propósito e
 
 | Capa | Tecnología |
 |---|---|
-| Frontend | Vue 3 + Vite, Vuetify (Material Design 3) |
-| Backend  | Laravel 12, Laravel Sanctum |
-| Base de datos | PostgreSQL |
+| Frontend | Vue 3 + Vite, Vuetify (Material Design 3), PWA instalable |
+| Backend  | Laravel 12, Laravel Sanctum (auth por token) |
+| Base de datos | PostgreSQL (Neon) |
 | PDF | DomPDF |
 | Email | SMTP (Brevo) / Resend |
 | Deploy | Render (backend) + Vercel (frontend) + Neon (Postgres) |
 
 Para levantar el proyecto localmente con Docker, ver la [guía de desarrollo](prototype/v0.1/README.md).
+
+
+## Calidad e infraestructura
+
+CapyMeal corre con la misma disciplina que un proyecto en producción real, aunque sea chico:
+
+- ✅ **Tests automáticos** (backend): login, registro, diario, recuperación de contraseña y exportación de PDF.
+- ✅ **CI/CD** (GitHub Actions): cada cambio corre tests + lint antes de poder mergearse.
+- ✅ **Monitoreo de errores** (Sentry): backend y frontend avisan solos si algo se rompe en producción.
+- ✅ **Monitoreo de disponibilidad** (UptimeRobot): aviso por email si el backend se cae.
+- ✅ **Backups diarios** de la base (además del punto de restauración de Neon).
+- ✅ **Dependabot**: alerta y actualiza solo las dependencias con vulnerabilidades conocidas.
+- ✅ **Lint automático** (ESLint + Laravel Pint): el estilo del código no depende de que alguien lo revise a mano.
 
 
 ## Capi 🤎
