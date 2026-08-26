@@ -253,12 +253,10 @@ async function deleteEntry() {
 async function loadEntry() {
   loading.value = true
   try {
+    // `entry.value` queda null cuando no hay registro para ese dia -- no es
+    // un error, la vista ya sabe mostrar el estado "sin registro" para eso.
     entry.value = await getMealEntry(dateKey)
   } catch (error) {
-    if (error.status === 404) {
-      entry.value = null
-      return
-    }
     errorMessage.value = isNetworkError(error)
       ? 'Estás sin conexión — no pude cargar este día.'
       : 'No pude cargar este día. Intentá nuevamente.'

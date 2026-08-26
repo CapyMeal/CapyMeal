@@ -200,16 +200,20 @@ async function loadEntryByDate(date) {
   savedFields.value  = new Set()
 
   try {
+    // `entry` es null cuando todavia no hay nada guardado para ese dia --
+    // el formulario ya vacio (reseteado arriba) es la UI correcta para eso.
     const entry = await getMealEntry(date)
-    Object.assign(form, {
-      breakfast: entry.breakfast || '',
-      lunch:     entry.lunch     || '',
-      snack:     entry.snack     || '',
-      dinner:    entry.dinner    || '',
-      notes:     entry.notes     || '',
-    })
-  } catch (error) {
-    if (error.status === 404) { return }
+
+    if (entry) {
+      Object.assign(form, {
+        breakfast: entry.breakfast || '',
+        lunch:     entry.lunch     || '',
+        snack:     entry.snack     || '',
+        dinner:    entry.dinner    || '',
+        notes:     entry.notes     || '',
+      })
+    }
+  } catch {
     errorMessage.value = 'No pude cargar ese día. Intentá nuevamente.'
   } finally {
     loading.value = false
