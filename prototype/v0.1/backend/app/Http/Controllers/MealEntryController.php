@@ -16,7 +16,14 @@ class MealEntryController extends Controller
 
     public function show(Request $request, string $date)
     {
-        return $request->user()->mealEntries()->where('date', $date)->firstOrFail();
+        // No tener registro para un dia es el caso normal (la mayoria de los
+        // dias no tienen uno todavia), no un error: se devuelve 200 con
+        // `null` en vez de 404, para no tratar como excepcion algo esperado.
+        // response()->json(null) no sirve: Symfony convierte un $data null
+        // en un objeto vacio "{}" en vez de mandar el literal "null".
+        $entry = $request->user()->mealEntries()->where('date', $date)->first();
+
+        return response(json_encode($entry), 200, ['Content-Type' => 'application/json']);
     }
 
     public function store(Request $request)

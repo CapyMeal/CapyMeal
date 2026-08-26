@@ -101,9 +101,28 @@ class MealEntryTest extends TestCase
         $other = User::factory()->create();
         MealEntry::create(['user_id' => $owner->id, 'date' => '2026-08-20', 'lunch' => 'Milanesa']);
 
-        $this->withHeaders($this->authHeader($other))
-            ->getJson('/api/meal-entries/2026-08-20')
-            ->assertStatus(404);
+        $response = $this->withHeaders($this->authHeader($other))
+            ->getJson('/api/meal-entries/2026-08-20');
+
+        // No se usa $response->json(): Laravel trata un body JSON `null`
+        // literal como "decodificacion fallida" y hace fallar el test aunque
+        // la respuesta sea perfectamente valida (ver TestResponse::decodeResponseJson).
+        $response->assertOk();
+        $response->assertContent('null');
+    }
+
+    public function test_viewing_a_date_with_no_entry_returns_null_not_404(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->getJson('/api/meal-entries/2026-08-20');
+
+        // No se usa $response->json(): Laravel trata un body JSON `null`
+        // literal como "decodificacion fallida" y hace fallar el test aunque
+        // la respuesta sea perfectamente valida (ver TestResponse::decodeResponseJson).
+        $response->assertOk();
+        $response->assertContent('null');
     }
 
     public function test_user_can_update_entry(): void
