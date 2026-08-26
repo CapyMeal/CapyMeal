@@ -1,86 +1,8 @@
-{{-- Incrusta los iconos locales como base64: DomPDF 3 no puede leer
-     rutas de archivo locales (chroot) de forma confiable, y pedirse a
-     si mismo la URL publica via HTTP se traba porque `php artisan
-     serve` atiende una sola request a la vez (deadlock). Leer el
-     archivo directo evita ambos problemas. Se cachea en memoria para
-     no releer el mismo archivo por cada fila/dia. --}}
+{{-- El texto libre del usuario se escapa antes de renderizarse (ver
+     App\Support\MealDiaryPdfRenderer::renderText) para que no se pueda
+     inyectar HTML/markup a traves del propio diario. --}}
 @php
-// Guardadas detras de function_exists: esta vista puede renderizarse mas
-// de una vez dentro del mismo proceso de PHP (ej. el suite de tests, que
-// corre todos los tests con "php artisan test" en un solo proceso) -- sin
-// el guard, la segunda vez que Blade evalua este bloque, PHP explota con
-// "Cannot redeclare function".
-if (!function_exists('iconDataUri')) {
-function iconDataUri(string $filename): string {
-    static $cache = [];
-
-    if (!isset($cache[$filename])) {
-        $path = public_path('images/' . $filename);
-        $cache[$filename] = 'data:image/png;base64,' . base64_encode(file_get_contents($path));
-    }
-
-    return $cache[$filename];
-}
-}
-
-if (!function_exists('emojiDataUri')) {
-// Los PNG de Twemoji se bajan una sola vez y quedan en disco: pegarle a
-// la CDN por cada emoji en cada PDF fue lo que hizo lenta/pesada la
-// exportacion la vez anterior que se probo esto. Con el archivo ya
-// cacheado, las siguientes exportaciones no vuelven a tocar la red.
-function emojiDataUri(string $filename): ?string {
-    static $memCache = [];
-
-    if (array_key_exists($filename, $memCache)) {
-        return $memCache[$filename];
-    }
-
-    $cachePath = storage_path('app/emoji-cache/' . $filename . '.png');
-
-    if (!is_file($cachePath)) {
-        $url      = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/' . $filename . '.png';
-        $contents = @file_get_contents($url);
-
-        if ($contents === false) {
-            return $memCache[$filename] = null;
-        }
-
-        if (!is_dir(dirname($cachePath))) {
-            mkdir(dirname($cachePath), 0755, true);
-        }
-
-        file_put_contents($cachePath, $contents);
-    }
-
-    return $memCache[$filename] = 'data:image/png;base64,' . base64_encode(file_get_contents($cachePath));
-}
-}
-
-if (!function_exists('renderEmoji')) {
-function renderEmoji(string $text): string {
-    return preg_replace_callback(
-        '/(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]|\x{2B50}|\x{2B55})(?:\x{200D}(?:[\x{1F000}-\x{1FFFF}]|[\x{2600}-\x{27BF}]))*\x{FE0F}?/u',
-        function ($m) {
-            $chars = preg_split('//u', $m[0], -1, PREG_SPLIT_NO_EMPTY);
-            $codepoints = array_values(array_filter(
-                array_map(fn($c) => mb_ord($c), $chars),
-                fn($cp) => $cp !== 0xFE0F
-            ));
-            $filename = implode('-', array_map(fn($cp) => strtolower(dechex($cp)), $codepoints));
-            $dataUri  = emojiDataUri($filename);
-
-            // Si la descarga falla (CDN caida, sin red), se deja el
-            // emoji como texto plano en vez de mostrar un icono roto.
-            if ($dataUri === null) {
-                return $m[0];
-            }
-
-            return '<img src="' . $dataUri . '" width="13" height="13" style="vertical-align:middle;margin:0 1px;">';
-        },
-        $text
-    );
-}
-}
+use App\Support\MealDiaryPdfRenderer;
 @endphp
 
 <!DOCTYPE html>
@@ -286,7 +208,7 @@ function renderEmoji(string $text): string {
     {{-- Portada --}}
     <div class="cover">
         <div class="cover__chef-cell">
-            <img class="cover__chef" src="{{ iconDataUri('Chef.png') }}" alt="Capi">
+            <img class="cover__chef" src="{{ MealDiaryPdfRenderer::iconDataUri('Chef.png') }}" alt="Capi">
         </div>
         <div class="cover__info">
             <div class="cover__title">CapyMeal</div>
@@ -317,12 +239,12 @@ function renderEmoji(string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ iconDataUri('desayuno.png') }}" alt="Desayuno">
+                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('desayuno.png') }}" alt="Desayuno">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Desayuno</div>
                         @if ($entry->breakfast)
-                            <div class="meal-row__value">{!! renderEmoji($entry->breakfast) !!}</div>
+                            <div class="meal-row__value">{!! MealDiaryPdfRenderer::renderText($entry->breakfast) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -331,12 +253,12 @@ function renderEmoji(string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ iconDataUri('almuerzo.png') }}" alt="Almuerzo">
+                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('almuerzo.png') }}" alt="Almuerzo">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Almuerzo</div>
                         @if ($entry->lunch)
-                            <div class="meal-row__value">{!! renderEmoji($entry->lunch) !!}</div>
+                            <div class="meal-row__value">{!! MealDiaryPdfRenderer::renderText($entry->lunch) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -345,12 +267,12 @@ function renderEmoji(string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ iconDataUri('merienda.png') }}" alt="Merienda">
+                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('merienda.png') }}" alt="Merienda">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Merienda</div>
                         @if ($entry->snack)
-                            <div class="meal-row__value">{!! renderEmoji($entry->snack) !!}</div>
+                            <div class="meal-row__value">{!! MealDiaryPdfRenderer::renderText($entry->snack) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -359,12 +281,12 @@ function renderEmoji(string $text): string {
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ iconDataUri('cena.png') }}" alt="Cena">
+                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('cena.png') }}" alt="Cena">
                     </div>
                     <div class="meal-row__content">
                         <div class="meal-row__label">Cena</div>
                         @if ($entry->dinner)
-                            <div class="meal-row__value">{!! renderEmoji($entry->dinner) !!}</div>
+                            <div class="meal-row__value">{!! MealDiaryPdfRenderer::renderText($entry->dinner) !!}</div>
                         @else
                             <div class="meal-row__empty">No registrado</div>
                         @endif
@@ -373,8 +295,8 @@ function renderEmoji(string $text): string {
 
                 @if ($entry->notes)
                     <div class="notes-row">
-                        <div class="notes-row__label">{!! renderEmoji('📝 Recuerdo del día') !!}</div>
-                        <div class="notes-row__value">{!! renderEmoji($entry->notes) !!}</div>
+                        <div class="notes-row__label">{!! MealDiaryPdfRenderer::renderText('📝 Recuerdo del día') !!}</div>
+                        <div class="notes-row__value">{!! MealDiaryPdfRenderer::renderText($entry->notes) !!}</div>
                     </div>
                 @endif
 
@@ -382,7 +304,7 @@ function renderEmoji(string $text): string {
         </div>
     @empty
         <div class="empty-state">
-            <img class="empty-state__chef" src="{{ iconDataUri('Chef.png') }}" alt="Capi">
+            <img class="empty-state__chef" src="{{ MealDiaryPdfRenderer::iconDataUri('Chef.png') }}" alt="Capi">
             <p>No hay registros para ese rango.</p>
         </div>
     @endforelse

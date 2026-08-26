@@ -103,11 +103,16 @@ class MealEntryController extends Controller
 
         Carbon::setLocale('es');
 
+        // isRemoteEnabled queda deshabilitado (default de DomPDF): todas las
+        // imagenes de la vista (iconos, emojis) se incrustan como data URIs
+        // ya resueltas en PHP, asi que DomPDF nunca necesita pedir una URL
+        // por su cuenta. Dejarlo deshabilitado evita que texto del usuario
+        // (comidas/notas) pueda hacer que el servidor pida una URL remota.
         $pdf = Pdf::loadView('pdf.meal-entries', [
             'entries' => $entries,
             'from' => $validated['from'] ?? null,
             'to' => $validated['to'] ?? null,
-        ])->setOptions(['isRemoteEnabled' => true]);
+        ]);
 
         return $pdf->download('capymeal-diario.pdf');
     }
