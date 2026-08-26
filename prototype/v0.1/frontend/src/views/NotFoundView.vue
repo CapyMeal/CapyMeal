@@ -4,8 +4,8 @@
 
       <img
         class="not-found__capi"
-        src="../assets/illustrations/Chef.png"
-        alt="Capi buscando"
+        src="../assets/illustrations/404.png"
+        alt="Capi confundido, buscando"
       />
 
       <div class="not-found__brand">
