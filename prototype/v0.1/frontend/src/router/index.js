@@ -19,6 +19,7 @@ const router = createRouter({
     { path: '/recuerdos/:date',    name: 'detail',          component: () => import('../views/DetailView.vue'),         meta: { auth: true  }  },
     { path: '/exportar',           name: 'export',          component: () => import('../views/ExportView.vue'),         meta: { auth: true  }  },
     { path: '/ajustes',            name: 'settings',        component: () => import('../views/SettingsView.vue'),       meta: { auth: true  }  },
+    { path: '/:pathMatch(.*)*',    name: 'not-found',       component: () => import('../views/NotFoundView.vue')                                 },
   ]
 })
 
