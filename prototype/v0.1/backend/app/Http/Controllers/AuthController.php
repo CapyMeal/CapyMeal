@@ -42,11 +42,13 @@ class AuthController extends Controller
 
         $user = User::where('email', $data['email'])->first();
 
-        if (! $user || ! Hash::check($data['password'], $user->password)) {
+        if (! $user) {
             throw ValidationException::withMessages([
                 'email' => ['El email o la contraseña son incorrectos.'],
             ]);
         }
+
+        $this->assertPasswordMatches($user, $data['password'], 'email', 'El email o la contraseña son incorrectos.');
 
         $user->tokens()->delete();
         $token = $user->createToken('capymeal')->plainTextToken;
@@ -88,11 +90,7 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        if (! Hash::check($data['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'password' => ['La contraseña no es correcta.'],
-            ]);
-        }
+        $this->assertPasswordMatches($user, $data['password'], 'password', 'La contraseña no es correcta.');
 
         DB::transaction(function () use ($user) {
             // password_reset_tokens se indexa por email, no por user_id --
@@ -108,5 +106,12 @@ class AuthController extends Controller
         });
 
         return response()->json(null, 204);
+    }
+
+    private function assertPasswordMatches(User $user, string $password, string $field, string $message): void
+    {
+        if (! Hash::check($password, $user->password)) {
+            throw ValidationException::withMessages([$field => [$message]]);
+        }
     }
 }

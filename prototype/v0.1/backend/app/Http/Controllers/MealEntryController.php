@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreMealEntryRequest;
+use App\Http\Requests\UpdateMealEntryRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -46,12 +48,9 @@ class MealEntryController extends Controller
         return response(json_encode($entry), 200, ['Content-Type' => 'application/json']);
     }
 
-    public function store(Request $request)
+    public function store(StoreMealEntryRequest $request)
     {
-        $data = $request->validate([
-            'date' => 'required|date',
-            ...$this->entryFieldRules(),
-        ]);
+        $data = $request->validated();
 
         // Un registro por usuario y fecha
         if ($request->user()->mealEntries()->where('date', $data['date'])->exists()) {
@@ -73,15 +72,13 @@ class MealEntryController extends Controller
         return response()->json($entry, 201);
     }
 
-    public function update(Request $request, string $date)
+    public function update(UpdateMealEntryRequest $request, string $date)
     {
         $entry = $request->user()->mealEntries()->where('date', $date)->firstOrFail();
 
         $this->authorize('update', $entry);
 
-        $data = $request->validate($this->entryFieldRules());
-
-        $normalized = $this->normalizeEntryFields($data);
+        $normalized = $this->normalizeEntryFields($request->validated());
 
         if (! $this->hasAtLeastOneFilledField($normalized)) {
             throw ValidationException::withMessages([
@@ -151,17 +148,6 @@ class MealEntryController extends Controller
         }
 
         return $query;
-    }
-
-    private function entryFieldRules(): array
-    {
-        return [
-            'breakfast' => 'nullable|string|max:2000',
-            'lunch' => 'nullable|string|max:2000',
-            'snack' => 'nullable|string|max:2000',
-            'dinner' => 'nullable|string|max:2000',
-            'notes' => 'nullable|string|max:2000',
-        ];
     }
 
     private function normalizeEntryFields(array $data): array
