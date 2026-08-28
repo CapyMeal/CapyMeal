@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Http;
+
 class MealDiaryPdfRenderer
 {
     /**
@@ -52,9 +55,17 @@ class MealDiaryPdfRenderer
 
         if (! is_file($cachePath)) {
             $url = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/'.$filename.'.png';
-            $contents = @file_get_contents($url);
 
-            if ($contents === false) {
+            // Timeout corto y explícito: sin esto, un CDN lento o caído
+            // cuelga la generación del PDF entera esperando una respuesta
+            // que puede no llegar nunca.
+            try {
+                $response = Http::timeout(2)->get($url);
+            } catch (ConnectionException) {
+                return $memCache[$filename] = null;
+            }
+
+            if (! $response->successful()) {
                 return $memCache[$filename] = null;
             }
 
@@ -62,7 +73,7 @@ class MealDiaryPdfRenderer
                 mkdir(dirname($cachePath), 0755, true);
             }
 
-            file_put_contents($cachePath, $contents);
+            file_put_contents($cachePath, $response->body());
         }
 
         return $memCache[$filename] = 'data:image/png;base64,'.base64_encode(file_get_contents($cachePath));
