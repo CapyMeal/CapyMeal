@@ -26,7 +26,10 @@ CACHE_STORE=file
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 
-FRONTEND_URL=${FRONTEND_URL:-*}
+# Si Render no seteó esta variable, mejor dejarla vacía (el frontend real
+# se queda sin poder hacer requests, algo que se nota al toque) que un
+# fallback tipo "*" que abriría CORS a cualquier origen en silencio.
+FRONTEND_URL=${FRONTEND_URL:-}
 
 MAIL_MAILER=${MAIL_MAILER:-log}
 RESEND_API_KEY=${RESEND_API_KEY:-}
