@@ -21,7 +21,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/me', [AuthController::class, 'destroy']);
 
     Route::get('/meal-entries', [MealEntryController::class, 'index']);
-    Route::get('/meal-entries/export/pdf', [MealEntryController::class, 'exportPdf']);
+    // Generar el PDF es lo más pesado de la API (renderiza la vista con
+    // imagenes/emojis vía DomPDF) -- sin límite, alguien podría pedirlo en
+    // loop y cargar el servidor de más. throttle ya cuenta por usuario acá
+    // (auth:sanctum), no por IP.
+    Route::get('/meal-entries/export/pdf', [MealEntryController::class, 'exportPdf'])->middleware('throttle:10,1');
     Route::get('/meal-entries/{date}', [MealEntryController::class, 'show']);
     Route::post('/meal-entries', [MealEntryController::class, 'store']);
     Route::put('/meal-entries/{date}', [MealEntryController::class, 'update']);

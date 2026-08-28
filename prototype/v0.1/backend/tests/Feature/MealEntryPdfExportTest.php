@@ -5,11 +5,22 @@ namespace Tests\Feature;
 use App\Models\MealEntry;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class MealEntryPdfExportTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // El export tiene throttle:10,1. El cache "array" de testing vive
+        // durante todo el proceso del suite, así que sin esto los intentos
+        // se acumulan entre tests y terminan en 429 (ver AuthTest).
+        Cache::flush();
+    }
 
     private function authHeader(User $user): array
     {
@@ -65,5 +76,17 @@ class MealEntryPdfExportTest extends TestCase
     public function test_unauthenticated_export_is_rejected(): void
     {
         $this->getJson('/api/meal-entries/export/pdf')->assertStatus(401);
+    }
+
+    public function test_pdf_export_is_rate_limited_after_10_requests_per_minute(): void
+    {
+        $user = User::factory()->create();
+        $headers = $this->authHeader($user);
+
+        for ($i = 0; $i < 10; $i++) {
+            $this->withHeaders($headers)->get('/api/meal-entries/export/pdf')->assertOk();
+        }
+
+        $this->withHeaders($headers)->get('/api/meal-entries/export/pdf')->assertStatus(429);
     }
 }
