@@ -1,4 +1,4 @@
-import { getToken } from '../stores/authStore'
+import { getToken, handleUnauthorized } from '../stores/authStore'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -16,6 +16,10 @@ async function request(path, options = {}) {
   })
 
   if (!response.ok) {
+    if (response.status === 401) {
+      return handleUnauthorized()
+    }
+
     const text = await response.text()
     let data = null
 
@@ -105,6 +109,10 @@ export async function exportMealEntriesPdf({ from, to }) {
   })
 
   if (!response.ok) {
+    if (response.status === 401) {
+      return handleUnauthorized()
+    }
+
     const text = await response.text()
     const error = new Error(`API ${response.status}: ${text}`)
     error.status = response.status

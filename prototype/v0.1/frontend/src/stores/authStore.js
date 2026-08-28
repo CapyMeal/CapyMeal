@@ -28,6 +28,20 @@ function clear() {
   localStorage.removeItem('capymeal-user')
 }
 
+// Un 401 de la API significa que el token ya no sirve (expiró o se revocó
+// en otro lado) -- a diferencia de un logout manual, acá hay que avisar
+// por qué se cerró la sesión. Import dinámico para no crear una
+// dependencia circular con router/index.js (que importa este archivo).
+export async function handleUnauthorized() {
+  clear()
+
+  const { default: router } = await import('../router')
+
+  if (router.currentRoute.value.name !== 'login') {
+    router.push({ name: 'login', query: { expired: '1' } })
+  }
+}
+
 async function authRequest(path, body) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method:  'POST',
@@ -98,6 +112,10 @@ export async function deleteAccount(password) {
   })
 
   if (!response.ok) {
+    if (response.status === 401) {
+      return handleUnauthorized()
+    }
+
     const raw = await response.text()
     const data = raw ? JSON.parse(raw) : null
     const message = data?.message
@@ -110,7 +128,8 @@ export async function deleteAccount(password) {
 
   // A diferencia de logout(), acá no se llama clear() si falla -- la
   // cuenta sigue existiendo y hay que poder reintentar sin perder la
-  // sesión.
+  // sesión. Un 401 es la excepción: ahí el token ya no sirve, así que no
+  // hay nada que reintentar (ver handleUnauthorized arriba).
   clear()
 }
 
@@ -124,6 +143,10 @@ export async function updateAvatar(avatar) {
     },
     body: JSON.stringify({ avatar }),
   })
+
+  if (response.status === 401) {
+    return handleUnauthorized()
+  }
 
   const raw = await response.text()
   const data = raw ? JSON.parse(raw) : null
