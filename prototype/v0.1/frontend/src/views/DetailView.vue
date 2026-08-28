@@ -64,6 +64,8 @@
                   rows="3"
                   auto-grow
                   density="compact"
+                  maxlength="2000"
+                  counter
                 />
                 <div class="detail-meal-editor__actions">
                   <CapyButton
@@ -98,6 +100,8 @@
                   rows="3"
                   auto-grow
                   density="compact"
+                  maxlength="2000"
+                  counter
                 />
                 <div class="detail-meal-editor__actions">
                   <CapyButton

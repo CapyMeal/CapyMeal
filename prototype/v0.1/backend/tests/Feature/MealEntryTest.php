@@ -84,6 +84,45 @@ class MealEntryTest extends TestCase
         $this->assertDatabaseMissing('meal_entries', ['user_id' => $user->id, 'date' => '2026-08-20']);
     }
 
+    public function test_cannot_create_entry_with_field_longer_than_2000_characters(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->withHeaders($this->authHeader($user))->postJson('/api/meal-entries', [
+            'date' => '2026-08-20',
+            'breakfast' => str_repeat('a', 2001),
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('breakfast');
+        $this->assertDatabaseMissing('meal_entries', ['user_id' => $user->id, 'date' => '2026-08-20']);
+    }
+
+    public function test_can_create_entry_with_field_exactly_2000_characters(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->withHeaders($this->authHeader($user))->postJson('/api/meal-entries', [
+            'date' => '2026-08-20',
+            'breakfast' => str_repeat('a', 2000),
+        ]);
+
+        $response->assertCreated();
+    }
+
+    public function test_cannot_update_entry_with_field_longer_than_2000_characters(): void
+    {
+        $user = User::factory()->create();
+        MealEntry::create(['user_id' => $user->id, 'date' => '2026-08-20', 'lunch' => 'Milanesa']);
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->putJson('/api/meal-entries/2026-08-20', ['lunch' => str_repeat('a', 2001)]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('lunch');
+        $this->assertDatabaseHas('meal_entries', ['user_id' => $user->id, 'date' => '2026-08-20', 'lunch' => 'Milanesa']);
+    }
+
     public function test_user_can_view_single_entry_by_date(): void
     {
         $user = User::factory()->create();

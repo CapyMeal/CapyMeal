@@ -20,6 +20,7 @@
       :placeholder="placeholder"
       :value="modelValue"
       rows="3"
+      maxlength="2000"
       @input="$emit('update:modelValue', $event.target.value)"
       @blur="onBlur"
     />

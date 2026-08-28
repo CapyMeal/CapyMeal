@@ -30,11 +30,7 @@ class MealEntryController extends Controller
     {
         $data = $request->validate([
             'date' => 'required|date',
-            'breakfast' => 'nullable|string',
-            'lunch' => 'nullable|string',
-            'snack' => 'nullable|string',
-            'dinner' => 'nullable|string',
-            'notes' => 'nullable|string',
+            ...$this->entryFieldRules(),
         ]);
 
         // Un registro por usuario y fecha
@@ -61,13 +57,7 @@ class MealEntryController extends Controller
     {
         $entry = $request->user()->mealEntries()->where('date', $date)->firstOrFail();
 
-        $data = $request->validate([
-            'breakfast' => 'nullable|string',
-            'lunch' => 'nullable|string',
-            'snack' => 'nullable|string',
-            'dinner' => 'nullable|string',
-            'notes' => 'nullable|string',
-        ]);
+        $data = $request->validate($this->entryFieldRules());
 
         $normalized = $this->normalizeEntryFields($data);
 
@@ -122,6 +112,17 @@ class MealEntryController extends Controller
         ]);
 
         return $pdf->download('capymeal-diario.pdf');
+    }
+
+    private function entryFieldRules(): array
+    {
+        return [
+            'breakfast' => 'nullable|string|max:2000',
+            'lunch' => 'nullable|string|max:2000',
+            'snack' => 'nullable|string|max:2000',
+            'dinner' => 'nullable|string|max:2000',
+            'notes' => 'nullable|string|max:2000',
+        ];
     }
 
     private function normalizeEntryFields(array $data): array
