@@ -18,7 +18,7 @@
           autocomplete="current-password"
         />
 
-        <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact">
+        <v-alert v-if="errorMessage" :type="errorType" variant="tonal" density="compact">
           {{ errorMessage }}
         </v-alert>
 
@@ -42,7 +42,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
@@ -50,12 +50,18 @@ import PasswordField from '../components/base/PasswordField.vue'
 import { login } from '../stores/authStore'
 
 const router = useRouter()
+const route  = useRoute()
 
-const email        = ref('')
-const password     = ref('')
-const loading      = ref(false)
-const errorMessage = ref('')
-const slowLogin     = ref(false)
+const email          = ref('')
+const password       = ref('')
+const loading        = ref(false)
+const slowLogin      = ref(false)
+// Si llegamos acá porque el token expiró (ver handleUnauthorized en
+// authStore.js), avisamos por qué en vez de dejar que parezca que el
+// login en sí falló.
+const sessionExpired = ref(!!route.query.expired)
+const errorMessage   = ref(sessionExpired.value ? 'Tu sesión expiró. Iniciá sesión de nuevo.' : '')
+const errorType      = computed(() => sessionExpired.value ? 'warning' : 'error')
 
 const loadingButtonLabel = computed(() => {
   if (!loading.value) return '🍂 Entrar'
@@ -63,9 +69,10 @@ const loadingButtonLabel = computed(() => {
 })
 
 async function submit() {
-  loading.value      = true
-  errorMessage.value = ''
-  slowLogin.value    = false
+  loading.value        = true
+  errorMessage.value   = ''
+  sessionExpired.value = false
+  slowLogin.value      = false
 
   // El backend gratuito de Render "duerme" tras un rato sin uso y tarda
   // unos segundos en despertar en el primer pedido -- este aviso evita
