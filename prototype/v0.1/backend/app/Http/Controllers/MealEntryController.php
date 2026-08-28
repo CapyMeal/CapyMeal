@@ -11,7 +11,18 @@ class MealEntryController extends Controller
 {
     public function index(Request $request)
     {
-        return $request->user()->mealEntries()->orderByDesc('date')->get();
+        // "from"/"to" son opcionales: sin ellos se sigue devolviendo todo el
+        // diario (mismo comportamiento de siempre), pero le permiten al
+        // frontend pedir sólo el rango que va a mostrar en vez de traer y
+        // filtrar todo del lado del cliente -- mismo patrón que exportPdf().
+        $validated = $request->validate($this->dateRangeRules());
+
+        $query = $this->applyDateRangeFilter(
+            $request->user()->mealEntries()->orderByDesc('date'),
+            $validated
+        );
+
+        return $query->get();
     }
 
     public function show(Request $request, string $date)
@@ -81,20 +92,12 @@ class MealEntryController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $validated = $request->validate([
-            'from' => 'nullable|date',
-            'to' => 'nullable|date|after_or_equal:from',
-        ]);
+        $validated = $request->validate($this->dateRangeRules());
 
-        $query = $request->user()->mealEntries()->orderBy('date');
-
-        if (! empty($validated['from'])) {
-            $query->whereDate('date', '>=', $validated['from']);
-        }
-
-        if (! empty($validated['to'])) {
-            $query->whereDate('date', '<=', $validated['to']);
-        }
+        $query = $this->applyDateRangeFilter(
+            $request->user()->mealEntries()->orderBy('date'),
+            $validated
+        );
 
         $entries = $query->get();
 
@@ -112,6 +115,27 @@ class MealEntryController extends Controller
         ]);
 
         return $pdf->download('capymeal-diario.pdf');
+    }
+
+    private function dateRangeRules(): array
+    {
+        return [
+            'from' => 'nullable|date',
+            'to' => 'nullable|date|after_or_equal:from',
+        ];
+    }
+
+    private function applyDateRangeFilter($query, array $validated)
+    {
+        if (! empty($validated['from'])) {
+            $query->whereDate('date', '>=', $validated['from']);
+        }
+
+        if (! empty($validated['to'])) {
+            $query->whereDate('date', '<=', $validated['to']);
+        }
+
+        return $query;
     }
 
     private function entryFieldRules(): array

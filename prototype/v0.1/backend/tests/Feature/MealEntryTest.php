@@ -29,6 +29,31 @@ class MealEntryTest extends TestCase
         $this->assertSame('2026-08-10', $response->json('0.date'));
     }
 
+    public function test_user_can_filter_own_entries_by_date_range(): void
+    {
+        $user = User::factory()->create();
+        MealEntry::create(['user_id' => $user->id, 'date' => '2026-08-01', 'breakfast' => 'Café']);
+        MealEntry::create(['user_id' => $user->id, 'date' => '2026-08-10', 'breakfast' => 'Té']);
+        MealEntry::create(['user_id' => $user->id, 'date' => '2026-08-20', 'breakfast' => 'Mate']);
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->getJson('/api/meal-entries?from=2026-08-05&to=2026-08-15');
+
+        $response->assertOk();
+        $response->assertJsonCount(1);
+        $this->assertSame('2026-08-10', $response->json('0.date'));
+    }
+
+    public function test_meal_entries_index_rejects_invalid_date_range(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->withHeaders($this->authHeader($user))
+            ->getJson('/api/meal-entries?from=2026-08-20&to=2026-08-01');
+
+        $response->assertStatus(422);
+    }
+
     public function test_user_cannot_see_other_users_entries(): void
     {
         $owner = User::factory()->create();
