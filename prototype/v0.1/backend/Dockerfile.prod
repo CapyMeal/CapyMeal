@@ -24,6 +24,20 @@ RUN mkdir -p storage/framework/sessions \
 COPY entrypoint.prod.sh /entrypoint.sh
 RUN sed -i 's/\r//' /entrypoint.sh && chmod +x /entrypoint.sh
 
+# El binario de frankenphp trae por defecto la capability CAP_NET_BIND_SERVICE
+# (para poder bindear puertos <1024 sin ser root). El sandbox de Render no
+# permite ejecutar binarios con capabilities de Linux -- el exec falla con
+# "Operation not permitted", sin importar el usuario. Servimos en :8000 (no
+# privilegiado), así que no la necesitamos: se la sacamos.
+RUN setcap -r /usr/local/bin/frankenphp
+
+# Corre como usuario sin privilegios: FrankenPHP no necesita ser root una vez
+# que no bindea puertos privilegiados. /config/caddy y /data/caddy son donde
+# Caddy guarda su config autoguardada y su storage interno.
+RUN useradd --create-home appuser \
+    && chown -R appuser:appuser /app /config/caddy /data/caddy
+USER appuser
+
 # FrankenPHP (Caddy) escucha en el puerto de SERVER_NAME; Render espera
 # encontrar la app en el puerto 8000, igual que antes con "artisan serve".
 ENV SERVER_NAME=":8000"
