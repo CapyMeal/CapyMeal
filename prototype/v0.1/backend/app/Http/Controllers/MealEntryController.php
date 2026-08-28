@@ -34,6 +34,15 @@ class MealEntryController extends Controller
         // en un objeto vacio "{}" en vez de mandar el literal "null".
         $entry = $request->user()->mealEntries()->where('date', $date)->first();
 
+        // El lookup ya está escopeado al usuario autenticado, así que esto
+        // nunca debería fallar -- es la red de seguridad ante un futuro
+        // cambio que rompa ese scoping sin querer. Con guard porque $entry
+        // puede ser null a propósito (ver comentario arriba), y authorize()
+        // no acepta un modelo null.
+        if ($entry) {
+            $this->authorize('view', $entry);
+        }
+
         return response(json_encode($entry), 200, ['Content-Type' => 'application/json']);
     }
 
@@ -68,6 +77,8 @@ class MealEntryController extends Controller
     {
         $entry = $request->user()->mealEntries()->where('date', $date)->firstOrFail();
 
+        $this->authorize('update', $entry);
+
         $data = $request->validate($this->entryFieldRules());
 
         $normalized = $this->normalizeEntryFields($data);
@@ -85,7 +96,11 @@ class MealEntryController extends Controller
 
     public function destroy(Request $request, string $date)
     {
-        $request->user()->mealEntries()->where('date', $date)->firstOrFail()->delete();
+        $entry = $request->user()->mealEntries()->where('date', $date)->firstOrFail();
+
+        $this->authorize('delete', $entry);
+
+        $entry->delete();
 
         return response()->json(null, 204);
     }
