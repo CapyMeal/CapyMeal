@@ -6,7 +6,10 @@ $frontendUrl = env('FRONTEND_URL');
 // el service worker no se registra corriendo "vite dev" en 5173/5174).
 $allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:4173'];
 
-if ($frontendUrl) {
+// "*" nunca se acepta acá, aunque llegue seteado así por env: preferimos
+// que el frontend real se quede afuera (visible, se nota al toque) antes
+// que abrir CORS a cualquier origen por un fallback mal configurado.
+if ($frontendUrl && $frontendUrl !== '*') {
     $allowedOrigins[] = rtrim($frontendUrl, '/');
 }
 
