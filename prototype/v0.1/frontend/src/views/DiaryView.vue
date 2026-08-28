@@ -11,20 +11,20 @@
     <CapyLoader v-if="loading" message="Cargando tu diario..." />
 
     <EmptyState
-      v-else-if="entries.length === 0"
+      v-else-if="entries.length === 0 && !hasDateFilter"
       message="Todavía no guardamos ningún recuerdo."
       action-label="Registrar mi primer día"
       @action="$router.push('/hoy')"
     />
 
     <EmptyState
-      v-else-if="!loading && filteredEntries.length === 0"
+      v-else-if="!loading && hasDateFilter && entries.length === 0"
       message="No encontré registros para esas fechas."
     />
 
     <div v-else-if="!loading" class="diary-list">
       <DiaryCard
-        v-for="{ date, entry } in filteredEntries"
+        v-for="{ date, entry } in entries"
         :key="date"
         :date="date"
         :entry="entry"
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import MainLayout       from '../layouts/MainLayout.vue'
 import DiaryCard        from '../components/diary/DiaryCard.vue'
 import EmptyState       from '../components/diary/EmptyState.vue'
@@ -48,26 +48,22 @@ const errorMessage = ref('')
 const fromDate = ref('')
 const toDate = ref('')
 
-const filteredEntries = computed(() =>
-  entries.value.filter(({ date }) => {
-    if (fromDate.value && date < fromDate.value) {
-      return false
-    }
+const hasDateFilter = computed(() => !!fromDate.value || !!toDate.value)
 
-    if (toDate.value && date > toDate.value) {
-      return false
-    }
+async function loadEntries() {
+  // Mientras se edita el rango con los selectores de fecha, puede haber un
+  // instante con "desde" posterior a "hasta" -- el backend lo rechazaría
+  // con un 422. Se espera a que el rango vuelva a ser válido en vez de
+  // mostrar un error por algo que todavía se está terminando de elegir.
+  if (fromDate.value && toDate.value && fromDate.value > toDate.value) {
+    return
+  }
 
-    return true
-  })
-)
-
-onMounted(async () => {
   loading.value = true
   errorMessage.value = ''
 
   try {
-    const data = await getMealEntries()
+    const data = await getMealEntries({ from: fromDate.value, to: toDate.value })
     entries.value = data.map((entry) => ({
       date: entry.date,
       entry,
@@ -83,7 +79,10 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(loadEntries)
+watch([fromDate, toDate], loadEntries)
 </script>
 
 <style scoped>

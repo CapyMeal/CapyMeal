@@ -61,8 +61,26 @@ export function apiFetch(path, options = {}) {
   return request(`/api${path}`, options)
 }
 
-export function getMealEntries() {
-  return request('/api/meal-entries')
+// Sin "from"/"to" trae el diario entero (comportamiento de siempre);
+// pasarlos le permite a la vista pedir sólo el rango que va a mostrar en
+// vez de traer todo y filtrar del lado del cliente.
+function dateRangeQuery({ from, to } = {}) {
+  const params = new URLSearchParams()
+
+  if (from) {
+    params.set('from', from)
+  }
+
+  if (to) {
+    params.set('to', to)
+  }
+
+  const query = params.toString()
+  return query ? `?${query}` : ''
+}
+
+export function getMealEntries({ from, to } = {}) {
+  return request(`/api/meal-entries${dateRangeQuery({ from, to })}`)
 }
 
 export async function upsertMealEntry(payload) {
@@ -88,18 +106,7 @@ export function deleteMealEntry(date) {
 }
 
 export async function exportMealEntriesPdf({ from, to }) {
-  const params = new URLSearchParams()
-
-  if (from) {
-    params.set('from', from)
-  }
-
-  if (to) {
-    params.set('to', to)
-  }
-
-  const query = params.toString()
-  const url = `${API_BASE_URL}/api/meal-entries/export/pdf${query ? `?${query}` : ''}`
+  const url = `${API_BASE_URL}/api/meal-entries/export/pdf${dateRangeQuery({ from, to })}`
 
   const response = await fetch(url, {
     headers: {

@@ -11,7 +11,7 @@
     <CapyLoader v-if="loading" message="Cargando registros para exportar..." />
 
     <CapyButton
-      v-if="!loading && filteredEntries.length > 0"
+      v-if="!loading && entries.length > 0"
       class="export-button"
       :disabled="exporting"
       @click="printPdf"
@@ -20,13 +20,13 @@
     </CapyButton>
 
     <EmptyState
-      v-else-if="filteredEntries.length === 0"
+      v-else-if="entries.length === 0"
       message="No encontré registros para esas fechas."
     />
 
     <div v-else-if="!loading" id="print-section" class="export-preview">
       <v-card
-        v-for="{ date, entry } in filteredEntries"
+        v-for="{ date, entry } in entries"
         :key="date"
         class="export-card"
         elevation="1"
@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import MainLayout      from '../layouts/MainLayout.vue'
 import EmptyState      from '../components/diary/EmptyState.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
@@ -60,33 +60,30 @@ const errorMessage = ref('')
 const fromDate = ref('')
 const toDate = ref('')
 
-const filteredEntries = computed(() =>
-  entries.value.filter(({ date }) => {
-    if (fromDate.value && date < fromDate.value) {
-      return false
-    }
+async function loadEntries() {
+  // Mientras se edita el rango con los selectores de fecha, puede haber un
+  // instante con "desde" posterior a "hasta" -- el backend lo rechazaría
+  // con un 422. Se espera a que el rango vuelva a ser válido en vez de
+  // mostrar un error por algo que todavía se está terminando de elegir.
+  if (fromDate.value && toDate.value && fromDate.value > toDate.value) {
+    return
+  }
 
-    if (toDate.value && date > toDate.value) {
-      return false
-    }
-
-    return true
-  })
-)
-
-onMounted(async () => {
   loading.value = true
   errorMessage.value = ''
 
   try {
-    const data = await getMealEntries()
+    const data = await getMealEntries({ from: fromDate.value, to: toDate.value })
     entries.value = data.map((entry) => ({ date: entry.date, entry }))
   } catch {
     errorMessage.value = 'No pude cargar los registros para exportar.'
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(loadEntries)
+watch([fromDate, toDate], loadEntries)
 
 function formatDate(date) {
   const [year, month, day] = date.split('-').map(Number)
