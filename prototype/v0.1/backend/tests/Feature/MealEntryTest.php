@@ -5,11 +5,23 @@ namespace Tests\Feature;
 use App\Models\MealEntry;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class MealEntryTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Las rutas de este grupo tienen throttle:60,1. El cache "array" de
+        // testing vive durante todo el proceso del suite, así que sin esto
+        // los intentos se acumulan entre tests y terminan en 429 (ver
+        // AuthTest / MealEntryPdfExportTest).
+        Cache::flush();
+    }
 
     private function authHeader(User $user): array
     {
@@ -249,5 +261,17 @@ class MealEntryTest extends TestCase
     public function test_unauthenticated_requests_are_rejected(): void
     {
         $this->getJson('/api/meal-entries')->assertStatus(401);
+    }
+
+    public function test_meal_entries_are_rate_limited_after_60_requests_per_minute(): void
+    {
+        $user = User::factory()->create();
+        $headers = $this->authHeader($user);
+
+        for ($i = 0; $i < 60; $i++) {
+            $this->withHeaders($headers)->getJson('/api/meal-entries')->assertOk();
+        }
+
+        $this->withHeaders($headers)->getJson('/api/meal-entries')->assertStatus(429);
     }
 }
