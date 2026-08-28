@@ -44,4 +44,13 @@ ENV SERVER_NAME=":8000"
 
 EXPOSE 8000
 
+# La imagen base trae un HEALTHCHECK que pega contra el endpoint de admin
+# de Caddy (puerto 2019, sólo para métricas internas). Render parece
+# proxearlo desde afuera con el hostname público en vez de "localhost",
+# y Caddy lo rechaza (host no permitido) -- ruido en los logs que además
+# podría hacer que Render marque el contenedor como no saludable sin
+# motivo real. No lo necesitamos: el health check que importa es que la
+# app responda en :8000, no las métricas internas de Caddy.
+HEALTHCHECK NONE
+
 ENTRYPOINT ["/entrypoint.sh"]
