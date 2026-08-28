@@ -13,6 +13,25 @@ jobs:
     defaults:
       run:
         working-directory: prototype/v0.1/backend
+    # Postgres real (mismo motor que Neon en producción) como service container
+    # al costado del job -- no se puede usar el patrón "container:" de
+    # backup-db.yml acá, porque este job necesita PHP/apt/actions normales del
+    # runner de Ubuntu, no la imagen minimal de postgres:18-alpine como entorno
+    # de ejecución.
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: capymeal_test
+          POSTGRES_USER: capymeal
+          POSTGRES_PASSWORD: capymeal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U capymeal"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
     steps:
       - uses: actions/checkout@v7
 
@@ -20,7 +39,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, bcmath, dom, fileinfo, pdo_sqlite, sqlite3, gd, intl
+          extensions: mbstring, bcmath, dom, fileinfo, pdo_pgsql, gd, intl
           coverage: none
 
       - name: Cache Composer packages
@@ -41,6 +60,13 @@ jobs:
         run: composer lint
 
       - name: Run tests
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: capymeal_test
+          DB_USERNAME: capymeal
+          DB_PASSWORD: capymeal
         run: php artisan test
 
   frontend-build:
