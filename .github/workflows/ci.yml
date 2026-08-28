@@ -59,6 +59,9 @@ jobs:
       - name: Lint (Pint)
         run: composer lint
 
+      - name: Static analysis (Larastan)
+        run: composer phpstan
+
       - name: Run tests
         env:
           DB_CONNECTION: pgsql
