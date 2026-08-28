@@ -139,6 +139,12 @@ class MealEntryController extends Controller
 
     private function applyDateRangeFilter($query, array $validated)
     {
+        // Tope duro de 5 años, siempre aplicado -- el filtro from/to de
+        // arriba es opcional (sin él, se sigue devolviendo "todo"), así que
+        // sin este tope un historial de años sin filtrar trae y renderiza
+        // (en exportPdf) el diario entero de una sola vez, sin límite real.
+        $query->whereDate('date', '>=', Carbon::now()->subYears(5)->toDateString());
+
         if (! empty($validated['from'])) {
             $query->whereDate('date', '>=', $validated['from']);
         }

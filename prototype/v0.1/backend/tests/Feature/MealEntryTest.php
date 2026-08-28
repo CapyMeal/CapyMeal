@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\MealEntry;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
@@ -39,6 +40,27 @@ class MealEntryTest extends TestCase
         $response->assertOk();
         $response->assertJsonCount(2);
         $this->assertSame('2026-08-10', $response->json('0.date'));
+    }
+
+    public function test_entries_older_than_5_years_are_excluded_by_default(): void
+    {
+        $user = User::factory()->create();
+        MealEntry::create([
+            'user_id' => $user->id,
+            'date' => Carbon::now()->subYears(6)->toDateString(),
+            'breakfast' => 'Muy viejo',
+        ]);
+        MealEntry::create([
+            'user_id' => $user->id,
+            'date' => Carbon::now()->subYear()->toDateString(),
+            'breakfast' => 'Reciente',
+        ]);
+
+        $response = $this->withHeaders($this->authHeader($user))->getJson('/api/meal-entries');
+
+        $response->assertOk();
+        $response->assertJsonCount(1);
+        $this->assertSame('Reciente', $response->json('0.breakfast'));
     }
 
     public function test_user_can_filter_own_entries_by_date_range(): void
