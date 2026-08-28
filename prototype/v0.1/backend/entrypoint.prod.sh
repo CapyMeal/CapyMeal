@@ -63,5 +63,10 @@ php artisan migrate --force --no-interaction
 php artisan config:cache
 php artisan route:cache
 
-echo "🚀 Iniciando servidor en :8000"
-php artisan serve --host=0.0.0.0 --port=8000
+# "artisan serve" es un servidor de desarrollo (un solo proceso, sin
+# concurrencia real) -- Laravel mismo advierte no usarlo en producción.
+# FrankenPHP sí sirve requests concurrentes de verdad; "exec" reemplaza
+# este shell por el proceso de FrankenPHP para que reciba directo las
+# señales de Render (SIGTERM en cada redeploy) y pueda cerrar prolijo.
+echo "🚀 Iniciando FrankenPHP en :8000"
+exec frankenphp run --config /etc/frankenphp/Caddyfile --adapter caddyfile
