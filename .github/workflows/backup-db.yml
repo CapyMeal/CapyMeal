@@ -12,6 +12,12 @@ on:
     - cron: '0 6 * * *' # 6am UTC = 3am hora Argentina
   workflow_dispatch: {}
 
+# Least-privilege explícito -- este job ni siquiera hace checkout del repo,
+# pero fijar el default de todos modos deja documentado que no necesita nada
+# más que poder correr.
+permissions:
+  contents: read
+
 jobs:
   backup:
     runs-on: ubuntu-latest
