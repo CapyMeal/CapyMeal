@@ -166,6 +166,7 @@ import {
   upsertMealEntry,
   isNetworkError,
 } from '../services/mealEntriesApi'
+import { formatDateEs } from '../utils/date'
 
 const route  = useRoute()
 const router = useRouter()
@@ -191,12 +192,9 @@ const allMeals = [
   { key: 'dinner',    iconImage: dinnerIcon, title: 'Cena' },
 ]
 
-const formattedDate = computed(() => {
-  const [year, month, day] = dateKey.split('-').map(Number)
-  return new Date(year, month - 1, day).toLocaleDateString('es-AR', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-  })
-})
+const formattedDate = computed(() => formatDateEs(dateKey, {
+  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+}))
 
 onMounted(() => {
   loadEntry()

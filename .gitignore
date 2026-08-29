@@ -252,8 +252,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-../ROADMAP.md
-
 # Logs
 logs
 *.log

@@ -52,6 +52,7 @@ import CapyButton      from '../components/base/CapyButton.vue'
 import DateRangeFilter from '../components/base/DateRangeFilter.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
 import { exportMealEntriesPdf, getMealEntries } from '../services/mealEntriesApi'
+import { formatDateEs } from '../utils/date'
 
 const entries = ref([])
 const loading = ref(false)
@@ -86,8 +87,7 @@ onMounted(loadEntries)
 watch([fromDate, toDate], loadEntries)
 
 function formatDate(date) {
-  const [year, month, day] = date.split('-').map(Number)
-  return new Date(year, month - 1, day).toLocaleDateString('es-AR', {
+  return formatDateEs(date, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
