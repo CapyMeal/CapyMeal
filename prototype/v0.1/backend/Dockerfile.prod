@@ -6,11 +6,27 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copia el código de la app
+# Copia solo los manifests de Composer primero: mientras composer.lock no
+# cambie, esta capa (instalar los paquetes de vendor/, la parte lenta)
+# se reusa entre builds aunque el código de la app sí haya cambiado --
+# antes, "COPY . ." completo corría antes del install, así que cualquier
+# cambio de código (sin tocar composer.lock) invalidaba el cache y
+# forzaba reinstalar todo en cada deploy.
+COPY composer.json composer.lock ./
+
+# --no-autoloader: el autoloader optimizado necesita ver los archivos
+# reales de app/ para armar el classmap, que todavía no están copiados
+# acá (--no-scripts evita package:discover sin .env, igual que antes).
+RUN composer install --no-dev --no-scripts --no-autoloader --no-interaction --quiet
+
+# Recién ahora se copia el código real de la app.
 COPY . .
 
-# Instala dependencias de producción (--no-scripts evita package:discover sin .env)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --quiet
+# Con el código ya presente, se genera el autoloader optimizado -- rápido,
+# corre en cada build sin afectar el cache de la capa anterior. --no-scripts
+# por la misma razón que el install de arriba: package:discover necesita un
+# .env que todavía no existe en este punto del build.
+RUN composer dump-autoload --optimize --no-interaction --no-scripts --quiet
 
 # Permisos de storage (sin brace expansion para /bin/sh)
 RUN mkdir -p storage/framework/sessions \
