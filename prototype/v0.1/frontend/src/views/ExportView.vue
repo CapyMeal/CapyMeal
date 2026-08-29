@@ -45,46 +45,22 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 import MainLayout      from '../layouts/MainLayout.vue'
 import EmptyState      from '../components/diary/EmptyState.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import DateRangeFilter from '../components/base/DateRangeFilter.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
-import { exportMealEntriesPdf, getMealEntries } from '../services/mealEntriesApi'
+import { exportMealEntriesPdf } from '../services/mealEntriesApi'
 import { formatDateEs } from '../utils/date'
+import { useMealEntriesByRange } from '../utils/useMealEntriesByRange'
 
-const entries = ref([])
-const loading = ref(false)
+const { entries, loading, errorMessage, fromDate, toDate } = useMealEntriesByRange({
+  networkErrorMessage: 'No pude cargar los registros para exportar: estás sin conexión.',
+  genericErrorMessage: 'No pude cargar los registros para exportar.',
+})
+
 const exporting = ref(false)
-const errorMessage = ref('')
-const fromDate = ref('')
-const toDate = ref('')
-
-async function loadEntries() {
-  // Mientras se edita el rango con los selectores de fecha, puede haber un
-  // instante con "desde" posterior a "hasta" -- el backend lo rechazaría
-  // con un 422. Se espera a que el rango vuelva a ser válido en vez de
-  // mostrar un error por algo que todavía se está terminando de elegir.
-  if (fromDate.value && toDate.value && fromDate.value > toDate.value) {
-    return
-  }
-
-  loading.value = true
-  errorMessage.value = ''
-
-  try {
-    const data = await getMealEntries({ from: fromDate.value, to: toDate.value })
-    entries.value = data.map((entry) => ({ date: entry.date, entry }))
-  } catch {
-    errorMessage.value = 'No pude cargar los registros para exportar.'
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(loadEntries)
-watch([fromDate, toDate], loadEntries)
 
 function formatDate(date) {
   return formatDateEs(date, {

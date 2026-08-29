@@ -34,55 +34,24 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { computed } from 'vue'
 import MainLayout       from '../layouts/MainLayout.vue'
 import DiaryCard        from '../components/diary/DiaryCard.vue'
 import EmptyState       from '../components/diary/EmptyState.vue'
 import DateRangeFilter  from '../components/base/DateRangeFilter.vue'
 import CapyLoader       from '../components/base/CapyLoader.vue'
-import { getMealEntries, isNetworkError } from '../services/mealEntriesApi'
+import { useMealEntriesByRange } from '../utils/useMealEntriesByRange'
 
-const entries = ref([])
-const loading = ref(false)
-const errorMessage = ref('')
-const fromDate = ref('')
-const toDate = ref('')
+// Nota sobre el catch de useMealEntriesByRange: si el service worker ya
+// tenía este pedido cacheado (visita previa con conexión), la respuesta se
+// sirve desde el caché y ese catch ni se dispara. Solo se ejecuta si nunca
+// se había cargado nada en este dispositivo.
+const { entries, loading, errorMessage, fromDate, toDate } = useMealEntriesByRange({
+  networkErrorMessage: 'No pude cargar el diario: estás sin conexión.',
+  genericErrorMessage: 'No pude cargar el diario. Intentá nuevamente.',
+})
 
 const hasDateFilter = computed(() => !!fromDate.value || !!toDate.value)
-
-async function loadEntries() {
-  // Mientras se edita el rango con los selectores de fecha, puede haber un
-  // instante con "desde" posterior a "hasta" -- el backend lo rechazaría
-  // con un 422. Se espera a que el rango vuelva a ser válido en vez de
-  // mostrar un error por algo que todavía se está terminando de elegir.
-  if (fromDate.value && toDate.value && fromDate.value > toDate.value) {
-    return
-  }
-
-  loading.value = true
-  errorMessage.value = ''
-
-  try {
-    const data = await getMealEntries({ from: fromDate.value, to: toDate.value })
-    entries.value = data.map((entry) => ({
-      date: entry.date,
-      entry,
-    }))
-  } catch (error) {
-    // Nota: si el service worker ya tenía este pedido cacheado (visita
-    // previa con conexión), la respuesta se sirve desde el caché y este
-    // catch ni se dispara. Solo llega hasta acá si nunca se había cargado
-    // nada en este dispositivo.
-    errorMessage.value = isNetworkError(error)
-      ? 'No pude cargar el diario: estás sin conexión.'
-      : 'No pude cargar el diario. Intentá nuevamente.'
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(loadEntries)
-watch([fromDate, toDate], loadEntries)
 </script>
 
 <style scoped>

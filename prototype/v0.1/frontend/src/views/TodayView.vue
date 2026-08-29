@@ -118,7 +118,7 @@ import CapyLoader      from '../components/base/CapyLoader.vue'
 import UserAvatar      from '../components/base/UserAvatar.vue'
 import { getMealEntries, getMealEntry, upsertMealEntry, isNetworkError } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
-import { parseISODate, formatDateEs } from '../utils/date'
+import { formatDateEs, formatDateISO, addDays } from '../utils/date'
 import breakfastIcon from '../assets/icons/desayuno.png'
 import lunchIcon     from '../assets/icons/almuerzo.png'
 import snackIcon     from '../assets/icons/merienda.png'
@@ -162,7 +162,7 @@ const formattedDate = computed(() => formatDateEs(selectedDate.value, {
   month:   'long',
 }))
 
-const yesterdayISO = formatDateISO(shiftDays(today, -1))
+const yesterdayISO = addDays(todayISO, -1)
 
 // Solo tiene sentido sugerir "seguir desde ahi" mientras se esta mirando
 // el dia de hoy: si el ultimo recuerdo es de hoy o ayer no hay hueco real,
@@ -281,7 +281,7 @@ function resetForm() {
   // "Registrar otro día" avanza al día siguiente al que se acaba de
   // guardar (util para ponerse al dia con varias fechas atrasadas),
   // sin pasarse de hoy.
-  const nextDate = formatDateISO(shiftDays(parseISODate(selectedDate.value), 1))
+  const nextDate = addDays(selectedDate.value, 1)
 
   resetFormFields()
   saved.value        = false
@@ -301,27 +301,14 @@ function hasAnyContent() {
 }
 
 function setQuickDate(daysAgo) {
-  selectedDate.value  = formatDateISO(shiftDays(new Date(), -daysAgo))
+  selectedDate.value  = addDays(todayISO, -daysAgo)
   showDatePicker.value = false
 }
 
 function goToGap() {
   if (!lastRecordedDate.value) return
-  selectedDate.value = formatDateISO(shiftDays(parseISODate(lastRecordedDate.value), 1))
+  selectedDate.value = addDays(lastRecordedDate.value, 1)
   showDatePicker.value = false
-}
-
-function shiftDays(baseDate, days) {
-  const d = new Date(baseDate)
-  d.setDate(d.getDate() + days)
-  return d
-}
-
-function formatDateISO(date) {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
 }
 
 watch(selectedDate, (newDate) => loadEntryByDate(newDate))
