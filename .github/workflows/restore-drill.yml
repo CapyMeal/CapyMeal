@@ -35,8 +35,17 @@ jobs:
       PGUSER: capymeal
       PGDATABASE: capymeal_restore_drill
     steps:
-      - name: Install Postgres client tools
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends postgresql-client
+      # El postgresql-client genérico del repo de Ubuntu queda atrás de la
+      # versión real del servidor (18) -- un pg_restore más viejo no puede
+      # leer el formato del dump ("unsupported version... in file header").
+      # Se instala la 18 real desde el repo oficial de PGDG.
+      - name: Install Postgres 18 client tools
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends postgresql-client-18
 
       - name: Download latest backup artifact
         env:
