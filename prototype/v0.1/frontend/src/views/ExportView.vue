@@ -20,11 +20,11 @@
     </CapyButton>
 
     <EmptyState
-      v-else-if="entries.length === 0"
+      v-if="!loading && entries.length === 0"
       message="No encontré registros para esas fechas."
     />
 
-    <div v-else-if="!loading" id="print-section" class="export-preview">
+    <div v-if="!loading && entries.length > 0" id="print-section" class="export-preview">
       <v-card
         v-for="{ date, entry } in entries"
         :key="date"
