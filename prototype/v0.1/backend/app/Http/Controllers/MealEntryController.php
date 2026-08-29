@@ -54,12 +54,6 @@ class MealEntryController extends Controller
     {
         $normalized = $this->normalizeEntryFields($request->validated());
 
-        if (! $this->hasAtLeastOneFilledField($normalized)) {
-            throw ValidationException::withMessages([
-                'entry' => ['Tenés que completar al menos una comida o recuerdo antes de guardar.'],
-            ]);
-        }
-
         // Un registro por usuario y fecha: se confía en el índice único
         // (user_id, date) como fuente de verdad en vez de un exists() previo
         // -- ese chequeo puede quedar desactualizado entre la lectura y el
@@ -91,12 +85,6 @@ class MealEntryController extends Controller
         $this->authorize('update', $entry);
 
         $normalized = $this->normalizeEntryFields($request->validated());
-
-        if (! $this->hasAtLeastOneFilledField($normalized)) {
-            throw ValidationException::withMessages([
-                'entry' => ['No se puede guardar un registro vacío.'],
-            ]);
-        }
 
         $entry->update($normalized);
 
@@ -177,16 +165,5 @@ class MealEntryController extends Controller
         }
 
         return $data;
-    }
-
-    private function hasAtLeastOneFilledField(array $data): bool
-    {
-        foreach (['breakfast', 'lunch', 'snack', 'dinner', 'notes'] as $field) {
-            if (! empty($data[$field])) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
