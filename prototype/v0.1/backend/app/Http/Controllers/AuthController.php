@@ -50,7 +50,11 @@ class AuthController extends Controller
 
         $this->assertPasswordMatches($user, $data['password'], 'email', 'El email o la contraseña son incorrectos.');
 
-        $user->tokens()->delete();
+        // A propósito no se revocan los tokens existentes acá: CapyMeal es
+        // una PWA pensada para usarse desde varios dispositivos (celular +
+        // compu), y loguearse en uno no debería desloguear al otro sin
+        // aviso. El revoke sigue existiendo donde sí hay una razón de
+        // seguridad real -- reset de contraseña y borrado de cuenta.
         $token = $user->createToken('capymeal')->plainTextToken;
 
         return response()->json([
