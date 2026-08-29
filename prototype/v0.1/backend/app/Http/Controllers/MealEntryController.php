@@ -6,7 +6,9 @@ use App\Http\Requests\StoreMealEntryRequest;
 use App\Http\Requests\UpdateMealEntryRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class MealEntryController extends Controller
@@ -50,16 +52,7 @@ class MealEntryController extends Controller
 
     public function store(StoreMealEntryRequest $request)
     {
-        $data = $request->validated();
-
-        // Un registro por usuario y fecha
-        if ($request->user()->mealEntries()->where('date', $data['date'])->exists()) {
-            throw ValidationException::withMessages([
-                'date' => ['Ya existe un registro para esa fecha.'],
-            ]);
-        }
-
-        $normalized = $this->normalizeEntryFields($data);
+        $normalized = $this->normalizeEntryFields($request->validated());
 
         if (! $this->hasAtLeastOneFilledField($normalized)) {
             throw ValidationException::withMessages([
@@ -67,7 +60,26 @@ class MealEntryController extends Controller
             ]);
         }
 
-        $entry = $request->user()->mealEntries()->create($normalized);
+        // Un registro por usuario y fecha: se confía en el índice único
+        // (user_id, date) como fuente de verdad en vez de un exists() previo
+        // -- ese chequeo puede quedar desactualizado entre la lectura y el
+        // insert bajo requests concurrentes (doble click, reintento de red
+        // del frontend), lo que antes terminaba en un 500 sin capturar en
+        // vez de este 422. El create() va envuelto en DB::transaction()
+        // porque en Postgres un statement fallido dentro de una transacción
+        // (la de más afuera de cada test, o una futura del caller en
+        // producción) deja la conexión entera "abortada" hasta el rollback
+        // -- sin este wrapper, capturar la excepción acá no alcanza para
+        // que cualquier query posterior en la misma transacción funcione.
+        try {
+            $entry = DB::transaction(
+                fn () => $request->user()->mealEntries()->create($normalized)
+            );
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages([
+                'date' => ['Ya existe un registro para esa fecha.'],
+            ]);
+        }
 
         return response()->json($entry, 201);
     }
