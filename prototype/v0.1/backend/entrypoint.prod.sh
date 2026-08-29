@@ -1,6 +1,24 @@
 #!/bin/bash
 set -e
 
+# Fail-fast en vez de un default silencioso: generar una APP_KEY nueva acá
+# invalidaría las sesiones/tokens encriptados de los usuarios en cada
+# redeploy sin ningún aviso, y una DATABASE_URL vacía haría que Laravel
+# intente conectar a un Postgres local inexistente (vía los defaults de
+# DB_HOST/DB_PORT de más abajo) en vez de fallar con un mensaje que
+# señale el problema real -- las dos son variables que Render debe tener
+# seteadas siempre, así que su ausencia es un error de configuración, no
+# un caso a tolerar.
+if [ -z "${APP_KEY:-}" ]; then
+    echo "❌ Falta la variable de entorno APP_KEY (configurala en el dashboard de Render)." >&2
+    exit 1
+fi
+
+if [ -z "${DATABASE_URL:-}" ]; then
+    echo "❌ Falta la variable de entorno DATABASE_URL (configurala en el dashboard de Render)." >&2
+    exit 1
+fi
+
 # Genera .env desde variables de entorno de Render
 cat > .env <<EOF
 APP_NAME=CapyMeal
@@ -48,15 +66,7 @@ mkdir -p storage/framework/sessions \
   storage/logs \
   bootstrap/cache
 
-# Solo generamos una key nueva si Render no nos dio una ya (si la
-# tenemos, hay que preservarla: cambiarla invalida las sesiones/tokens
-# encriptados de los usuarios en cada deploy).
-if [ -z "${APP_KEY:-}" ]; then
-    echo "🔑 No hay APP_KEY, generando una nueva..."
-    php artisan key:generate --force --no-interaction
-else
-    echo "🔑 Usando la APP_KEY existente de Render"
-fi
+echo "🔑 Usando la APP_KEY existente de Render"
 
 php artisan package:discover --ansi
 
