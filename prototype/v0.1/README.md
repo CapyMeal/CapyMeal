@@ -117,3 +117,4 @@ Siempre trabajar en una rama `feature/` que sale de `dev`.
   Cualquier cambio que hagas en los archivos se refleja en tiempo real sin reiniciar Docker.
 - La base de datos persiste en un volumen Docker (`db_data`).
   Para resetearla completamente usá `docker compose down -v`.
+- Si un deploy a `dev` rompe algo en producción, ver [RUNBOOK.md](./RUNBOOK.md).
