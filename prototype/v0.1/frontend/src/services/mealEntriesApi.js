@@ -1,47 +1,14 @@
 import { getToken, handleUnauthorized } from '../stores/authStore'
+import { apiRequest } from './httpClient'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
-async function request(path, options = {}) {
-  const token = getToken()
-
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
+function request(path, options = {}) {
+  return apiRequest(API_BASE_URL, path, {
     ...options,
+    token: getToken(),
+    onUnauthorized: handleUnauthorized,
   })
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      return handleUnauthorized()
-    }
-
-    const text = await response.text()
-    let data = null
-
-    try {
-      data = text ? JSON.parse(text) : null
-    } catch {
-      // respuesta no-JSON (ej. error de servidor/proxy), seguimos con data = null
-    }
-
-    const message = data?.message
-      || Object.values(data?.errors || {})[0]?.[0]
-      || `API ${response.status}: ${text}`
-    const error = new Error(message)
-    error.status = response.status
-    throw error
-  }
-
-  if (response.status === 204) {
-    return null
-  }
-
-  return response.json()
 }
 
 // Un fallo de red (fetch no llega a completarse, ej. sin conexión) tira un
@@ -116,8 +83,11 @@ export async function exportMealEntriesPdf({ from, to }) {
   })
 
   if (!response.ok) {
+    // No usa apiRequest (esto es un blob, no JSON), pero el 401 se maneja
+    // igual que ahí: dispara handleUnauthorized() y sigue tirando, en vez
+    // de devolver sin lanzar -- consistente con el resto de la app.
     if (response.status === 401) {
-      return handleUnauthorized()
+      await handleUnauthorized()
     }
 
     const text = await response.text()

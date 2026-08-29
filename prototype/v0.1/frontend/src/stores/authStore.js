@@ -1,4 +1,5 @@
 import { reactive, computed } from 'vue'
+import { apiRequest } from '../services/httpClient'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -42,37 +43,11 @@ export async function handleUnauthorized() {
   }
 }
 
-async function authRequest(path, body) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method:  'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body:    JSON.stringify(body),
+function authRequest(path, body) {
+  return apiRequest(API_BASE_URL, path, {
+    method: 'POST',
+    body: JSON.stringify(body),
   })
-
-  const raw = await response.text()
-  let data = null
-
-  try {
-    data = raw ? JSON.parse(raw) : null
-  } catch {
-    const error = new Error('El servidor devolvió una respuesta inválida.')
-    error.status = response.status
-    throw error
-  }
-
-  if (!response.ok) {
-    const message = data?.message
-      || Object.values(data?.errors || {})[0]?.[0]
-      || 'Ocurrió un error.'
-    const error = new Error(message)
-    error.status = response.status
-    throw error
-  }
-
-  return data
 }
 
 export async function register({ name, email, password, password_confirmation }) {
@@ -89,76 +64,39 @@ export async function login({ email, password }) {
 
 export async function logout() {
   if (state.token) {
-    await fetch(`${API_BASE_URL}/api/logout`, {
-      method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${state.token}`,
-      },
+    // A diferencia del resto de las funciones de acá abajo, no pasa
+    // onUnauthorized: si el token ya venció, no hay nada que "manejar" --
+    // de cualquier forma se va a limpiar la sesión local ahora mismo.
+    await apiRequest(API_BASE_URL, '/api/logout', {
+      method: 'POST',
+      token: state.token,
     }).catch(() => {})
   }
   clear()
 }
 
 export async function deleteAccount(password) {
-  const response = await fetch(`${API_BASE_URL}/api/me`, {
-    method:  'DELETE',
-    headers: {
-      'Content-Type':  'application/json',
-      'Accept':        'application/json',
-      'Authorization': `Bearer ${state.token}`,
-    },
+  // A diferencia de logout(), acá no se limpia la sesión si falla -- la
+  // cuenta sigue existiendo y hay que poder reintentar sin perderla. Un 401
+  // es la excepción: ahí apiRequest ya disparó handleUnauthorized() (limpia
+  // y redirige) antes de tirar, así que no hay nada que reintentar.
+  await apiRequest(API_BASE_URL, '/api/me', {
+    method: 'DELETE',
+    token: state.token,
+    onUnauthorized: handleUnauthorized,
     body: JSON.stringify({ password }),
   })
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      return handleUnauthorized()
-    }
-
-    const raw = await response.text()
-    const data = raw ? JSON.parse(raw) : null
-    const message = data?.message
-      || Object.values(data?.errors || {})[0]?.[0]
-      || 'No pude eliminar la cuenta.'
-    const error = new Error(message)
-    error.status = response.status
-    throw error
-  }
-
-  // A diferencia de logout(), acá no se llama clear() si falla -- la
-  // cuenta sigue existiendo y hay que poder reintentar sin perder la
-  // sesión. Un 401 es la excepción: ahí el token ya no sirve, así que no
-  // hay nada que reintentar (ver handleUnauthorized arriba).
   clear()
 }
 
 export async function updateAvatar(avatar) {
-  const response = await fetch(`${API_BASE_URL}/api/me/avatar`, {
-    method:  'PUT',
-    headers: {
-      'Content-Type':  'application/json',
-      'Accept':        'application/json',
-      'Authorization': `Bearer ${state.token}`,
-    },
+  const data = await apiRequest(API_BASE_URL, '/api/me/avatar', {
+    method: 'PUT',
+    token: state.token,
+    onUnauthorized: handleUnauthorized,
     body: JSON.stringify({ avatar }),
   })
-
-  if (response.status === 401) {
-    return handleUnauthorized()
-  }
-
-  const raw = await response.text()
-  const data = raw ? JSON.parse(raw) : null
-
-  if (!response.ok) {
-    const message = data?.message
-      || Object.values(data?.errors || {})[0]?.[0]
-      || 'No pude actualizar el avatar.'
-    const error = new Error(message)
-    error.status = response.status
-    throw error
-  }
 
   persist(state.token, data)
   return data
