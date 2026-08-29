@@ -1,5 +1,29 @@
-# Vue 3 + Vite
+# CapyMeal — Frontend
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+PWA de Vue 3 + Vuetify para CapyMeal, un diario personal de comidas (explícitamente no una app de fitness/calorías).
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+Para levantar el proyecto completo (backend + frontend + base de datos) con Docker, ver la
+[guía de desarrollo](../README.md) en la raíz de `prototype/v0.1/` — ese es el README mantenido
+con los pasos reales de instalación.
+
+## Comandos específicos de este paquete
+
+```bash
+npm run dev      # servidor de desarrollo (Vite)
+npm run build    # build de producción
+npm run lint     # ESLint (solo reporta)
+npm run format   # Prettier (aplica los arreglos)
+npm test         # Vitest
+```
+
+## Stack
+
+- Vue 3 (`<script setup>`) + Vue Router + Vuetify 4
+- Vite + `vite-plugin-pwa` (instalable, con caché offline del diario ya guardado)
+- Vitest + Vue Test Utils
+- Sentry (monitoreo de errores)
+
+## Deploy
+
+Vercel, build estático de este directorio. Auto-deploy desde la rama `dev` (no `main`). Variables
+de entorno (`VITE_API_URL`, `VITE_SENTRY_DSN`) configuradas en el dashboard de Vercel.

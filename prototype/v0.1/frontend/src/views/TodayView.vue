@@ -118,6 +118,7 @@ import CapyLoader      from '../components/base/CapyLoader.vue'
 import UserAvatar      from '../components/base/UserAvatar.vue'
 import { getMealEntries, getMealEntry, upsertMealEntry, isNetworkError } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
+import { parseISODate, formatDateEs } from '../utils/date'
 import breakfastIcon from '../assets/icons/desayuno.png'
 import lunchIcon     from '../assets/icons/almuerzo.png'
 import snackIcon     from '../assets/icons/merienda.png'
@@ -155,14 +156,11 @@ const mealFields = [
   { key: 'notes',     icon: '📝',              title: 'Recuerdo del día', placeholder: '¿Hubo algo especial hoy?' },
 ]
 
-const formattedDate = computed(() => {
-  const [year, month, day] = selectedDate.value.split('-').map(Number)
-  return new Date(year, month - 1, day).toLocaleDateString('es-AR', {
-    weekday: 'long',
-    day:     'numeric',
-    month:   'long',
-  })
-})
+const formattedDate = computed(() => formatDateEs(selectedDate.value, {
+  weekday: 'long',
+  day:     'numeric',
+  month:   'long',
+}))
 
 const yesterdayISO = formatDateISO(shiftDays(today, -1))
 
@@ -177,8 +175,7 @@ const showGapBanner = computed(() =>
 
 const gapDateFormatted = computed(() => {
   if (!lastRecordedDate.value) return ''
-  const [year, month, day] = lastRecordedDate.value.split('-').map(Number)
-  return new Date(year, month - 1, day).toLocaleDateString('es-AR', {
+  return formatDateEs(lastRecordedDate.value, {
     day:   'numeric',
     month: 'long',
   })
@@ -284,8 +281,7 @@ function resetForm() {
   // "Registrar otro día" avanza al día siguiente al que se acaba de
   // guardar (util para ponerse al dia con varias fechas atrasadas),
   // sin pasarse de hoy.
-  const [year, month, day] = selectedDate.value.split('-').map(Number)
-  const nextDate = formatDateISO(shiftDays(new Date(year, month - 1, day), 1))
+  const nextDate = formatDateISO(shiftDays(parseISODate(selectedDate.value), 1))
 
   resetFormFields()
   saved.value        = false
@@ -311,8 +307,7 @@ function setQuickDate(daysAgo) {
 
 function goToGap() {
   if (!lastRecordedDate.value) return
-  const [year, month, day] = lastRecordedDate.value.split('-').map(Number)
-  selectedDate.value = formatDateISO(shiftDays(new Date(year, month - 1, day), 1))
+  selectedDate.value = formatDateISO(shiftDays(parseISODate(lastRecordedDate.value), 1))
   showDatePicker.value = false
 }
 
