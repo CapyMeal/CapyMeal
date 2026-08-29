@@ -1,6 +1,14 @@
 <template>
   <MainLayout>
 
+    <!-- Antes que cualquier otra rama: un error de red/servidor puede pasar
+         mientras se está confirmando el borrado o cuando todavía no hay
+         `entry` (falla el load inicial) -- si este mensaje viviera adentro
+         de la rama de lectura/edición, quedaría invisible en esos casos y
+         el usuario vería el EmptyState de "no encontré ese recuerdo" (o el
+         diálogo de confirmar borrado, sin más) en vez del error real. -->
+    <p v-if="errorMessage" class="detail-error">{{ errorMessage }}</p>
+
     <!-- Confirmar eliminar -->
     <div v-if="confirmingDelete" class="detail-confirm">
       <img src="../assets/icons/eliminar.png" alt="Capi" class="detail-confirm__capi">
@@ -13,13 +21,20 @@
 
     <CapyLoader v-else-if="loading" message="Cargando el detalle del día..." />
 
-    <!-- No encontrado -->
-    <EmptyState
-      v-else-if="!entry"
-      message="No encontré ese recuerdo."
-      action-label="Volver al diario"
-      @action="$router.push('/recuerdos')"
-    />
+    <!-- Sin entry: puede ser porque de verdad no hay registro, o porque el
+         load falló (ver el mensaje de arriba). El resto del template asume
+         `entry` no-null, así que este branch tiene que interceptar los dos
+         casos -- si no, un load fallido con entry todavía null caería en el
+         template de lectura/edición de más abajo e intentaría leer
+         entry[meal.key] de null. -->
+    <template v-else-if="!entry">
+      <EmptyState
+        v-if="!errorMessage"
+        message="No encontré ese recuerdo."
+        action-label="Volver al diario"
+        @action="$router.push('/recuerdos')"
+      />
+    </template>
 
     <!-- Detalle / Edición -->
     <template v-else>
@@ -29,8 +44,6 @@
         </button>
         <p class="detail-date">{{ formattedDate }}</p>
       </div>
-
-      <p v-if="errorMessage" class="detail-error">{{ errorMessage }}</p>
 
       <!-- Modo lectura -->
       <template v-if="!editing">
