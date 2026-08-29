@@ -107,22 +107,25 @@ class AuthTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_login_revokes_previous_tokens(): void
+    public function test_login_does_not_revoke_sessions_on_other_devices(): void
     {
+        // CapyMeal es una PWA pensada para usarse desde varios dispositivos
+        // (celular + compu) -- loguearse en uno no debería desloguear al
+        // otro sin aviso.
         $user = User::factory()->create([
             'email' => 'mercedes@example.com',
             'password' => Hash::make('capymeal123'),
         ]);
-        $oldToken = $user->createToken('capymeal')->plainTextToken;
+        $existingToken = $user->createToken('capymeal')->plainTextToken;
 
         $this->postJson('/api/login', [
             'email' => 'mercedes@example.com',
             'password' => 'capymeal123',
         ])->assertOk();
 
-        $this->withHeader('Authorization', "Bearer {$oldToken}")
+        $this->withHeader('Authorization', "Bearer {$existingToken}")
             ->getJson('/api/me')
-            ->assertStatus(401);
+            ->assertOk();
     }
 
     public function test_logout_revokes_current_token(): void
