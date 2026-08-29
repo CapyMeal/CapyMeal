@@ -48,86 +48,19 @@
       <!-- Modo lectura -->
       <template v-if="!editing">
         <div class="detail-meals detail-meals--with-bar">
-          <v-card v-for="meal in allMeals" :key="meal.key" class="detail-meal" elevation="1">
-            <v-card-text>
-              <p class="detail-meal__label">
-                <img
-                  v-if="meal.iconImage"
-                  :src="meal.iconImage"
-                  :alt="meal.title"
-                  class="detail-meal__icon-image"
-                >
-                <span v-else>{{ meal.icon }}</span> {{ meal.title }}
-              </p>
-              <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry[meal.key] }">
-                {{ entry[meal.key] || 'No registrado' }}
-              </p>
-              <div class="detail-meal__actions">
-                <CapyButton
-                  variant="ghost"
-                  :disabled="savingMealKey === meal.key"
-                  @click="startMealEdit(meal.key)"
-                >
-                  {{ editingMealKey === meal.key ? 'Editando...' : `Editar ${meal.title.toLowerCase()}` }}
-                </CapyButton>
-              </div>
-              <div v-if="editingMealKey === meal.key" class="detail-meal-editor">
-                <v-textarea
-                  v-model="mealDraftValue"
-                  rows="3"
-                  auto-grow
-                  density="compact"
-                  maxlength="2000"
-                  counter
-                />
-                <div class="detail-meal-editor__actions">
-                  <CapyButton
-                    :disabled="savingMealKey === meal.key"
-                    @click="saveSingleMeal(meal.key, meal.title)"
-                  >
-                    {{ savingMealKey === meal.key ? 'Guardando...' : 'Guardar' }}
-                  </CapyButton>
-                  <CapyButton variant="ghost" @click="cancelMealEdit">Cancelar</CapyButton>
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
-          <v-card class="detail-meal" elevation="1">
-            <v-card-text>
-              <p class="detail-meal__label">📝 Recuerdo del día</p>
-              <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !entry.notes }">
-                {{ entry.notes || 'No registrado' }}
-              </p>
-              <div class="detail-meal__actions">
-                <CapyButton
-                  variant="ghost"
-                  :disabled="savingMealKey === 'notes'"
-                  @click="startMealEdit('notes')"
-                >
-                  {{ editingMealKey === 'notes' ? 'Editando...' : 'Editar recuerdo' }}
-                </CapyButton>
-              </div>
-              <div v-if="editingMealKey === 'notes'" class="detail-meal-editor">
-                <v-textarea
-                  v-model="mealDraftValue"
-                  rows="3"
-                  auto-grow
-                  density="compact"
-                  maxlength="2000"
-                  counter
-                />
-                <div class="detail-meal-editor__actions">
-                  <CapyButton
-                    :disabled="savingMealKey === 'notes'"
-                    @click="saveSingleMeal('notes', 'recuerdo')"
-                  >
-                    {{ savingMealKey === 'notes' ? 'Guardando...' : 'Guardar' }}
-                  </CapyButton>
-                  <CapyButton variant="ghost" @click="cancelMealEdit">Cancelar</CapyButton>
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
+          <MealDetailCard
+            v-for="meal in allMealsWithNotes"
+            :key="meal.key"
+            :meal="meal"
+            :value="entry[meal.key]"
+            :editing="editingMealKey === meal.key"
+            :saving="savingMealKey === meal.key"
+            :draft="mealDraftValue"
+            @update:draft="mealDraftValue = $event"
+            @start-edit="startMealEdit(meal.key)"
+            @save="saveSingleMeal(meal.key, meal.label)"
+            @cancel="cancelMealEdit"
+          />
         </div>
 
         <StickyActionBar>
@@ -164,6 +97,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MainLayout      from '../layouts/MainLayout.vue'
 import MealCard        from '../components/meal/MealCard.vue'
+import MealDetailCard  from '../components/meal/MealDetailCard.vue'
 import EmptyState      from '../components/diary/EmptyState.vue'
 import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton from '../components/base/CapyButton.vue'
@@ -199,11 +133,17 @@ const savingMealKey = ref('')
 const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
 
 const allMeals = [
-  { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno' },
-  { key: 'lunch',     iconImage: lunchIcon, title: 'Almuerzo' },
-  { key: 'snack',     iconImage: snackIcon, title: 'Merienda' },
-  { key: 'dinner',    iconImage: dinnerIcon, title: 'Cena' },
+  { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno', label: 'desayuno' },
+  { key: 'lunch',     iconImage: lunchIcon, title: 'Almuerzo', label: 'almuerzo' },
+  { key: 'snack',     iconImage: snackIcon, title: 'Merienda', label: 'merienda' },
+  { key: 'dinner',    iconImage: dinnerIcon, title: 'Cena', label: 'cena' },
 ]
+
+// label es lo que va en el botón/mensajes ("Editar recuerdo", "Completá
+// recuerdo antes de guardar") -- deliberadamente más corto que el title que
+// se muestra como encabezado de la tarjeta ("Recuerdo del día").
+const notesMeal = { key: 'notes', icon: '📝', title: 'Recuerdo del día', label: 'recuerdo' }
+const allMealsWithNotes = [...allMeals, notesMeal]
 
 const formattedDate = computed(() => formatDateEs(dateKey, {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -371,56 +311,6 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   flex-direction: column;
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
-}
-
-.detail-meal {
-  border: 1px solid var(--color-border);
-}
-
-.detail-meal :deep(.v-card-text) {
-  padding: var(--space-md) var(--space-lg);
-}
-
-.detail-meal__label {
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: var(--space-xs);
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.detail-meal__icon-image {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
-.detail-meal__value {
-  font-size: .95rem;
-  color: var(--color-text);
-  line-height: 1.6;
-}
-
-.detail-meal__value--empty {
-  opacity: .4;
-  font-style: italic;
-}
-
-.detail-meal__actions {
-  margin-top: var(--space-sm);
-}
-
-.detail-meal-editor {
-  margin-top: var(--space-sm);
-}
-
-.detail-meal-editor__actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  margin-top: var(--space-xs);
 }
 
 .detail-edit-meals {
