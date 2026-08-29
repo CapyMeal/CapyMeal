@@ -94,17 +94,22 @@
 
       <hr class="settings-divider" />
 
-      <div class="settings-item settings-item--danger" @click="handleLogout">
+      <button type="button" class="settings-item settings-item--danger" @click="handleLogout">
         <span class="settings-item__icon">🚪</span>
         <p class="settings-item__label">Cerrar sesión</p>
-      </div>
+      </button>
 
       <hr class="settings-divider" />
 
-      <div v-if="!confirmingDeleteAccount" class="settings-item settings-item--danger" @click="confirmingDeleteAccount = true">
+      <button
+        v-if="!confirmingDeleteAccount"
+        type="button"
+        class="settings-item settings-item--danger"
+        @click="confirmingDeleteAccount = true"
+      >
         <span class="settings-item__icon">🗑</span>
         <p class="settings-item__label">Eliminar mi cuenta</p>
-      </div>
+      </button>
 
       <div v-else class="settings-delete-account">
         <p class="settings-delete-account__warning">
@@ -294,6 +299,13 @@ async function handleDeleteAccount() {
   justify-content: center;
   cursor: pointer;
   color: #B5453C;
+  /* Es un <button> real (antes un <div> con @click -- sin foco de
+     teclado ni rol semántico). Se resetea el estilo nativo del botón
+     para que siga viendo igual que antes; font:inherit ya lo cubre el
+     reset global de main.css. */
+  width: 100%;
+  border: none;
+  background: none;
 }
 
 .settings-item--danger .settings-item__label {
