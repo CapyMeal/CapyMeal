@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,7 @@ class AuthController extends Controller
         $token = $user->createToken('capymeal')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token,
         ], 201);
     }
@@ -58,7 +59,7 @@ class AuthController extends Controller
         $token = $user->createToken('capymeal')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token,
         ]);
     }
@@ -72,7 +73,7 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        return response()->json(new UserResource($request->user()));
     }
 
     public function updateAvatar(Request $request)
@@ -83,7 +84,7 @@ class AuthController extends Controller
 
         $request->user()->update(['avatar' => $data['avatar'] ?? null]);
 
-        return response()->json($request->user()->fresh());
+        return response()->json(new UserResource($request->user()->fresh()));
     }
 
     public function destroy(Request $request)
