@@ -1,0 +1,77 @@
+name: Restore Drill
+
+# Verifica que el backup diario (backup-db.yml) realmente se pueda
+# restaurar -- un backup que nunca se restauró es, en la práctica, un
+# backup no verificado. Manual a propósito: no hace falta correrlo todos
+# los días, alcanza con confirmar de tanto en tanto que el proceso entero
+# (bajar el artifact + pg_restore) sigue funcionando de punta a punta.
+#
+# No toca la base real de Neon en ningún momento: sólo baja el dump ya
+# generado y lo restaura contra un Postgres descartable de este mismo job.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  restore-drill:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: capymeal_restore_drill
+          POSTGRES_USER: capymeal
+          POSTGRES_PASSWORD: capymeal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U capymeal"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      PGPASSWORD: capymeal
+      PGHOST: 127.0.0.1
+      PGUSER: capymeal
+      PGDATABASE: capymeal_restore_drill
+    steps:
+      - name: Install Postgres client tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends postgresql-client
+
+      - name: Download latest backup artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RUN_ID=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow=backup-db.yml --status=success --limit=1 --json databaseId --jq '.[0].databaseId')
+
+          if [ -z "$RUN_ID" ]; then
+            echo "No se encontró ninguna corrida exitosa de backup-db.yml -- ¿corrió alguna vez?" >&2
+            exit 1
+          fi
+
+          echo "Bajando el backup de la corrida $RUN_ID..."
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --dir ./backup
+
+      - name: Restore into a scratch database
+        run: |
+          FILE=$(find ./backup -type f -name '*.dump' | head -n1)
+
+          if [ -z "$FILE" ]; then
+            echo "No se encontró ningún archivo .dump dentro del artifact bajado." >&2
+            exit 1
+          fi
+
+          echo "Restaurando desde: $FILE"
+          pg_restore --clean --if-exists --no-owner --no-privileges -d "$PGDATABASE" "$FILE"
+
+      - name: Verify restored data looks sane
+        run: |
+          USERS=$(psql -tAc "SELECT count(*) FROM users;")
+          ENTRIES=$(psql -tAc "SELECT count(*) FROM meal_entries;")
+
+          echo "users: $USERS -- meal_entries: $ENTRIES"
+
+          if [ "$USERS" -lt 1 ]; then
+            echo "La tabla users quedó vacía después del restore -- el dump o el proceso de restore tienen un problema real." >&2
+            exit 1
+          fi
