@@ -3,7 +3,7 @@
     :model-value="modelValue"
     :label="label"
     :type="show ? 'text' : 'password'"
-    :append-inner-icon="show ? 'mdi-eye-off' : 'mdi-eye'"
+    :append-inner-icon="show ? `svg:${mdiEyeOff}` : `svg:${mdiEye}`"
     :placeholder="placeholder"
     :autocomplete="autocomplete"
     :minlength="minlength"
@@ -15,6 +15,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { mdiEye, mdiEyeOff } from '@mdi/js'
 
 defineProps({
   modelValue:   { type: String, default: '' },

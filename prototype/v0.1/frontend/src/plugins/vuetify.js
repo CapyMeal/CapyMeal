@@ -2,8 +2,8 @@
 // CSS de cada componente de Vuetify que se usa -- importar 'vuetify/styles'
 // acá además traía TODO el CSS del framework entero, duplicado con lo que
 // ya autoimportaba cada componente.
-import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
+import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from '@mdi/js'
 import { getInitialTheme } from '../utils/theme'
 
 // Estos valores son copia de los tokens de ../styles/main.css (los mismos
@@ -59,6 +59,17 @@ export default createVuetify({
     themes: {
       capymealLight,
       capymealDark,
+    },
+  },
+  // Vuetify solo usa íconos propios para los 3 estados de VAlert (success/
+  // warning/error) en esta app -- nada de VSelect, VCheckbox, VMenu, etc.
+  // Se pisan esos 3 alias con SVG puntual de @mdi/js (tree-shakeable) en vez
+  // de cargar la fuente @mdi/font completa (~350 íconos que no se usan).
+  icons: {
+    aliases: {
+      success: `svg:${mdiCheckCircle}`,
+      warning: `svg:${mdiAlertCircle}`,
+      error: `svg:${mdiCloseCircle}`,
     },
   },
   defaults: {

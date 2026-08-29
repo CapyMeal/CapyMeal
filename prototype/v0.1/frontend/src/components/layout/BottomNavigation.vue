@@ -1,25 +1,26 @@
 <template>
   <nav class="bottom-nav">
     <RouterLink to="/hoy" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <v-icon icon="mdi-calendar-today" size="26" />
+      <v-icon :icon="`svg:${mdiCalendarToday}`" size="26" />
       <span class="bottom-nav__label">Hoy</span>
     </RouterLink>
     <RouterLink to="/recuerdos" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <v-icon icon="mdi-notebook" size="26" />
+      <v-icon :icon="`svg:${mdiNotebook}`" size="26" />
       <span class="bottom-nav__label">Diario</span>
     </RouterLink>
     <RouterLink to="/exportar" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <v-icon icon="mdi-file-pdf-box" size="26" />
+      <v-icon :icon="`svg:${mdiFilePdfBox}`" size="26" />
       <span class="bottom-nav__label">PDF</span>
     </RouterLink>
     <RouterLink to="/ajustes" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <v-icon icon="mdi-cog" size="26" />
+      <v-icon :icon="`svg:${mdiCog}`" size="26" />
       <span class="bottom-nav__label">Ajustes</span>
     </RouterLink>
   </nav>
 </template>
 
 <script setup>
+import { mdiCalendarToday, mdiCog, mdiFilePdfBox, mdiNotebook } from '@mdi/js'
 </script>
 
 <style scoped>
