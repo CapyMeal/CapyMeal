@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [dev, main]
 
+# Least-privilege explícito: sin esto el GITHUB_TOKEN corre con el default
+# del repo mientras los jobs instalan dependencias de terceros no auditadas
+# (composer install / npm ci) -- solo necesita poder leer el código.
+permissions:
+  contents: read
+
 jobs:
   backend-tests:
     name: Backend (PHPUnit)

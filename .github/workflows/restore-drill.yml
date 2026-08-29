@@ -12,6 +12,13 @@ name: Restore Drill
 on:
   workflow_dispatch: {}
 
+# Least-privilege explícito: además de leer el código, este job necesita
+# poder listar/bajar runs y artifacts de otros workflows (gh run list / gh
+# run download contra backup-db.yml), así que suma actions: read.
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   restore-drill:
     runs-on: ubuntu-latest
