@@ -50,6 +50,14 @@ const vuetifyVariant = computed(() => ({
 .capy-button--ghost {
   border-color: var(--color-border) !important;
   color: var(--color-text) !important;
+  /* Vuetify calcula la opacidad del overlay de hover/focus como
+     `--v-hover-opacity * --v-theme-overlay-multiplier`, y esta segunda
+     variable sólo la define Vuetify vía las clases utilitarias "bg-*"
+     -- que un botón "outlined" como este nunca recibe (solo aplica
+     "text-*" a su color, sea cual sea). Sin la variable, el calc() es
+     inválido y el navegador cae al opacity inicial (1): el botón se ve
+     sólido y tapa el texto al pasar el mouse. Se la damos a mano. */
+  --v-theme-overlay-multiplier: var(--v-theme-surface-overlay-multiplier);
 }
 
 .capy-button:hover {

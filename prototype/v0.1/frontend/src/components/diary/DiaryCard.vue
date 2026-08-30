@@ -1,5 +1,5 @@
 <template>
-  <v-card :to="`/recuerdos/${date}`" class="diary-card" elevation="1" hover>
+  <v-card :to="`/recuerdos/${date}`" class="diary-card" color="surface" elevation="1" hover>
     <v-card-text>
       <p class="diary-card__date">{{ formattedDate }}</p>
 
