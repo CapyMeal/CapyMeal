@@ -162,4 +162,46 @@ class AuthTest extends TestCase
     {
         $this->getJson('/api/me')->assertStatus(401);
     }
+
+    public function test_user_can_update_avatar(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('capymeal')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson('/api/me/avatar', ['avatar' => 'capy2']);
+
+        $response->assertOk();
+        $response->assertJsonPath('avatar', 'capy2');
+        $this->assertSame('capy2', $user->fresh()->avatar);
+    }
+
+    public function test_user_can_clear_avatar(): void
+    {
+        $user = User::factory()->create(['avatar' => 'capy1']);
+        $token = $user->createToken('capymeal')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson('/api/me/avatar', ['avatar' => null]);
+
+        $response->assertOk();
+        $response->assertJsonPath('avatar', null);
+        $this->assertNull($user->fresh()->avatar);
+    }
+
+    public function test_update_avatar_rejects_invalid_value(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('capymeal')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson('/api/me/avatar', ['avatar' => 'no-existe']);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_unauthenticated_request_to_update_avatar_is_rejected(): void
+    {
+        $this->putJson('/api/me/avatar', ['avatar' => 'capy1'])->assertStatus(401);
+    }
 }
