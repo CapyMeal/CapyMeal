@@ -1,0 +1,50 @@
+# Infraestructura como documentación, no como fuente de verdad activa: este
+# archivo no está conectado a Render como Blueprint todavía -- el servicio
+# real ("CapyMeal", srv-d9kv4odaeets73a9cph0) ya existía antes de este
+# archivo, y adoptarlo como Blueprint es un paso manual aparte en el
+# dashboard de Render que no se dio. El propósito acá es que la topología
+# del deploy no dependa 100% de memoria institucional: si se pierde el
+# acceso al dashboard, esto documenta cómo recrear el servicio (plan,
+# región, health check, variables de entorno que hacen falta).
+#
+# name/plan/region confirmados contra el dashboard real (2026-08-30). El
+# resto (dockerfilePath, healthCheckPath, la lista de env vars) se derivó
+# leyendo Dockerfile.prod/entrypoint.prod.sh/bootstrap/app.php.
+#
+# Todos los valores marcados "sync: false" son secrets o config específica
+# del entorno real -- viven únicamente en el dashboard de Render, nunca acá.
+
+services:
+  - type: web
+    name: CapyMeal
+    runtime: docker
+    dockerfilePath: ./prototype/v0.1/backend/Dockerfile.prod
+    dockerContext: ./prototype/v0.1/backend
+    plan: free
+    region: oregon
+    branch: dev
+    healthCheckPath: /up
+    autoDeploy: true
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: APP_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: MAIL_MAILER
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
