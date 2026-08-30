@@ -11,7 +11,7 @@
 
     <!-- Confirmar eliminar -->
     <div v-if="confirmingDelete" class="detail-confirm">
-      <img src="../assets/icons/eliminar.png" alt="Capi" class="detail-confirm__capi">
+      <img src="../assets/icons/eliminar.webp" alt="Capi" class="detail-confirm__capi">
       <p class="detail-confirm__message">¿Segura que querés eliminar este recuerdo?</p>
       <div class="detail-confirm__actions">
         <CapyButton variant="danger" @click="deleteEntry">Sí, eliminar</CapyButton>

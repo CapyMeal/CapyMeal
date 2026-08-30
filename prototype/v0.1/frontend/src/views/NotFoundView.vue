@@ -4,7 +4,7 @@
 
       <img
         class="not-found__capi"
-        src="../assets/illustrations/404.png"
+        src="../assets/illustrations/404.webp"
         alt="Capi confundido, buscando"
       />
 
