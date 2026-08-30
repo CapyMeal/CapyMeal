@@ -22,6 +22,18 @@ return [
         'key' => env('RESEND_API_KEY'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        // Absoluta y seteada aparte de APP_URL a propósito: el puerto
+        // interno del contenedor (8000) no es el puerto real mapeado al
+        // host (8080), así que derivarla de APP_URL generaría una URL que
+        // el navegador nunca puede alcanzar. Tiene que coincidir carácter
+        // por carácter con lo registrado en Google Cloud Console.
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+        'frontend_url' => env('FRONTEND_URL'),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

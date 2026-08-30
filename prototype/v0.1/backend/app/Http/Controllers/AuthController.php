@@ -89,13 +89,19 @@ class AuthController extends Controller
 
     public function destroy(Request $request)
     {
-        $data = $request->validate([
-            'password' => 'required|string',
-        ]);
-
         $user = $request->user();
 
-        $this->assertPasswordMatches($user, $data['password'], 'password', 'La contraseña no es correcta.');
+        // Las cuentas de Google no tienen contraseña propia (ver
+        // GoogleAuthController) -- para esas, no hay nada que confirmar más
+        // allá de la posesión del bearer token, la misma protección que ya
+        // tiene logout()/updateAvatar()/toda mutación de meal_entries. No
+        // es una reducción de seguridad respecto al resto de la API: acá
+        // el password nunca fue el único factor real, era un extra
+        // disponible sólo cuando existía.
+        if ($user->password) {
+            $data = $request->validate(['password' => 'required|string']);
+            $this->assertPasswordMatches($user, $data['password'], 'password', 'La contraseña no es correcta.');
+        }
 
         DB::transaction(function () use ($user) {
             // password_reset_tokens se indexa por email, no por user_id --
@@ -115,7 +121,11 @@ class AuthController extends Controller
 
     private function assertPasswordMatches(User $user, string $password, string $field, string $message): void
     {
-        if (! Hash::check($password, $user->password)) {
+        // Una cuenta creada vía Google tiene password null -- nunca puede
+        // "coincidir" con nada que se envíe acá. Mismo mensaje genérico de
+        // siempre (nunca uno distinto que revele que la cuenta es de
+        // Google, mismo principio anti-enumeración que ya usa login()).
+        if (is_null($user->password) || ! Hash::check($password, $user->password)) {
             throw ValidationException::withMessages([$field => [$message]]);
         }
     }
