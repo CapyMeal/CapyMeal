@@ -27,6 +27,15 @@
         </CapyButton>
       </form>
 
+      <p class="auth-divider">o</p>
+
+      <!-- href real, no @click con router: el login con Google necesita una
+           navegación real de nivel superior del navegador para completarse
+           (Google no permite terminarlo dentro de un fetch/XHR). -->
+      <CapyButton variant="ghost" :href="googleRedirectUrl">
+        Iniciar sesión con Google
+      </CapyButton>
+
       <template #footer>
         <p>
           ¿No tenés cuenta?
@@ -51,6 +60,12 @@ import { login } from '../stores/authStore'
 
 const router = useRouter()
 const route  = useRoute()
+
+// Mismo fallback que ya usan authStore.js/mealEntriesApi.js -- la
+// constante está duplicada en varios lugares, aceptado y fuera de
+// alcance tocarlo acá.
+const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+const googleRedirectUrl = `${apiBaseUrl}/api/auth/google/redirect`
 
 const email          = ref('')
 const password       = ref('')
@@ -95,5 +110,13 @@ async function submit() {
 .auth-submit {
   width: 100%;
   margin-top: var(--space-xs);
+}
+
+.auth-divider {
+  width: 100%;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: var(--font-size-label);
+  margin: var(--space-xs) 0;
 }
 </style>

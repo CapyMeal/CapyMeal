@@ -43,6 +43,13 @@
         </CapyButton>
       </form>
 
+      <p class="auth-divider">o</p>
+
+      <!-- href real, no @click con router: ver la misma nota en LoginView.vue. -->
+      <CapyButton variant="ghost" :href="googleRedirectUrl">
+        Registrarte con Google
+      </CapyButton>
+
       <template #footer>
         <p>
           ¿Ya tenés cuenta?
@@ -67,6 +74,12 @@ import PasswordField from '../components/base/PasswordField.vue'
 import { register } from '../stores/authStore'
 
 const router = useRouter()
+
+// Mismo fallback que ya usan authStore.js/mealEntriesApi.js -- la
+// constante está duplicada en varios lugares, aceptado y fuera de
+// alcance tocarlo acá.
+const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+const googleRedirectUrl = `${apiBaseUrl}/api/auth/google/redirect`
 
 const name             = ref('')
 const email             = ref('')
@@ -121,5 +134,13 @@ async function submit() {
 .auth-card__legal {
   font-size: .78rem;
   opacity: .8;
+}
+
+.auth-divider {
+  width: 100%;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: var(--font-size-label);
+  margin: var(--space-xs) 0;
 }
 </style>

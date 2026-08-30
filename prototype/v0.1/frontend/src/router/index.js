@@ -14,6 +14,7 @@ const router = createRouter({
     { path: '/registro',           name: 'register',        component: () => import('../views/RegisterView.vue'),       meta: { guest: true }  },
     { path: '/olvide-contrasena',  name: 'forgot-password', component: () => import('../views/ForgotPasswordView.vue'), meta: { guest: true }  },
     { path: '/reset-password',     name: 'reset-password',  component: () => import('../views/ResetPasswordView.vue'),  meta: { guest: true }  },
+    { path: '/auth/google/callback', name: 'google-callback', component: () => import('../views/GoogleCallbackView.vue'), meta: { guest: true }  },
     { path: '/hoy',                name: 'today',           component: () => import('../views/TodayView.vue'),          meta: { auth: true  }  },
     { path: '/recuerdos',          name: 'diary',           component: () => import('../views/DiaryView.vue'),          meta: { auth: true  }  },
     { path: '/recuerdos/:date',    name: 'detail',          component: () => import('../views/DetailView.vue'),         meta: { auth: true  }  },

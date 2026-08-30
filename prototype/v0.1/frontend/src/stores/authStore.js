@@ -62,6 +62,15 @@ export async function login({ email, password }) {
   return data.user
 }
 
+// Canjea el código de un solo uso que GoogleAuthController::callback()
+// generó (llega como ?code= en la URL de /auth/google/callback) por la
+// sesión real -- mismo shape de respuesta que login()/register().
+export async function exchangeGoogleCode(code) {
+  const data = await authRequest('/api/auth/google/exchange', { code })
+  persist(data.token, data.user)
+  return data.user
+}
+
 export async function logout() {
   if (state.token) {
     // A diferencia del resto de las funciones de acá abajo, no pasa

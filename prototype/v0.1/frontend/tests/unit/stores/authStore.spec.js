@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { login, getToken, handleUnauthorized } from '../../../src/stores/authStore'
+import { login, exchangeGoogleCode, getToken, handleUnauthorized } from '../../../src/stores/authStore'
 
 const pushMock = vi.fn()
 const mockRouter = {
@@ -45,6 +45,33 @@ describe('authStore', () => {
 
       await expect(login({ email: 'mer@example.com', password: 'mal' }))
         .rejects.toThrow('El email o la contraseña son incorrectos.')
+
+      expect(getToken()).toBe(tokenAntes)
+    })
+  })
+
+  describe('exchangeGoogleCode', () => {
+    it('guarda el token y el usuario en localStorage tras canjear el código', async () => {
+      global.fetch.mockResolvedValue(
+        new Response(JSON.stringify({ token: 'token-google', user: { id: 2, name: 'Mercedes' } }), { status: 200 })
+      )
+
+      const user = await exchangeGoogleCode('un-codigo')
+
+      expect(user).toEqual({ id: 2, name: 'Mercedes' })
+      expect(getToken()).toBe('token-google')
+      expect(localStorage.getItem('capymeal-token')).toBe('token-google')
+    })
+
+    it('tira un error con el mensaje del servidor y no toca el token si el código no es válido', async () => {
+      global.fetch.mockResolvedValue(
+        new Response(JSON.stringify({ message: 'Este enlace ya no es válido. Iniciá sesión de nuevo.' }), { status: 422 })
+      )
+
+      const tokenAntes = getToken()
+
+      await expect(exchangeGoogleCode('codigo-vencido'))
+        .rejects.toThrow('Este enlace ya no es válido. Iniciá sesión de nuevo.')
 
       expect(getToken()).toBe(tokenAntes)
     })
