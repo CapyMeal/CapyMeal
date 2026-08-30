@@ -1,6 +1,6 @@
 <template>
   <div class="empty-state">
-    <img src="../../assets/icons/estadoVacio.png" alt="Capi" class="empty-state__capi">
+    <img src="../../assets/icons/estadoVacio.webp" alt="Capi" class="empty-state__capi">
     <p class="empty-state__message">{{ message }}</p>
     <CapyButton v-if="actionLabel" @click="$emit('action')">
       {{ actionLabel }}

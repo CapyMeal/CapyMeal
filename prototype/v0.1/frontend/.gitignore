@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Tiene el DSN real de Sentry -- *.local ya cubre .env.local, pero no un
+# .env a secas. .env.example sigue trackeado (no matchea este patrón).
+.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

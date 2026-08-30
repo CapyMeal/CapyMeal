@@ -3,7 +3,7 @@
 
     <!-- Confirmación de Capi -->
     <div v-if="saved" class="confirmation">
-      <img src="../assets/icons/diaGuardado.png" alt="Capi" class="confirmation__capi">
+      <img src="../assets/icons/diaGuardado.webp" alt="Capi" class="confirmation__capi">
       <p class="confirmation__message">
         Listo 🍂<br>
         <span>Este día ya forma parte de tu diario.</span>
