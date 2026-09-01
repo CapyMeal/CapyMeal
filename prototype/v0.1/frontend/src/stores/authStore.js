@@ -62,11 +62,11 @@ export async function login({ email, password }) {
   return data.user
 }
 
-// Canjea el código de un solo uso que GoogleAuthController::callback()
-// generó (llega como ?code= en la URL de /auth/google/callback) por la
-// sesión real -- mismo shape de respuesta que login()/register().
-export async function exchangeGoogleCode(code) {
-  const data = await authRequest('/api/auth/google/exchange', { code })
+// Canjea el código de un solo uso que SocialAuthController::callback()
+// generó (Google o Microsoft, llega como ?code= en /auth/{provider}/callback)
+// por la sesión real -- mismo shape de respuesta que login()/register().
+export async function exchangeSocialCode(provider, code) {
+  const data = await authRequest(`/api/auth/${provider}/exchange`, { code })
   persist(data.token, data.user)
   return data.user
 }

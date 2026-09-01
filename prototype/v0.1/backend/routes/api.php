@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\MealEntryController;
+use App\Http\Controllers\MicrosoftAuthController;
 use App\Http\Controllers\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,10 +27,15 @@ Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middl
 Route::middleware('web')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:20,1');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback']);
+
+    // Mismo razonamiento que el bloque de Google de arriba.
+    Route::get('/auth/microsoft/redirect', [MicrosoftAuthController::class, 'redirect'])->middleware('throttle:20,1');
+    Route::get('/auth/microsoft/callback', [MicrosoftAuthController::class, 'callback']);
 });
 // exchange() sí es bearer-token/stateless como el resto de la API: recibe
 // el código de un solo uso que callback() generó y devuelve el token real.
 Route::post('/auth/google/exchange', [GoogleAuthController::class, 'exchange'])->middleware('throttle:10,1');
+Route::post('/auth/microsoft/exchange', [MicrosoftAuthController::class, 'exchange'])->middleware('throttle:10,1');
 
 // Rutas protegidas. throttle:60,1,api es el piso para todo el grupo -- antes
 // sólo auth y el export a PDF tenían límite, y el resto (listar/crear/

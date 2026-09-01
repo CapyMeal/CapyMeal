@@ -31,7 +31,18 @@ return [
         // el navegador nunca puede alcanzar. Tiene que coincidir carácter
         // por carácter con lo registrado en Google Cloud Console.
         'redirect' => env('GOOGLE_REDIRECT_URI'),
-        'frontend_url' => env('FRONTEND_URL'),
+    ],
+
+    'microsoft' => [
+        'client_id' => env('MICROSOFT_CLIENT_ID'),
+        'client_secret' => env('MICROSOFT_CLIENT_SECRET'),
+        // Misma razón que 'redirect' en 'google' -- ver comentario arriba.
+        // Tiene que coincidir carácter por carácter con lo registrado en el
+        // App registration de Azure/Microsoft Entra.
+        'redirect' => env('MICROSOFT_REDIRECT_URI'),
+        // 'common' = cuentas personales + de trabajo/escuela (multi-tenant).
+        // CapyMeal es para cualquier persona, no sólo cuentas corporativas.
+        'tenant' => env('MICROSOFT_TENANT', 'common'),
     ],
 
     'ses' => [

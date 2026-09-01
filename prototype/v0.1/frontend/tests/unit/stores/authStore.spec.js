@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { login, exchangeGoogleCode, getToken, handleUnauthorized } from '../../../src/stores/authStore'
+import { login, exchangeSocialCode, getToken, handleUnauthorized } from '../../../src/stores/authStore'
 
 const pushMock = vi.fn()
 const mockRouter = {
@@ -50,17 +50,21 @@ describe('authStore', () => {
     })
   })
 
-  describe('exchangeGoogleCode', () => {
-    it('guarda el token y el usuario en localStorage tras canjear el código', async () => {
+  describe.each(['google', 'microsoft'])('exchangeSocialCode (%s)', (provider) => {
+    it('guarda el token y el usuario en localStorage tras canjear el código, contra la URL del proveedor correcto', async () => {
       global.fetch.mockResolvedValue(
-        new Response(JSON.stringify({ token: 'token-google', user: { id: 2, name: 'Mercedes' } }), { status: 200 })
+        new Response(JSON.stringify({ token: 'token-social', user: { id: 2, name: 'Mercedes' } }), { status: 200 })
       )
 
-      const user = await exchangeGoogleCode('un-codigo')
+      const user = await exchangeSocialCode(provider, 'un-codigo')
 
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining(`/api/auth/${provider}/exchange`),
+        expect.anything()
+      )
       expect(user).toEqual({ id: 2, name: 'Mercedes' })
-      expect(getToken()).toBe('token-google')
-      expect(localStorage.getItem('capymeal-token')).toBe('token-google')
+      expect(getToken()).toBe('token-social')
+      expect(localStorage.getItem('capymeal-token')).toBe('token-social')
     })
 
     it('tira un error con el mensaje del servidor y no toca el token si el código no es válido', async () => {
@@ -70,7 +74,7 @@ describe('authStore', () => {
 
       const tokenAntes = getToken()
 
-      await expect(exchangeGoogleCode('codigo-vencido'))
+      await expect(exchangeSocialCode(provider, 'codigo-vencido'))
         .rejects.toThrow('Este enlace ya no es válido. Iniciá sesión de nuevo.')
 
       expect(getToken()).toBe(tokenAntes)

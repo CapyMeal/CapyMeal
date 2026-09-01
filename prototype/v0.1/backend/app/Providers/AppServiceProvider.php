@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Microsoft\Provider as MicrosoftSocialiteProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +28,14 @@ class AppServiceProvider extends ServiceProvider
         // más allá de User/MealEntry) y a atributos inexistentes al
         // momento de escribir el código, no en un log de producción.
         Model::shouldBeStrict(! $this->app->isProduction());
+
+        // Socialite no trae un driver nativo de Microsoft (sólo Facebook,
+        // GitHub, Google, LinkedIn, Bitbucket, Slack, Twitter) -- este
+        // listener lo registra vía el paquete de la comunidad
+        // socialiteproviders/microsoft. Google no necesita esto porque su
+        // driver ya viene incluido en laravel/socialite.
+        Event::listen(function (SocialiteWasCalled $event) {
+            $event->extendSocialite('microsoft', MicrosoftSocialiteProvider::class);
+        });
     }
 }
