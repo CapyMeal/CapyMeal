@@ -10,6 +10,10 @@ use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Tests\TestCase;
 
+// Sólo lo específico de Google vive acá -- el comportamiento genérico de
+// exchange()/login()/destroy() contra una cuenta social-only (que no
+// depende de qué proveedor la creó) está en SocialAuthExchangeTest, ya
+// parametrizado sobre Google y Microsoft.
 class GoogleAuthTest extends TestCase
 {
     use RefreshDatabase;
@@ -77,56 +81,5 @@ class GoogleAuthTest extends TestCase
         $user->refresh();
         $this->assertSame('g-1', $user->google_id);
         $this->assertNotNull($user->password);
-    }
-
-    public function test_exchange_code_redeems_for_token_and_user(): void
-    {
-        $user = User::factory()->create(['google_id' => 'g-1', 'password' => null]);
-        Cache::put('google-auth-exchange:test-code', ['user_id' => $user->id], now()->addMinute());
-
-        $response = $this->postJson('/api/auth/google/exchange', ['code' => 'test-code']);
-
-        $response->assertOk();
-        $response->assertJsonStructure(['user' => ['id', 'name', 'email'], 'token']);
-        $response->assertJsonPath('user.email', $user->email);
-    }
-
-    public function test_exchange_code_cannot_be_reused(): void
-    {
-        $user = User::factory()->create(['google_id' => 'g-1', 'password' => null]);
-        Cache::put('google-auth-exchange:test-code', ['user_id' => $user->id], now()->addMinute());
-
-        $this->postJson('/api/auth/google/exchange', ['code' => 'test-code'])->assertOk();
-        $this->postJson('/api/auth/google/exchange', ['code' => 'test-code'])->assertStatus(422);
-    }
-
-    public function test_expired_or_unknown_exchange_code_fails(): void
-    {
-        $this->postJson('/api/auth/google/exchange', ['code' => 'never-existed'])->assertStatus(422);
-    }
-
-    public function test_login_with_password_against_google_only_account_fails_with_generic_message(): void
-    {
-        $user = User::factory()->create(['password' => null, 'google_id' => 'g-1']);
-
-        $response = $this->postJson('/api/login', [
-            'email' => $user->email,
-            'password' => 'lo-que-sea',
-        ]);
-
-        $response->assertStatus(422);
-        $response->assertJsonPath('errors.email.0', 'El email o la contraseña son incorrectos.');
-    }
-
-    public function test_google_only_account_can_be_deleted_without_password(): void
-    {
-        $user = User::factory()->create(['password' => null, 'google_id' => 'g-1']);
-        $token = $user->createToken('capymeal')->plainTextToken;
-
-        $this->withHeader('Authorization', "Bearer {$token}")
-            ->deleteJson('/api/me')
-            ->assertNoContent();
-
-        $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
 }

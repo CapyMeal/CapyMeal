@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import GoogleCallbackView from '../../../src/views/GoogleCallbackView.vue'
-import { exchangeGoogleCode } from '../../../src/stores/authStore'
+import SocialCallbackView from '../../../src/views/SocialCallbackView.vue'
+import { exchangeSocialCode } from '../../../src/stores/authStore'
 
 vi.mock('../../../src/stores/authStore', () => ({
-  exchangeGoogleCode: vi.fn(),
+  exchangeSocialCode: vi.fn(),
 }))
 
 const mockRoute = { query: {} }
@@ -16,8 +16,9 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ replace, push }),
 }))
 
-function mountGoogleCallbackView() {
-  return mount(GoogleCallbackView, {
+function mountSocialCallbackView(provider) {
+  return mount(SocialCallbackView, {
+    props: { provider },
     global: {
       stubs: {
         AuthLayout: { template: '<div><slot /></div>' },
@@ -30,41 +31,44 @@ function mountGoogleCallbackView() {
   })
 }
 
-describe('GoogleCallbackView', () => {
+describe.each([
+  ['google', 'Google'],
+  ['microsoft', 'Microsoft'],
+])('SocialCallbackView (%s)', (provider, label) => {
   beforeEach(() => {
     mockRoute.query = {}
     replace.mockReset()
     push.mockReset()
-    exchangeGoogleCode.mockReset()
+    exchangeSocialCode.mockReset()
   })
 
   it('canjea el código y redirige a /hoy cuando hay un código en la URL', async () => {
     mockRoute.query = { code: 'un-codigo' }
-    exchangeGoogleCode.mockResolvedValue({ id: 1, name: 'Mercedes' })
+    exchangeSocialCode.mockResolvedValue({ id: 1, name: 'Mercedes' })
 
-    mountGoogleCallbackView()
+    mountSocialCallbackView(provider)
     await flushPromises()
 
-    expect(exchangeGoogleCode).toHaveBeenCalledWith('un-codigo')
+    expect(exchangeSocialCode).toHaveBeenCalledWith(provider, 'un-codigo')
     expect(replace).toHaveBeenCalledWith('/hoy')
   })
 
   it('muestra un error y no llama al store si no hay código en la URL', async () => {
     mockRoute.query = {}
 
-    const wrapper = mountGoogleCallbackView()
+    const wrapper = mountSocialCallbackView(provider)
     await flushPromises()
 
-    expect(exchangeGoogleCode).not.toHaveBeenCalled()
+    expect(exchangeSocialCode).not.toHaveBeenCalled()
     expect(replace).not.toHaveBeenCalled()
-    expect(wrapper.text()).toContain('No pudimos completar el ingreso con Google.')
+    expect(wrapper.text()).toContain(`No pudimos completar el ingreso con ${label}.`)
   })
 
   it('muestra el mensaje de error del store cuando el canje falla', async () => {
     mockRoute.query = { code: 'codigo-vencido' }
-    exchangeGoogleCode.mockRejectedValue(new Error('Este enlace ya no es válido. Iniciá sesión de nuevo.'))
+    exchangeSocialCode.mockRejectedValue(new Error('Este enlace ya no es válido. Iniciá sesión de nuevo.'))
 
-    const wrapper = mountGoogleCallbackView()
+    const wrapper = mountSocialCallbackView(provider)
     await flushPromises()
 
     expect(replace).not.toHaveBeenCalled()

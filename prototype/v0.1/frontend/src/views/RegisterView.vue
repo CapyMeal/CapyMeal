@@ -46,9 +46,15 @@
       <p class="auth-divider">o</p>
 
       <!-- href real, no @click con router: ver la misma nota en LoginView.vue. -->
-      <CapyButton variant="ghost" :href="googleRedirectUrl" class="google-button">
+      <CapyButton variant="ghost" :href="googleRedirectUrl" class="social-button">
         <GoogleIcon />
         Registrarte con Google
+      </CapyButton>
+
+      <!-- href real, mismo motivo que el botón de Google de arriba. -->
+      <CapyButton variant="ghost" :href="microsoftRedirectUrl" class="social-button">
+        <MicrosoftIcon />
+        Registrarte con Microsoft
       </CapyButton>
 
       <template #footer>
@@ -72,6 +78,7 @@ import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
 import GoogleIcon    from '../components/base/GoogleIcon.vue'
+import MicrosoftIcon from '../components/base/MicrosoftIcon.vue'
 import PasswordField from '../components/base/PasswordField.vue'
 import { register } from '../stores/authStore'
 
@@ -82,6 +89,7 @@ const router = useRouter()
 // alcance tocarlo acá.
 const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 const googleRedirectUrl = `${apiBaseUrl}/api/auth/google/redirect`
+const microsoftRedirectUrl = `${apiBaseUrl}/api/auth/microsoft/redirect`
 
 const name             = ref('')
 const email             = ref('')
@@ -146,7 +154,7 @@ async function submit() {
   margin: var(--space-xs) 0;
 }
 
-.google-button :deep(.v-btn__content) {
+.social-button :deep(.v-btn__content) {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
