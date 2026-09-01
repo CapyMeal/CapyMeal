@@ -67,7 +67,10 @@
         <div>
           <p class="settings-item__label">Sobre CapyMeal</p>
           <p class="settings-item__desc">Un lugar tranquilo para guardar los pequeños momentos alrededor de la comida.</p>
-          <router-link to="/privacidad" class="settings-item__link">Política de privacidad</router-link>
+          <div class="settings-item__links">
+            <router-link to="/privacidad" class="settings-item__link">Política de privacidad</router-link>
+            <router-link to="/terminos" class="settings-item__link">Términos de servicio</router-link>
+          </div>
         </div>
       </div>
 
@@ -330,9 +333,13 @@ async function handleDeleteAccount() {
   line-height: 1.5;
 }
 
-.settings-item__link {
-  display: inline-block;
+.settings-item__links {
+  display: flex;
+  gap: var(--space-md);
   margin-top: var(--space-xs);
+}
+
+.settings-item__link {
   font-size: .82rem;
   font-weight: 700;
   color: var(--color-primary);
