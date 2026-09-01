@@ -1,0 +1,28 @@
+name: Run Laravel scheduler
+
+# Render no tiene cron jobs en el plan free -- este workflow hace las veces
+# de cron real, golpeando un endpoint protegido por secreto que corre
+# "php artisan schedule:run" (ver SchedulerController y routes/console.php).
+# La hora acá tiene que coincidir con el ->dailyAt() de la tarea programada
+# en routes/console.php, o la tarea nunca se considera "due".
+
+on:
+  schedule:
+    - cron: '10 6 * * *' # 6:10am UTC = 3:10am hora Argentina
+  workflow_dispatch: {}
+
+# Least-privilege explícito -- este job ni siquiera hace checkout del repo.
+permissions:
+  contents: read
+
+jobs:
+  run-scheduler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar el scheduler del backend
+        run: |
+          curl --fail-with-body -sS -X POST \
+            -H "Authorization: Bearer ${SCHEDULER_TOKEN}" \
+            https://capymeal.onrender.com/api/internal/scheduler/run
+        env:
+          SCHEDULER_TOKEN: ${{ secrets.SCHEDULER_TOKEN }}

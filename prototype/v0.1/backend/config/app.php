@@ -67,6 +67,11 @@ return [
 
     'frontend_url' => env('FRONTEND_URL'),
 
+    // Secreto compartido con el workflow de GitHub Actions que dispara el
+    // scheduler de Laravel (ver VerifySchedulerToken/SchedulerController) --
+    // Render no tiene cron jobs en el plan free.
+    'scheduler_token' => env('SCHEDULER_TOKEN'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

@@ -5,6 +5,8 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\MealEntryController;
 use App\Http\Controllers\MicrosoftAuthController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\SchedulerController;
+use App\Http\Middleware\VerifySchedulerToken;
 use Illuminate\Support\Facades\Route;
 
 // Rutas públicas de autenticación
@@ -36,6 +38,13 @@ Route::middleware('web')->group(function () {
 // el código de un solo uso que callback() generó y devuelve el token real.
 Route::post('/auth/google/exchange', [GoogleAuthController::class, 'exchange'])->middleware('throttle:10,1');
 Route::post('/auth/microsoft/exchange', [MicrosoftAuthController::class, 'exchange'])->middleware('throttle:10,1');
+
+// Dispara el scheduler de Laravel (ver routes/console.php) -- Render no
+// tiene cron jobs en el plan free, así que un workflow de GitHub Actions
+// llama acá una vez al día en vez de un cron real. Protegido por un
+// secreto compartido (VerifySchedulerToken), no por sesión de usuario.
+Route::post('/internal/scheduler/run', [SchedulerController::class, 'run'])
+    ->middleware([VerifySchedulerToken::class, 'throttle:5,1']);
 
 // Rutas protegidas. throttle:60,1,api es el piso para todo el grupo -- antes
 // sólo auth y el export a PDF tenían límite, y el resto (listar/crear/
