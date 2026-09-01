@@ -57,7 +57,8 @@
           <RouterLink to="/login">Entrá</RouterLink>
         </p>
         <p class="auth-card__legal">
-          Al registrarte, aceptás nuestra
+          Al registrarte, aceptás nuestros
+          <RouterLink to="/terminos">Términos de servicio</RouterLink> y nuestra
           <RouterLink to="/privacidad">Política de privacidad</RouterLink>.
         </p>
       </template>
