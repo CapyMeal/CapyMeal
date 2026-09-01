@@ -46,7 +46,8 @@
       <p class="auth-divider">o</p>
 
       <!-- href real, no @click con router: ver la misma nota en LoginView.vue. -->
-      <CapyButton variant="ghost" :href="googleRedirectUrl">
+      <CapyButton variant="ghost" :href="googleRedirectUrl" class="google-button">
+        <GoogleIcon />
         Registrarte con Google
       </CapyButton>
 
@@ -70,6 +71,7 @@ import { useRouter } from 'vue-router'
 import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
+import GoogleIcon    from '../components/base/GoogleIcon.vue'
 import PasswordField from '../components/base/PasswordField.vue'
 import { register } from '../stores/authStore'
 
@@ -142,5 +144,11 @@ async function submit() {
   color: var(--color-muted);
   font-size: var(--font-size-label);
   margin: var(--space-xs) 0;
+}
+
+.google-button :deep(.v-btn__content) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 </style>
