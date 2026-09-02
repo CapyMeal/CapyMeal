@@ -15,9 +15,18 @@
         propósito de esta app es ayudarte a llevar tu diario de comidas.
       </p>
 
-      <CapyButton href="/capymeal.apk" class="install-download-button">
-        ⬇️ Descargar el .apk
-      </CapyButton>
+      <div class="install-download">
+        <CapyButton
+          :loading="downloading"
+          :disabled="downloading"
+          @click="downloadApk"
+        >
+          {{ downloading ? 'Descargando…' : '⬇️ Descargar el .apk' }}
+        </CapyButton>
+        <v-alert v-if="downloadError" type="error" variant="tonal" density="compact">
+          {{ downloadError }}
+        </v-alert>
+      </div>
 
       <section class="privacy-section">
         <h2>Antes de instalar: dos avisos normales</h2>
@@ -66,15 +75,48 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { isAuthenticated } from '../stores/authStore'
 import CapyButton from '../components/base/CapyButton.vue'
 
 // Mismo patrón que TermsOfServiceView.vue/PrivacyPolicyView.vue: desde
-// Ajustes (logueada) vuelve al Diario, sin sesión vuelve a la portada --
+// Ajustes (logueada) vuelve al Diario, sin sesión vuelve a la portada,
 // esta página también se comparte suelta con gente que todavía no se
 // registró.
 const backTo = computed(() => (isAuthenticated.value ? '/ajustes' : '/'))
+
+const downloading = ref(false)
+const downloadError = ref('')
+
+// Un <a href> plano no da ninguna señal visual mientras baja: en una
+// conexión lenta parece que el botón no hizo nada. Bajamos el archivo
+// nosotros con fetch para mostrar el spinner mientras tanto, y recién
+// disparamos el guardado real cuando el .apk ya está completo en memoria.
+async function downloadApk() {
+  downloading.value = true
+  downloadError.value = ''
+
+  try {
+    const response = await fetch('/capymeal.apk')
+    if (!response.ok) {
+      throw new Error(`El servidor respondió ${response.status}`)
+    }
+    const blob = await response.blob()
+    const blobUrl = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = 'capymeal.apk'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(blobUrl)
+  } catch {
+    downloadError.value = 'No pudimos descargar el archivo. Revisá tu conexión e intentá de nuevo.'
+  } finally {
+    downloading.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -126,8 +168,10 @@ const backTo = computed(() => (isAuthenticated.value ? '/ajustes' : '/'))
   margin-bottom: var(--space-lg);
 }
 
-.install-download-button {
-  width: 100%;
+.install-download {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
   margin-bottom: var(--space-xl);
 }
 
