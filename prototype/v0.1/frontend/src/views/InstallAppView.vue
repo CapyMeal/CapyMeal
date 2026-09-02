@@ -8,9 +8,11 @@
         <h1 class="privacy-heading__title">Descargar CapyMeal para Android</h1>
       </div>
       <p class="privacy-updated">
-        Esta es una versión instalable de CapyMeal para tu celular Android, sin pasar por Play
-        Store. Es la misma app que ya usás desde el navegador — solo que con ícono propio y sin
-        la barra de direcciones.
+        CapyMeal quiere ser una app para todos, así que además de usarla desde el navegador la
+        podés instalar directo en tu Android, sin pasar por Play Store. La bajamos así, en vez de
+        publicarla ahí, para que siga siendo 100% gratuita: no le pedimos plata a nadie, no
+        mostramos publicidad, no vendemos tus datos ni escondemos nada raro adentro. El único
+        propósito de esta app es ayudarte a llevar tu diario de comidas.
       </p>
 
       <CapyButton href="/capymeal.apk" class="install-download-button">
@@ -18,13 +20,12 @@
       </CapyButton>
 
       <section class="privacy-section">
-        <h2>Antes de instalar: un aviso normal</h2>
+        <h2>Antes de instalar: dos avisos normales</h2>
         <p>
-          Como no lo bajaste de Play Store, Android va a mostrarte un aviso del estilo
-          <strong>"No se pudo verificar la app"</strong> o <strong>"Instalar apps desconocidas"</strong>.
-          Esto le pasa a <strong>cualquier</strong> app que se instala así, no es una señal de que
-          algo esté mal — es simplemente que Android no reconoce Play Store como origen. Estos son
-          los pasos para seguir adelante:
+          Como esta versión no viene de Play Store, tu Android va a mostrarte un par de avisos de
+          seguridad al instalarla. Le pasa a <strong>cualquier</strong> app que se instala así, no
+          es una señal de que algo esté mal: es simplemente que Android no reconoce a Play Store
+          como origen. Abajo te explicamos paso a paso qué hacer con cada uno.
         </p>
       </section>
 
@@ -37,14 +38,17 @@
             Descargas).
           </li>
           <li>
-            Android va a mostrar el aviso de seguridad mencionado arriba, con un botón
-            <strong>"Ajustes"</strong> o <strong>"Configuración"</strong>. Tocalo.
+            Va a aparecer un primer aviso, algo como <strong>"Instalar apps desconocidas"</strong>,
+            con un botón <strong>"Configuración"</strong>. Tocalo, activá <strong>"Confiar en esta
+            fuente"</strong> y volvé para atrás.
           </li>
+          <li>Tocá <strong>"Instalar"</strong> de nuevo.</li>
           <li>
-            Vas a ver una opción como <strong>"Permitir de esta fuente"</strong>. Activala.
+            Puede aparecer un segundo aviso de <strong>Google Play Protect</strong>, algo como
+            <strong>"Se bloqueó la app para proteger tu dispositivo"</strong>. Tocá
+            <strong>"Más detalles"</strong> y después <strong>"Instalar de todos modos"</strong>.
           </li>
-          <li>Volvé para atrás y tocá <strong>"Instalar"</strong> de nuevo.</li>
-          <li>Cuando termine, tocá <strong>"Abrir"</strong> — ¡listo!</li>
+          <li>Cuando termine, tocá <strong>"Abrir"</strong>. ¡Listo!</li>
         </ol>
       </section>
 
