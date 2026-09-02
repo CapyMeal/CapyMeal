@@ -31,6 +31,14 @@ export default defineConfig({
         // y el navegador nunca pide ttf/eot/svg, así que se excluyen para
         // no duplicar ~2.6MB de fuente que nadie va a usar).
         globPatterns: ['**/*.{js,css,html,png,svg,ico,webp,woff,woff2}'],
+        // Sin esto, el fallback de navegación de abajo (para que rutas de
+        // Vue Router como /hoy sigan andando sin conexión) también
+        // interceptaba la descarga del .apk: al ser un <a href> real, el
+        // navegador la trata como una navegación de nivel superior, el
+        // service worker la agarraba y servía index.html en vez del
+        // archivo -- la app terminaba mostrando su propio 404 en vez de
+        // bajar el instalador.
+        navigateFallbackDenylist: [/^\/capymeal\.apk$/],
         // Los GET a /api/meal-entries se cachean para que el diario siga
         // visible sin señal; POST/PUT/DELETE quedan fuera a propósito, van
         // directo a la red y fallan "al desnudo" (ver useOnlineStatus.js).
