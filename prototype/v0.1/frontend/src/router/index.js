@@ -11,6 +11,7 @@ const router = createRouter({
     { path: '/',                   name: 'splash',          component: () => import('../views/HomeView.vue')                                    },
     { path: '/privacidad',         name: 'privacy',         component: () => import('../views/PrivacyPolicyView.vue')                           },
     { path: '/terminos',           name: 'terms',           component: () => import('../views/TermsOfServiceView.vue')                          },
+    { path: '/instalar-app',       name: 'install-app',     component: () => import('../views/InstallAppView.vue')                              },
     { path: '/login',              name: 'login',           component: () => import('../views/LoginView.vue'),          meta: { guest: true }  },
     { path: '/registro',           name: 'register',        component: () => import('../views/RegisterView.vue'),       meta: { guest: true }  },
     { path: '/olvide-contrasena',  name: 'forgot-password', component: () => import('../views/ForgotPasswordView.vue'), meta: { guest: true }  },
