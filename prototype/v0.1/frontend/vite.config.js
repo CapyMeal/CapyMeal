@@ -36,7 +36,7 @@ export default defineConfig({
         // interceptaba la descarga del .apk: al ser un <a href> real, el
         // navegador la trata como una navegación de nivel superior, el
         // service worker la agarraba y servía index.html en vez del
-        // archivo -- la app terminaba mostrando su propio 404 en vez de
+        // archivo, y la app terminaba mostrando su propio 404 en vez de
         // bajar el instalador.
         navigateFallbackDenylist: [/^\/capymeal\.apk$/],
         // Los GET a /api/meal-entries se cachean para que el diario siga
