@@ -2,7 +2,7 @@
 // pasar por los prompts interactivos de `bubblewrap init` (que además de ser
 // frágiles de scriptear a ciegas, usan un prompt tipo "list" para otros pasos
 // que no funciona bien con stdin no-interactivo). Deja ~/.bubblewrap/config.json
-// igual que lo dejaría la CLI real -- corridas futuras de `bubblewrap build`
+// igual que lo dejaría la CLI real. Corridas futuras de `bubblewrap build`
 // lo detectan solo.
 const path = require('path');
 const os = require('os');

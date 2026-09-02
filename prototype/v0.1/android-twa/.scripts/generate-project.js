@@ -1,5 +1,5 @@
 // Arma twa-manifest.json a partir del manifest real de la PWA, genera el
-// proyecto Android (Gradle) y crea la clave de firma -- todo de forma
+// proyecto Android (Gradle) y crea la clave de firma, todo de forma
 // programática, sin pasar por los prompts interactivos de `bubblewrap init`
 // (uno de esos prompts es tipo "list", que no anda bien con stdin no
 // interactivo). Usa las mismas clases que usa la CLI real por dentro.
@@ -11,7 +11,7 @@ const os = require('os');
 // Este entorno expone tanto `PATH` como `Path` como claves separadas en
 // process.env (duplicado heredado de la cadena de shells que lanza este
 // script). JdkHelper.getEnv() de @bubblewrap/core asume la clave `Path` y
-// solo la actualiza a ella -- si el valor real vive en `PATH`, el `Path`
+// solo la actualiza a ella: si el valor real vive en `PATH`, el `Path`
 // que arma queda como "<bin del jdk>;undefined" y los subprocesos (keytool,
 // sdkmanager, gradle) no encuentran nada. Unificamos a una sola clave antes
 // de tocar nada de @bubblewrap/core.
@@ -37,7 +37,7 @@ const PACKAGE_ID = 'com.capymeal.twa';
 const FRONTEND_PUBLIC_DIR = path.resolve(TARGET_DIR, '../frontend/public');
 
 function randomPassword(length = 32) {
-  // Solo alfanumérico -- evita headaches de escaping de shell (%, ", \) en
+  // Solo alfanumérico, evita headaches de escaping de shell (%, ", \) en
   // los comandos de keytool, que en Windows corren vía cmd.exe.
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   return Array.from(crypto.randomFillSync(new Uint32Array(length)))
@@ -82,7 +82,7 @@ async function main() {
 
   // Mismo password para ambas: un keystore PKCS12 (el formato default desde
   // JDK 9+, y el que usa keytool acá) solo soporta una password real para
-  // todo el store -- si se le pide una "-keypass" distinta a "-storepass",
+  // todo el store: si se le pide una "-keypass" distinta a "-storepass",
   // keytool la genera igual sin quejarse pero la ignora en silencio, y
   // cualquier herramienta que después intente abrir la clave privada con
   // esa segunda password (como apksigner) falla con "Wrong password?".
