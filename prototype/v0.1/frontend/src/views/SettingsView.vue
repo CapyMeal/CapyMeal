@@ -70,6 +70,7 @@
           <div class="settings-item__links">
             <router-link to="/privacidad" class="settings-item__link">Política de privacidad</router-link>
             <router-link to="/terminos" class="settings-item__link">Términos de servicio</router-link>
+            <router-link to="/instalar-app" class="settings-item__link">Descargar app para Android</router-link>
           </div>
         </div>
       </div>

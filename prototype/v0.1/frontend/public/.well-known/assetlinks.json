@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.capymeal.twa",
+        "sha256_cert_fingerprints": ["5B:D9:8D:70:91:37:DD:D8:47:42:93:9D:0F:4D:E6:EC:04:F4:01:AD:D7:99:91:0A:88:0D:05:C7:D4:96:81:F1"]
+      }
+    }]
