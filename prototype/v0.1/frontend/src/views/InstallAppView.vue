@@ -8,23 +8,33 @@
         <h1 class="privacy-heading__title">Descargar CapyMeal para Android</h1>
       </div>
       <p class="privacy-updated">
-        Esta es una versión instalable de CapyMeal para tu celular Android, sin pasar por Play
-        Store. Es la misma app que ya usás desde el navegador — solo que con ícono propio y sin
-        la barra de direcciones.
+        CapyMeal quiere ser una app para todos, así que además de usarla desde el navegador la
+        podés instalar directo en tu Android, sin pasar por Play Store. La bajamos así, en vez de
+        publicarla ahí, para que siga siendo 100% gratuita: no le pedimos plata a nadie, no
+        mostramos publicidad, no vendemos tus datos ni escondemos nada raro adentro. El único
+        propósito de esta app es ayudarte a llevar tu diario de comidas.
       </p>
 
-      <CapyButton href="/capymeal.apk" class="install-download-button">
-        ⬇️ Descargar el .apk
-      </CapyButton>
+      <div class="install-download">
+        <CapyButton
+          :loading="downloading"
+          :disabled="downloading"
+          @click="downloadApk"
+        >
+          {{ downloading ? 'Descargando…' : '⬇️ Descargar el .apk' }}
+        </CapyButton>
+        <v-alert v-if="downloadError" type="error" variant="tonal" density="compact">
+          {{ downloadError }}
+        </v-alert>
+      </div>
 
       <section class="privacy-section">
-        <h2>Antes de instalar: un aviso normal</h2>
+        <h2>Antes de instalar: dos avisos normales</h2>
         <p>
-          Como no lo bajaste de Play Store, Android va a mostrarte un aviso del estilo
-          <strong>"No se pudo verificar la app"</strong> o <strong>"Instalar apps desconocidas"</strong>.
-          Esto le pasa a <strong>cualquier</strong> app que se instala así, no es una señal de que
-          algo esté mal — es simplemente que Android no reconoce Play Store como origen. Estos son
-          los pasos para seguir adelante:
+          Como esta versión no viene de Play Store, tu Android va a mostrarte un par de avisos de
+          seguridad al instalarla. Le pasa a <strong>cualquier</strong> app que se instala así, no
+          es una señal de que algo esté mal: es simplemente que Android no reconoce a Play Store
+          como origen. Abajo te explicamos paso a paso qué hacer con cada uno.
         </p>
       </section>
 
@@ -37,14 +47,17 @@
             Descargas).
           </li>
           <li>
-            Android va a mostrar el aviso de seguridad mencionado arriba, con un botón
-            <strong>"Ajustes"</strong> o <strong>"Configuración"</strong>. Tocalo.
+            Va a aparecer un primer aviso, algo como <strong>"Instalar apps desconocidas"</strong>,
+            con un botón <strong>"Configuración"</strong>. Tocalo, activá <strong>"Confiar en esta
+            fuente"</strong> y volvé para atrás.
           </li>
+          <li>Tocá <strong>"Instalar"</strong> de nuevo.</li>
           <li>
-            Vas a ver una opción como <strong>"Permitir de esta fuente"</strong>. Activala.
+            Puede aparecer un segundo aviso de <strong>Google Play Protect</strong>, algo como
+            <strong>"Se bloqueó la app para proteger tu dispositivo"</strong>. Tocá
+            <strong>"Más detalles"</strong> y después <strong>"Instalar de todos modos"</strong>.
           </li>
-          <li>Volvé para atrás y tocá <strong>"Instalar"</strong> de nuevo.</li>
-          <li>Cuando termine, tocá <strong>"Abrir"</strong> — ¡listo!</li>
+          <li>Cuando termine, tocá <strong>"Abrir"</strong>. ¡Listo!</li>
         </ol>
       </section>
 
@@ -62,15 +75,48 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { isAuthenticated } from '../stores/authStore'
 import CapyButton from '../components/base/CapyButton.vue'
 
 // Mismo patrón que TermsOfServiceView.vue/PrivacyPolicyView.vue: desde
-// Ajustes (logueada) vuelve al Diario, sin sesión vuelve a la portada --
+// Ajustes (logueada) vuelve al Diario, sin sesión vuelve a la portada,
 // esta página también se comparte suelta con gente que todavía no se
 // registró.
 const backTo = computed(() => (isAuthenticated.value ? '/ajustes' : '/'))
+
+const downloading = ref(false)
+const downloadError = ref('')
+
+// Un <a href> plano no da ninguna señal visual mientras baja: en una
+// conexión lenta parece que el botón no hizo nada. Bajamos el archivo
+// nosotros con fetch para mostrar el spinner mientras tanto, y recién
+// disparamos el guardado real cuando el .apk ya está completo en memoria.
+async function downloadApk() {
+  downloading.value = true
+  downloadError.value = ''
+
+  try {
+    const response = await fetch('/capymeal.apk')
+    if (!response.ok) {
+      throw new Error(`El servidor respondió ${response.status}`)
+    }
+    const blob = await response.blob()
+    const blobUrl = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = 'capymeal.apk'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(blobUrl)
+  } catch {
+    downloadError.value = 'No pudimos descargar el archivo. Revisá tu conexión e intentá de nuevo.'
+  } finally {
+    downloading.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -122,8 +168,10 @@ const backTo = computed(() => (isAuthenticated.value ? '/ajustes' : '/'))
   margin-bottom: var(--space-lg);
 }
 
-.install-download-button {
-  width: 100%;
+.install-download {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
   margin-bottom: var(--space-xl);
 }
 

@@ -26,7 +26,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Por default vite-plugin-pwa solo precachea js/css/html — sumamos
+        // Por default vite-plugin-pwa solo precachea js/css/html, sumamos
         // imágenes y las fuentes realmente usadas (mdi carga woff2 primero
         // y el navegador nunca pide ttf/eot/svg, así que se excluyen para
         // no duplicar ~2.6MB de fuente que nadie va a usar).
@@ -36,7 +36,7 @@ export default defineConfig({
         // interceptaba la descarga del .apk: al ser un <a href> real, el
         // navegador la trata como una navegación de nivel superior, el
         // service worker la agarraba y servía index.html en vez del
-        // archivo -- la app terminaba mostrando su propio 404 en vez de
+        // archivo, y la app terminaba mostrando su propio 404 en vez de
         // bajar el instalador.
         navigateFallbackDenylist: [/^\/capymeal\.apk$/],
         // Los GET a /api/meal-entries se cachean para que el diario siga

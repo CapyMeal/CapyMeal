@@ -7,7 +7,7 @@
 const path = require('path');
 const os = require('os');
 
-// Mismo fix de PATH duplicado que generate-project.js -- necesario acá
+// Mismo fix de PATH duplicado que generate-project.js, necesario acá
 // también porque build.js invoca gradle/sdkmanager/apksigner via el mismo
 // JdkHelper.getEnv().
 const realPath = process.env.PATH || process.env.Path || '';
@@ -45,14 +45,14 @@ async function main() {
   }
   const config = await Config.loadConfig(path.join(os.homedir(), '.bubblewrap', 'config.json'));
 
-  // skipSigning: true -- Build.signApk()/signAppBundle() de @bubblewrap/cli
+  // skipSigning: true. Build.signApk()/signAppBundle() de @bubblewrap/cli
   // envuelven las passwords entre comillas literales antes de pasarlas
   // (pensado para el codepath que arma un string de shell), pero en Windows
   // apksigner se invoca vía `runJava` con args en array (no shell): esas
   // comillas quedan como caracteres literales de la password real y el
   // firmado falla con "Wrong password?". Frenamos el firmado automático acá
   // y lo hacemos nosotros mismos más abajo, sin ese bug. Tampoco firmamos el
-  // .aab (App Bundle): es para Play Store, que no usamos -- solo nos
+  // .aab (App Bundle): es para Play Store, que no usamos, solo nos
   // interesa el .apk para descarga directa.
   const args = { directory: TARGET_DIR, skipSigning: true };
   const ok = await build(config, args, undefined, silentPrompt);

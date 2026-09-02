@@ -1,4 +1,4 @@
-# Proyecto Android generado por Bubblewrap -- se regenera solo corriendo
+# Proyecto Android generado por Bubblewrap. Se regenera solo corriendo
 # `npm run generate` (ver README.md). No tiene sentido versionarlo: es
 # derivado 100% de twa-manifest.json + el manifest real de la PWA.
 app/
@@ -11,21 +11,21 @@ settings.gradle
 store_icon.png
 manifest-checksum.txt
 
-# La clave de firma y sus credenciales NUNCA van al repo -- sin esto
+# La clave de firma y sus credenciales NUNCA van al repo. Sin esto,
 # cualquiera con acceso al código podría firmar un .apk que Android
 # reconoce como "la app real". Ver KEYSTORE_CREDENTIALS.txt (local, también
 # ignorado) para las instrucciones de dónde guardar esto en su lugar.
 *.keystore
 KEYSTORE_CREDENTIALS.txt
 
-# Salidas de build -- el .apk final que se distribuye se copia a
+# Salidas de build. El .apk final que se distribuye se copia a
 # frontend/public/capymeal.apk, que sí se versiona ahí.
 *.apk
 *.aab
 
 node_modules/
 
-# Caché y reportes locales de Gradle -- se regeneran solos al buildear.
+# Caché y reportes locales de Gradle, se regeneran solos al buildear.
 .gradle/
 build/
 *.idsig
