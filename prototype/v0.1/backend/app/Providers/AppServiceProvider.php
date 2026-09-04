@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\RestoreConfiguredSessionSameSite;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -15,7 +16,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Captura el session.same_site real (desde config/session.php,
+        // SESSION_SAME_SITE en producción) antes de que
+        // EnsureFrontendRequestsAreStateful de Sanctum lo pise a "lax" en
+        // cada request -- ver el comentario en RestoreConfiguredSessionSameSite.
+        RestoreConfiguredSessionSameSite::$configuredSameSite = config('session.same_site');
     }
 
     /**

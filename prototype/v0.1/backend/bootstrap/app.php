@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RestoreConfiguredSessionSameSite;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +22,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // al bearer token de siempre, auth:sanctum sirve para ambos casos
         // sin tocar las rutas.
         $middleware->statefulApi();
+
+        // Sanctum pisa session.same_site a "lax" en cada request stateful,
+        // sin forma de desactivarlo (ver el comentario en
+        // RestoreConfiguredSessionSameSite) -- se restaura después, en el
+        // mismo grupo "api", el valor real de SESSION_SAME_SITE.
+        $middleware->api(append: [RestoreConfiguredSessionSameSite::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // El mensaje por defecto de Laravel para esto es "Unauthenticated."
