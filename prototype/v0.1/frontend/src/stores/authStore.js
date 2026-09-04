@@ -4,30 +4,30 @@ import { apiRequest } from '../services/httpClient'
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
 const state = reactive({
-  token: localStorage.getItem('capymeal-token') || null,
-  user:  JSON.parse(localStorage.getItem('capymeal-user') || 'null'),
+  user: null,
 })
 
-export const isAuthenticated = computed(() => !!state.token)
+export const isAuthenticated = computed(() => !!state.user)
 export const currentUser     = computed(() => state.user)
 
-export function getToken() {
-  return state.token
-}
-
-function persist(token, user) {
-  state.token = token
-  state.user  = user
-  localStorage.setItem('capymeal-token', token)
-  localStorage.setItem('capymeal-user', JSON.stringify(user))
+function persist(user) {
+  state.user = user
 }
 
 function clear() {
-  state.token = null
-  state.user  = null
-  localStorage.removeItem('capymeal-token')
-  localStorage.removeItem('capymeal-user')
+  state.user = null
 }
+
+// Se dispara una sola vez al cargar el módulo: la sesión ahora vive en una
+// cookie httpOnly (Sanctum), invisible para este JS, así que no hay nada
+// que leer de localStorage al arrancar -- hay que preguntarle al backend.
+// El router (`router/index.js`) espera esta promesa antes de resolver el
+// guard de rutas protegidas/de invitado. Un 401 acá es el caso normal de
+// "nadie logueado todavía", no un error real -- se ignora en silencio en
+// vez de pasar por handleUnauthorized (que redirige a login).
+export const authReady = apiRequest(API_BASE_URL, '/api/me')
+  .then((user) => { state.user = user })
+  .catch(() => { state.user = null })
 
 // Un 401 de la API significa que el token ya no sirve (expiró o se revocó
 // en otro lado) -- a diferencia de un logout manual, acá hay que avisar
@@ -52,13 +52,13 @@ function authRequest(path, body) {
 
 export async function register({ name, email, password, password_confirmation }) {
   const data = await authRequest('/api/register', { name, email, password, password_confirmation })
-  persist(data.token, data.user)
+  persist(data.user)
   return data.user
 }
 
 export async function login({ email, password }) {
   const data = await authRequest('/api/login', { email, password })
-  persist(data.token, data.user)
+  persist(data.user)
   return data.user
 }
 
@@ -67,20 +67,15 @@ export async function login({ email, password }) {
 // por la sesión real -- mismo shape de respuesta que login()/register().
 export async function exchangeSocialCode(provider, code) {
   const data = await authRequest(`/api/auth/${provider}/exchange`, { code })
-  persist(data.token, data.user)
+  persist(data.user)
   return data.user
 }
 
 export async function logout() {
-  if (state.token) {
-    // A diferencia del resto de las funciones de acá abajo, no pasa
-    // onUnauthorized: si el token ya venció, no hay nada que "manejar" --
-    // de cualquier forma se va a limpiar la sesión local ahora mismo.
-    await apiRequest(API_BASE_URL, '/api/logout', {
-      method: 'POST',
-      token: state.token,
-    }).catch(() => {})
-  }
+  // A diferencia del resto de las funciones de acá abajo, no pasa
+  // onUnauthorized: si la sesión ya venció, no hay nada que "manejar" -- de
+  // cualquier forma se va a limpiar el estado local ahora mismo.
+  await apiRequest(API_BASE_URL, '/api/logout', { method: 'POST' }).catch(() => {})
   clear()
 }
 
@@ -91,7 +86,6 @@ export async function deleteAccount(password) {
   // y redirige) antes de tirar, así que no hay nada que reintentar.
   await apiRequest(API_BASE_URL, '/api/me', {
     method: 'DELETE',
-    token: state.token,
     onUnauthorized: handleUnauthorized,
     body: JSON.stringify({ password }),
   })
@@ -102,11 +96,10 @@ export async function deleteAccount(password) {
 export async function updateAvatar(avatar) {
   const data = await apiRequest(API_BASE_URL, '/api/me/avatar', {
     method: 'PUT',
-    token: state.token,
     onUnauthorized: handleUnauthorized,
     body: JSON.stringify({ avatar }),
   })
 
-  persist(state.token, data)
+  persist(data)
   return data
 }

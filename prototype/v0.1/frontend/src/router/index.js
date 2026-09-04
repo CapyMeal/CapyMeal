@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { isAuthenticated } from '../stores/authStore'
+import { isAuthenticated, authReady } from '../stores/authStore'
 
 // Cada vista se carga sola cuando se visita esa ruta, en vez de todas
 // juntas en el bundle inicial -- así el primer login o splash no paga
@@ -27,7 +27,15 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
+  // Sólo las rutas que dependen de saber si hay sesión esperan a authReady
+  // -- el resto navega sin este delay, que en la práctica sólo se nota una
+  // vez (la primera navegación de la pestaña, authReady ya está resuelta
+  // para las siguientes).
+  if (to.meta.auth || to.meta.guest) {
+    await authReady
+  }
+
   if (to.meta.auth && !isAuthenticated.value) {
     return { name: 'login' }
   }

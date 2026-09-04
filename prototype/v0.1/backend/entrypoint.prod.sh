@@ -19,6 +19,12 @@ if [ -z "${DATABASE_URL:-}" ]; then
     exit 1
 fi
 
+# Sanctum sólo acepta auth por cookie de sesión desde los dominios listados
+# acá -- siempre el mismo host que FRONTEND_URL (sin protocolo), así que se
+# deriva de esa misma variable en vez de exigir una segunda que Render
+# tendría que mantener en sync a mano.
+FRONTEND_HOST=$(echo "${FRONTEND_URL:-}" | sed -E 's#^https?://##; s#/+$##')
+
 # Genera .env desde variables de entorno de Render
 cat > .env <<EOF
 APP_NAME=CapyMeal
@@ -48,6 +54,14 @@ QUEUE_CONNECTION=sync
 # se queda sin poder hacer requests, algo que se nota al toque) que un
 # fallback tipo "*" que abriría CORS a cualquier origen en silencio.
 FRONTEND_URL=${FRONTEND_URL:-}
+SANCTUM_STATEFUL_DOMAINS=${FRONTEND_HOST}
+
+# Fijos, no configurables por env: frontend (Vercel) y backend (Render) son
+# dominios distintos de verdad, así que la cookie de sesión siempre necesita
+# SameSite=None -- y SameSite=None exige Secure. Cualquier valor que no sea
+# éste rompería el login en producción.
+SESSION_SECURE_COOKIE=true
+SESSION_SAME_SITE=none
 
 MAIL_MAILER=${MAIL_MAILER:-log}
 RESEND_API_KEY=${RESEND_API_KEY:-}

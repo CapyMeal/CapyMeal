@@ -15,7 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Habilita que Sanctum autentique por cookie de sesión (en vez de
+        // bearer token) las requests que vengan de un dominio listado en
+        // SANCTUM_STATEFUL_DOMAINS -- cualquier otro cliente sigue cayendo
+        // al bearer token de siempre, auth:sanctum sirve para ambos casos
+        // sin tocar las rutas.
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // El mensaje por defecto de Laravel para esto es "Unauthenticated."

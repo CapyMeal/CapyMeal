@@ -33,7 +33,7 @@ class SocialAuthExchangeTest extends TestCase
     }
 
     #[DataProvider('providers')]
-    public function test_exchange_code_redeems_for_token_and_user(string $driver, string $column): void
+    public function test_exchange_code_redeems_for_a_session_and_user(string $driver, string $column): void
     {
         $user = User::factory()->create([$column => 'p-1', 'password' => null]);
         Cache::put('social-auth-exchange:test-code', ['user_id' => $user->id], now()->addMinute());
@@ -41,8 +41,10 @@ class SocialAuthExchangeTest extends TestCase
         $response = $this->postJson("/api/auth/{$driver}/exchange", ['code' => 'test-code']);
 
         $response->assertOk();
-        $response->assertJsonStructure(['user' => ['id', 'name', 'email'], 'token']);
+        $response->assertJsonStructure(['user' => ['id', 'name', 'email']]);
+        $response->assertJsonMissingPath('token');
         $response->assertJsonPath('user.email', $user->email);
+        $this->assertAuthenticated();
     }
 
     #[DataProvider('providers')]
