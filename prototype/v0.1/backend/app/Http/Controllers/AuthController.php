@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -72,10 +71,15 @@ class AuthController extends Controller
         // Un bearer token real (cliente sin sesión de navegador, o uno viejo
         // emitido antes de esta migración a cookies) se revoca de verdad acá.
         // Autenticado por cookie, currentAccessToken() devuelve un
-        // TransientToken sin fila real en la tabla -- nada que borrar ahí,
-        // sólo cerrar la sesión (bloque de abajo).
+        // TransientToken sin fila real en la tabla ni delete() -- nada que
+        // borrar ahí, sólo cerrar la sesión (bloque de abajo). El @var mixed
+        // es necesario para Larastan: tipa currentAccessToken() como
+        // PersonalAccessToken siempre (vía el genérico TToken de Sanctum),
+        // así que sin esto method_exists() le queda tautológico aunque en
+        // runtime sí pueda ser un TransientToken.
+        /** @var mixed $token */
         $token = $request->user()->currentAccessToken();
-        if ($token instanceof PersonalAccessToken) {
+        if ($token !== null && method_exists($token, 'delete')) {
             $token->delete();
         }
 
