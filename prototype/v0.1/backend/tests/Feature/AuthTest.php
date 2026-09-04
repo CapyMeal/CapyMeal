@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\RestoreConfiguredSessionSameSite;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -109,6 +110,30 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+    }
+
+    public function test_session_cookie_keeps_the_configured_same_site_instead_of_sanctums_forced_lax(): void
+    {
+        // EnsureFrontendRequestsAreStateful de Sanctum pisa session.same_site
+        // a "lax" en toda request stateful, sin forma de desactivarlo -- ver
+        // el comentario en RestoreConfiguredSessionSameSite. Producción
+        // necesita "none" de verdad (frontend y backend en dominios cruzados
+        // reales); acá se usa "strict" en vez de "lax" (que ya es el default
+        // y no probaría nada) para confirmar que el mecanismo de restauración
+        // funciona para cualquier valor distinto del que Sanctum fuerza.
+        config(['session.same_site' => 'strict']);
+        RestoreConfiguredSessionSameSite::$configuredSameSite = 'strict';
+
+        $response = $this->postJson('/api/login', [
+            'email' => 'no-existe@example.com',
+            'password' => 'lo-que-sea',
+        ]);
+
+        $sessionCookie = collect($response->headers->getCookies())
+            ->first(fn ($cookie) => $cookie->getName() === config('session.cookie'));
+
+        $this->assertNotNull($sessionCookie);
+        $this->assertSame('strict', $sessionCookie->getSameSite());
     }
 
     public function test_login_does_not_revoke_a_pre_existing_bearer_token(): void
