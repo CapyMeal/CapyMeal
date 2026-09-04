@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { apiRequest } from '../../../src/services/httpClient'
+import { apiRequest, setCsrfToken } from '../../../src/services/httpClient'
 
 const BASE_URL = 'http://localhost:8080'
 
 describe('apiRequest', () => {
   beforeEach(() => {
     global.fetch = vi.fn()
-    // Arranca cada test sin cookie CSRF, salvo que el test la simule.
-    document.cookie = 'XSRF-TOKEN=; Max-Age=0'
+    setCsrfToken(null)
   })
 
   it('siempre manda credentials: include (la sesión viaja por cookie httpOnly)', async () => {
@@ -19,40 +18,38 @@ describe('apiRequest', () => {
     expect(options.credentials).toBe('include')
   })
 
-  it('no agrega X-XSRF-TOKEN en un GET', async () => {
+  it('no agrega X-CSRF-TOKEN en un GET', async () => {
     global.fetch.mockResolvedValue(new Response('{}', { status: 200 }))
 
     await apiRequest(BASE_URL, '/api/me')
 
     const [, options] = global.fetch.mock.calls[0]
-    expect(options.headers['X-XSRF-TOKEN']).toBeUndefined()
+    expect(options.headers['X-CSRF-TOKEN']).toBeUndefined()
   })
 
-  it('en un método mutante sin cookie CSRF previa, primero la pide a /sanctum/csrf-cookie', async () => {
-    global.fetch.mockImplementationOnce(async () => {
-      // Simula lo que haría el Set-Cookie real de esa respuesta.
-      document.cookie = 'XSRF-TOKEN=recien%20emitida'
-      return new Response(null, { status: 204 })
-    })
+  it('en un método mutante sin token CSRF cacheado, primero lo pide a /api/csrf-token', async () => {
+    global.fetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ token: 'token-recien-pedido' }), { status: 200 })
+    )
     global.fetch.mockResolvedValueOnce(new Response('{}', { status: 200 }))
 
     await apiRequest(BASE_URL, '/api/logout', { method: 'POST' })
 
     expect(global.fetch).toHaveBeenCalledTimes(2)
-    expect(global.fetch.mock.calls[0][0]).toBe(`${BASE_URL}/sanctum/csrf-cookie`)
+    expect(global.fetch.mock.calls[0][0]).toBe(`${BASE_URL}/api/csrf-token`)
     const [, options] = global.fetch.mock.calls[1]
-    expect(options.headers['X-XSRF-TOKEN']).toBe('recien emitida')
+    expect(options.headers['X-CSRF-TOKEN']).toBe('token-recien-pedido')
   })
 
-  it('en un método mutante con cookie CSRF ya presente, no la vuelve a pedir', async () => {
-    document.cookie = 'XSRF-TOKEN=ya-existe'
+  it('en un método mutante con token CSRF ya cacheado, no lo vuelve a pedir', async () => {
+    setCsrfToken('ya-cacheado')
     global.fetch.mockResolvedValue(new Response('{}', { status: 200 }))
 
     await apiRequest(BASE_URL, '/api/logout', { method: 'POST' })
 
     expect(global.fetch).toHaveBeenCalledTimes(1)
     const [, options] = global.fetch.mock.calls[0]
-    expect(options.headers['X-XSRF-TOKEN']).toBe('ya-existe')
+    expect(options.headers['X-CSRF-TOKEN']).toBe('ya-cacheado')
   })
 
   it('devuelve null para un 204 en vez de intentar parsear el body', async () => {

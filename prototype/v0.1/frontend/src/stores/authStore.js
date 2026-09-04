@@ -1,5 +1,5 @@
 import { reactive, computed } from 'vue'
-import { apiRequest } from '../services/httpClient'
+import { apiRequest, setCsrfToken } from '../services/httpClient'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -16,6 +16,11 @@ function persist(user) {
 
 function clear() {
   state.user = null
+  // El token CSRF cacheado queda atado a la sesión que se acaba de cerrar
+  // (logout la invalida server-side, un 401 significa que ya estaba
+  // invalidada) -- sin esto, el próximo intento de login mandaría un token
+  // viejo y Sanctum lo rechazaría con 419.
+  setCsrfToken(null)
 }
 
 // Se dispara una sola vez al cargar el módulo: la sesión ahora vive en una
@@ -50,14 +55,20 @@ function authRequest(path, body) {
   })
 }
 
+// login/register/exchange regeneran la sesión del lado del servidor (previene
+// fixation), lo que de paso rota el token CSRF -- el que se haya usado para
+// esta misma request queda viejo, así que hay que reemplazar el cacheado por
+// el que vuelve en la respuesta antes de la próxima request mutante.
 export async function register({ name, email, password, password_confirmation }) {
   const data = await authRequest('/api/register', { name, email, password, password_confirmation })
+  setCsrfToken(data.csrfToken)
   persist(data.user)
   return data.user
 }
 
 export async function login({ email, password }) {
   const data = await authRequest('/api/login', { email, password })
+  setCsrfToken(data.csrfToken)
   persist(data.user)
   return data.user
 }
@@ -67,6 +78,7 @@ export async function login({ email, password }) {
 // por la sesión real -- mismo shape de respuesta que login()/register().
 export async function exchangeSocialCode(provider, code) {
   const data = await authRequest(`/api/auth/${provider}/exchange`, { code })
+  setCsrfToken(data.csrfToken)
   persist(data.user)
   return data.user
 }

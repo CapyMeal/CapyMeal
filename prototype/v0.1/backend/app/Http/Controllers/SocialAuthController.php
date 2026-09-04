@@ -76,6 +76,7 @@ abstract class SocialAuthController extends Controller
 
         return response()->json([
             'user' => new UserResource($user),
+            'csrfToken' => $request->session()->token(),
         ]);
     }
 
