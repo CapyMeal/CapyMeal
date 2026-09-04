@@ -28,7 +28,7 @@ No busca controlar calorías ni imponer objetivos nutricionales. Su propósito e
 | Capa | Tecnología |
 |---|---|
 | Frontend | Vue 3 + Vite, Vuetify (Material Design 3), PWA instalable |
-| Backend  | Laravel 12, Laravel Sanctum (auth por token) |
+| Backend  | Laravel 12, Laravel Sanctum (auth por cookie de sesión httpOnly) |
 | Base de datos | PostgreSQL (Neon) |
 | PDF | DomPDF |
 | Email | SMTP (Brevo) / Resend |
