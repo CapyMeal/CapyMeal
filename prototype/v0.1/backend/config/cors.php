@@ -14,11 +14,7 @@ if ($frontendUrl && $frontendUrl !== '*') {
 }
 
 return [
-    // "sanctum/csrf-cookie" no vive bajo "api/*" -- sin listarla acá el
-    // navegador bloquea el fetch cross-site que la pide (no llegan los
-    // headers Access-Control-Allow-*), y sin esa cookie previa el backend
-    // rechaza login/register con 419 por CSRF.
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*'],
     'allowed_methods' => ['*'],
     'allowed_origins' => $allowedOrigins,
     'allowed_origins_patterns' => [],

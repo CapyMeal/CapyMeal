@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getMealEntries, upsertMealEntry } from '../../../src/services/mealEntriesApi'
+import { setCsrfToken } from '../../../src/services/httpClient'
 
 // vi.mock se hoistea antes que los imports de arriba, así que esto reemplaza
 // authStore para todo el archivo sin importar el orden en que se escriba.
@@ -10,10 +11,10 @@ vi.mock('../../../src/stores/authStore', () => ({
 describe('getMealEntries', () => {
   beforeEach(() => {
     global.fetch = vi.fn()
-    // Simula que la cookie CSRF ya existe para que ensureCsrfCookie() no
-    // dispare un fetch extra a /sanctum/csrf-cookie y corra los índices de
-    // los mocks de fetch de abajo.
-    document.cookie = 'XSRF-TOKEN=test'
+    // Simula que el token CSRF ya está cacheado para que ensureCsrfToken()
+    // no dispare un fetch extra a /api/csrf-token y corra los índices de los
+    // mocks de fetch de abajo.
+    setCsrfToken('test')
   })
 
   it('sin from/to no agrega ningún query string', async () => {
@@ -39,7 +40,7 @@ describe('getMealEntries', () => {
 describe('upsertMealEntry', () => {
   beforeEach(() => {
     global.fetch = vi.fn()
-    document.cookie = 'XSRF-TOKEN=test'
+    setCsrfToken('test')
   })
 
   it('intenta PUT primero, y si el registro no existe (404) reintenta con POST', async () => {

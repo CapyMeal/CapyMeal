@@ -18,6 +18,19 @@ class AuthController extends Controller
     // las opciones que muestra Settingsview.vue en el frontend.
     private const AVAILABLE_AVATARS = ['capy1', 'capy2', 'capy3'];
 
+    // El patrón habitual de Sanctum (cookie XSRF-TOKEN, legible por JS) no
+    // sirve acá: frontend y backend son dominios sin ninguna relación
+    // (capy-meal.vercel.app / capymeal.onrender.com), así que una cookie
+    // que puso este backend es invisible para el JS que corre en el
+    // frontend -- document.cookie nunca la muestra, sin importar
+    // SameSite/Secure. El token viaja en el body en su lugar: esta ruta lo
+    // entrega antes del primer login/register, y login/register/exchange lo
+    // reenvían fresco en su propia respuesta (regenerate() lo rota).
+    public function csrfToken(Request $request)
+    {
+        return response()->json(['token' => $request->session()->token()]);
+    }
+
     public function register(Request $request)
     {
         $data = $request->validate([
@@ -33,6 +46,7 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => new UserResource($user),
+            'csrfToken' => $request->session()->token(),
         ], 201);
     }
 
@@ -63,6 +77,7 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => new UserResource($user),
+            'csrfToken' => $request->session()->token(),
         ]);
     }
 

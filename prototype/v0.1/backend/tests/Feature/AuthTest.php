@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Middleware\RestoreConfiguredSessionSameSite;
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +34,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertCreated();
-        $response->assertJsonStructure(['user' => ['id', 'name', 'email']]);
+        $response->assertJsonStructure(['user' => ['id', 'name', 'email'], 'csrfToken']);
         $response->assertJsonMissingPath('user.password');
         $response->assertJsonMissingPath('token');
 
@@ -82,9 +83,46 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertOk();
-        $response->assertJsonStructure(['user']);
+        $response->assertJsonStructure(['user', 'csrfToken']);
         $response->assertJsonMissingPath('token');
         $this->assertAuthenticated();
+    }
+
+    public function test_csrf_token_endpoint_returns_a_token_and_starts_a_session(): void
+    {
+        // Reemplaza al patrón habitual de Sanctum (cookie XSRF-TOKEN) porque
+        // frontend y backend son dominios sin relación -- ver el comentario
+        // en AuthController::csrfToken().
+        $response = $this->getJson('/api/csrf-token');
+
+        $response->assertOk();
+        $response->assertJsonStructure(['token']);
+        $this->assertNotEmpty($response->json('token'));
+    }
+
+    public function test_csrf_token_from_the_endpoint_actually_satisfies_csrf_validation(): void
+    {
+        // El resto del suite corre con la validación CSRF desactivada (ver
+        // TestCase::setUp()) para no tener que simular el handshake real en
+        // cada test -- éste sí la deja prendida, porque es justo lo que hay
+        // que probar: que el token que /api/csrf-token devuelve en el body
+        // (no en una cookie) es el que Sanctum realmente espera en el header
+        // X-CSRF-TOKEN. Regresión real que este test agarra: mandarlo como
+        // X-XSRF-TOKEN en vez de X-CSRF-TOKEN rebota 419, porque Laravel
+        // intenta desencriptar ese header como si fuera el valor ya
+        // encriptado de una cookie real, no un token en texto plano.
+        config(['sanctum.middleware.validate_csrf_token' => ValidateCsrfToken::class]);
+
+        $token = $this->getJson('/api/csrf-token')->json('token');
+
+        $response = $this->withHeader('X-CSRF-TOKEN', $token)->postJson('/api/login', [
+            'email' => 'no-existe@example.com',
+            'password' => 'lo-que-sea',
+        ]);
+
+        // 422 (no 419): la request pasó CSRF y llegó a la validación de
+        // credenciales del controller.
+        $response->assertStatus(422);
     }
 
     public function test_login_fails_with_wrong_password(): void

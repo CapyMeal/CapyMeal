@@ -41,7 +41,7 @@ class SocialAuthExchangeTest extends TestCase
         $response = $this->postJson("/api/auth/{$driver}/exchange", ['code' => 'test-code']);
 
         $response->assertOk();
-        $response->assertJsonStructure(['user' => ['id', 'name', 'email']]);
+        $response->assertJsonStructure(['user' => ['id', 'name', 'email'], 'csrfToken']);
         $response->assertJsonMissingPath('token');
         $response->assertJsonPath('user.email', $user->email);
         $this->assertAuthenticated();

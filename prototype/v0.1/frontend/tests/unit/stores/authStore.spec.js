@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest'
 import { login, exchangeSocialCode, currentUser, authReady, handleUnauthorized } from '../../../src/stores/authStore'
+import { setCsrfToken } from '../../../src/services/httpClient'
 
 const pushMock = vi.fn()
 const mockRouter = {
@@ -27,7 +28,11 @@ describe('authStore', () => {
     pushMock.mockClear()
     mockRouter.currentRoute.value.name = 'today'
     global.fetch = vi.fn()
-    document.cookie = 'XSRF-TOKEN=test'
+    // clear() (llamado por handleUnauthorized) resetea el token CSRF
+    // cacheado a propósito -- volver a cachearlo achá evita que
+    // ensureCsrfToken() dispare un fetch extra a /api/csrf-token y corra
+    // los índices de los mocks de fetch de abajo.
+    setCsrfToken('test')
   })
 
   describe('login', () => {
