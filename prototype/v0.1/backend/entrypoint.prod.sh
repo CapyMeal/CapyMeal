@@ -47,7 +47,15 @@ DB_PASSWORD=${DB_PASSWORD:-capymeal}
 DB_SSLMODE=require
 
 CACHE_STORE=file
-SESSION_DRIVER=file
+# "database" y no "file": el plan free de Render no tiene disco persistente
+# (ver render.yaml, sin sección "disk:") -- el filesystem es efímero y se
+# pisa en cada redeploy, y probablemente en cada reinicio del servicio tras
+# dormirse por inactividad. Una sesión en archivo se perdería ahí,
+# desconectando a todo el mundo en silencio mucho más seguido que con los
+# bearer tokens de antes (que vivían en Postgres). La tabla "sessions" ya
+# existe (viene con la migración default de Laravel, junto con "users"),
+# no hace falta ninguna migración nueva para este cambio.
+SESSION_DRIVER=database
 QUEUE_CONNECTION=sync
 
 # Si Render no seteó esta variable, mejor dejarla vacía (el frontend real
@@ -73,8 +81,7 @@ MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-hello@capymeal.app}
 MAIL_FROM_NAME=CapyMeal
 EOF
 
-mkdir -p storage/framework/sessions \
-  storage/framework/views \
+mkdir -p storage/framework/views \
   storage/framework/cache \
   storage/framework/cache/data \
   storage/logs \
