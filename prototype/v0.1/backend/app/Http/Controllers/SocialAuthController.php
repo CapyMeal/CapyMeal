@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -34,10 +35,9 @@ abstract class SocialAuthController extends Controller
         $socialiteUser = Socialite::driver($this->driver())->user();
         $user = $this->findOrCreateUser($socialiteUser);
 
-        // El token de Sanctum se genera recién en exchange(), no acá -- si
-        // el código nunca se canjea (pestaña cerrada, error de red), no
-        // queda un token real huérfano en personal_access_tokens sin nada
-        // que lo revoque, porque nunca se llegó a crear.
+        // La sesión autenticada se abre recién en exchange(), no acá -- si
+        // el código nunca se canjea (pestaña cerrada, error de red), nunca
+        // se llega a crear una sesión huérfana.
         $code = Str::random(64);
         Cache::put(
             self::EXCHANGE_CACHE_PREFIX.$code,
@@ -71,11 +71,11 @@ abstract class SocialAuthController extends Controller
             ]);
         }
 
-        $token = $user->createToken('capymeal')->plainTextToken;
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
 
         return response()->json([
             'user' => new UserResource($user),
-            'token' => $token,
         ]);
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -26,11 +27,12 @@ class AuthController extends Controller
         ]);
 
         $user = User::create($data)->fresh();
-        $token = $user->createToken('capymeal')->plainTextToken;
+
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
 
         return response()->json([
             'user' => new UserResource($user),
-            'token' => $token,
         ], 201);
     }
 
@@ -51,22 +53,44 @@ class AuthController extends Controller
 
         $this->assertPasswordMatches($user, $data['password'], 'email', 'El email o la contraseña son incorrectos.');
 
-        // A propósito no se revocan los tokens existentes acá: CapyMeal es
-        // una PWA pensada para usarse desde varios dispositivos (celular +
-        // compu), y loguearse en uno no debería desloguear al otro sin
-        // aviso. El revoke sigue existiendo donde sí hay una razón de
+        // A propósito no se invalidan las sesiones existentes acá: CapyMeal
+        // es una PWA pensada para usarse desde varios dispositivos (celular
+        // + compu), y loguearse en uno no debería desloguear al otro sin
+        // aviso. El logout real sigue existiendo donde sí hay una razón de
         // seguridad real -- reset de contraseña y borrado de cuenta.
-        $token = $user->createToken('capymeal')->plainTextToken;
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
 
         return response()->json([
             'user' => new UserResource($user),
-            'token' => $token,
         ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // Un bearer token real (cliente sin sesión de navegador, o uno viejo
+        // emitido antes de esta migración a cookies) se revoca de verdad acá.
+        // Autenticado por cookie, currentAccessToken() devuelve un
+        // TransientToken sin fila real en la tabla ni delete() -- nada que
+        // borrar ahí, sólo cerrar la sesión (bloque de abajo). El @var mixed
+        // es necesario para Larastan: tipa currentAccessToken() como
+        // PersonalAccessToken siempre (vía el genérico TToken de Sanctum),
+        // así que sin esto method_exists() le queda tautológico aunque en
+        // runtime sí pueda ser un TransientToken.
+        /** @var mixed $token */
+        $token = $request->user()->currentAccessToken();
+        if ($token !== null && method_exists($token, 'delete')) {
+            $token->delete();
+        }
+
+        // Sin sesión de navegador (mismo caso que el bearer token de arriba)
+        // no hay nada que invalidar -- $request->session() explota si se lo
+        // llama sin que EnsureFrontendRequestsAreStateful haya arrancado una.
+        if ($request->hasSession()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json(null, 204);
     }
@@ -93,11 +117,11 @@ class AuthController extends Controller
 
         // Las cuentas de Google no tienen contraseña propia (ver
         // GoogleAuthController) -- para esas, no hay nada que confirmar más
-        // allá de la posesión del bearer token, la misma protección que ya
-        // tiene logout()/updateAvatar()/toda mutación de meal_entries. No
-        // es una reducción de seguridad respecto al resto de la API: acá
-        // el password nunca fue el único factor real, era un extra
-        // disponible sólo cuando existía.
+        // allá de la sesión autenticada, la misma protección que ya tiene
+        // logout()/updateAvatar()/toda mutación de meal_entries. No es una
+        // reducción de seguridad respecto al resto de la API: acá el
+        // password nunca fue el único factor real, era un extra disponible
+        // sólo cuando existía.
         if ($user->password) {
             $data = $request->validate(['password' => 'required|string']);
             $this->assertPasswordMatches($user, $data['password'], 'password', 'La contraseña no es correcta.');

@@ -1,4 +1,4 @@
-import { getToken, handleUnauthorized } from '../stores/authStore'
+import { handleUnauthorized } from '../stores/authStore'
 import { apiRequest } from './httpClient'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
@@ -6,7 +6,6 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 function request(path, options = {}) {
   return apiRequest(API_BASE_URL, path, {
     ...options,
-    token: getToken(),
     onUnauthorized: handleUnauthorized,
   })
 }
@@ -76,10 +75,8 @@ export async function exportMealEntriesPdf({ from, to }) {
   const url = `${API_BASE_URL}/api/meal-entries/export/pdf${dateRangeQuery({ from, to })}`
 
   const response = await fetch(url, {
-    headers: {
-      Accept: 'application/pdf',
-      ...(getToken() ? { 'Authorization': `Bearer ${getToken()}` } : {}),
-    },
+    credentials: 'include',
+    headers: { Accept: 'application/pdf' },
   })
 
   if (!response.ok) {

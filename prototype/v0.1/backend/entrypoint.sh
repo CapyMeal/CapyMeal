@@ -33,6 +33,12 @@ QUEUE_CONNECTION=database
 
 FRONTEND_URL=${FRONTEND_URL:-http://localhost:5174}
 
+# Dominios desde los que Sanctum acepta auth por cookie de sesión -- tienen
+# que incluir host:puerto exacto, "localhost" pelado no matchea
+# "localhost:5174" (puerto distinto). Cubre los tres puertos que puede usar
+# el frontend en local (ver comentario de CORS en config/cors.php).
+SANCTUM_STATEFUL_DOMAINS=${SANCTUM_STATEFUL_DOMAINS:-localhost:5173,localhost:5174,localhost:4173}
+
 GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
 GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
 GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8080/api/auth/google/callback}

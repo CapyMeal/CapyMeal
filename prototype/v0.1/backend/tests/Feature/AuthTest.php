@@ -32,10 +32,12 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertCreated();
-        $response->assertJsonStructure(['user' => ['id', 'name', 'email'], 'token']);
+        $response->assertJsonStructure(['user' => ['id', 'name', 'email']]);
         $response->assertJsonMissingPath('user.password');
+        $response->assertJsonMissingPath('token');
 
         $this->assertDatabaseHas('users', ['email' => 'mercedes@example.com']);
+        $this->assertAuthenticated();
     }
 
     public function test_registration_fails_with_mismatched_password_confirmation(): void
@@ -79,7 +81,9 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertOk();
-        $response->assertJsonStructure(['user', 'token']);
+        $response->assertJsonStructure(['user']);
+        $response->assertJsonMissingPath('token');
+        $this->assertAuthenticated();
     }
 
     public function test_login_fails_with_wrong_password(): void
@@ -107,11 +111,12 @@ class AuthTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_login_does_not_revoke_sessions_on_other_devices(): void
+    public function test_login_does_not_revoke_a_pre_existing_bearer_token(): void
     {
-        // CapyMeal es una PWA pensada para usarse desde varios dispositivos
-        // (celular + compu) -- loguearse en uno no debería desloguear al
-        // otro sin aviso.
+        // CapyMeal migró de bearer tokens a cookie de sesión (login() ya no
+        // emite tokens nuevos), pero un token viejo emitido antes de la
+        // migración tiene que seguir sirviendo hasta que se revoque a mano --
+        // loguearse de nuevo (ahora por cookie) no debería invalidarlo.
         $user = User::factory()->create([
             'email' => 'mercedes@example.com',
             'password' => Hash::make('capymeal123'),
@@ -122,6 +127,8 @@ class AuthTest extends TestCase
             'email' => 'mercedes@example.com',
             'password' => 'capymeal123',
         ])->assertOk();
+
+        auth()->forgetGuards();
 
         $this->withHeader('Authorization', "Bearer {$existingToken}")
             ->getJson('/api/me')

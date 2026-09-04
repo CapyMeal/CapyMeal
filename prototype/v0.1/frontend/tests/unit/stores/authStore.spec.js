@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { login, exchangeSocialCode, getToken, handleUnauthorized } from '../../../src/stores/authStore'
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest'
+import { login, exchangeSocialCode, currentUser, authReady, handleUnauthorized } from '../../../src/stores/authStore'
 
 const pushMock = vi.fn()
 const mockRouter = {
@@ -13,27 +13,36 @@ const mockRouter = {
 vi.mock('../../../src/router', () => ({ default: mockRouter }))
 
 describe('authStore', () => {
+  // authStore dispara un GET a /api/me apenas se importa el módulo (para
+  // saber si la cookie de sesión, si existe, todavía es válida), con
+  // cualquier fetch global que hubiera en ese momento (no el mock de acá
+  // abajo, que recién se instala en el primer beforeEach). Hay que esperar
+  // a que esa promesa asiente antes de correr los tests, porque si resuelve
+  // tarde pisa el state.user que haya dejado el login() de un test anterior.
+  beforeAll(async () => {
+    await authReady
+  })
+
   beforeEach(() => {
-    localStorage.clear()
     pushMock.mockClear()
     mockRouter.currentRoute.value.name = 'today'
     global.fetch = vi.fn()
+    document.cookie = 'XSRF-TOKEN=test'
   })
 
   describe('login', () => {
-    it('guarda el token y el usuario en localStorage tras un login exitoso', async () => {
+    it('guarda el usuario tras un login exitoso', async () => {
       global.fetch.mockResolvedValue(
-        new Response(JSON.stringify({ token: 'nuevo-token', user: { id: 1, name: 'Mercedes' } }), { status: 200 })
+        new Response(JSON.stringify({ user: { id: 1, name: 'Mercedes' } }), { status: 200 })
       )
 
       const user = await login({ email: 'mer@example.com', password: '123' })
 
       expect(user).toEqual({ id: 1, name: 'Mercedes' })
-      expect(getToken()).toBe('nuevo-token')
-      expect(localStorage.getItem('capymeal-token')).toBe('nuevo-token')
+      expect(currentUser.value).toEqual({ id: 1, name: 'Mercedes' })
     })
 
-    it('tira un error con el mensaje del servidor y no toca el token si las credenciales son incorrectas', async () => {
+    it('tira un error con el mensaje del servidor y no toca la sesión si las credenciales son incorrectas', async () => {
       global.fetch.mockResolvedValue(
         new Response(JSON.stringify({ message: 'El email o la contraseña son incorrectos.' }), { status: 422 })
       )
@@ -41,19 +50,19 @@ describe('authStore', () => {
       // Se compara contra el valor de antes (no se asume "null") porque
       // authStore es un módulo singleton: su estado interno persiste entre
       // tests de este archivo, no se reinicia solo entre "it()".
-      const tokenAntes = getToken()
+      const userAntes = currentUser.value
 
       await expect(login({ email: 'mer@example.com', password: 'mal' }))
         .rejects.toThrow('El email o la contraseña son incorrectos.')
 
-      expect(getToken()).toBe(tokenAntes)
+      expect(currentUser.value).toEqual(userAntes)
     })
   })
 
   describe.each(['google', 'microsoft'])('exchangeSocialCode (%s)', (provider) => {
-    it('guarda el token y el usuario en localStorage tras canjear el código, contra la URL del proveedor correcto', async () => {
+    it('guarda el usuario tras canjear el código, contra la URL del proveedor correcto', async () => {
       global.fetch.mockResolvedValue(
-        new Response(JSON.stringify({ token: 'token-social', user: { id: 2, name: 'Mercedes' } }), { status: 200 })
+        new Response(JSON.stringify({ user: { id: 2, name: 'Mercedes' } }), { status: 200 })
       )
 
       const user = await exchangeSocialCode(provider, 'un-codigo')
@@ -63,36 +72,34 @@ describe('authStore', () => {
         expect.anything()
       )
       expect(user).toEqual({ id: 2, name: 'Mercedes' })
-      expect(getToken()).toBe('token-social')
-      expect(localStorage.getItem('capymeal-token')).toBe('token-social')
+      expect(currentUser.value).toEqual({ id: 2, name: 'Mercedes' })
     })
 
-    it('tira un error con el mensaje del servidor y no toca el token si el código no es válido', async () => {
+    it('tira un error con el mensaje del servidor y no toca la sesión si el código no es válido', async () => {
       global.fetch.mockResolvedValue(
         new Response(JSON.stringify({ message: 'Este enlace ya no es válido. Iniciá sesión de nuevo.' }), { status: 422 })
       )
 
-      const tokenAntes = getToken()
+      const userAntes = currentUser.value
 
       await expect(exchangeSocialCode(provider, 'codigo-vencido'))
         .rejects.toThrow('Este enlace ya no es válido. Iniciá sesión de nuevo.')
 
-      expect(getToken()).toBe(tokenAntes)
+      expect(currentUser.value).toEqual(userAntes)
     })
   })
 
   describe('handleUnauthorized', () => {
     it('limpia la sesión y redirige a login con expired=1', async () => {
       global.fetch.mockResolvedValue(
-        new Response(JSON.stringify({ token: 'token-vencido', user: { id: 1 } }), { status: 200 })
+        new Response(JSON.stringify({ user: { id: 1 } }), { status: 200 })
       )
       await login({ email: 'mer@example.com', password: '123' })
-      expect(getToken()).toBe('token-vencido')
+      expect(currentUser.value).toEqual({ id: 1 })
 
       await handleUnauthorized()
 
-      expect(getToken()).toBeNull()
-      expect(localStorage.getItem('capymeal-token')).toBeNull()
+      expect(currentUser.value).toBeNull()
       expect(pushMock).toHaveBeenCalledWith({ name: 'login', query: { expired: '1' } })
     })
 
