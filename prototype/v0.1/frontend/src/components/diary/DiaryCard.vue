@@ -19,7 +19,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { formatDateEs } from '../../utils/date'
+import { formatDate } from '../../utils/date'
 
 const props = defineProps({
   date:  { type: String, required: true },
@@ -39,7 +39,7 @@ const filledMeals = computed(() =>
     .map(m => ({ ...m, value: props.entry[m.key] }))
 )
 
-const formattedDate = computed(() => formatDateEs(props.date, {
+const formattedDate = computed(() => formatDate(props.date, {
   weekday: 'long',
   day:     'numeric',
   month:   'long',

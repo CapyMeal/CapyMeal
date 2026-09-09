@@ -85,7 +85,7 @@ describe('DetailView', () => {
       const wrapper = mountDetailView()
       await flushPromises()
 
-      expect(wrapper.text()).toContain('Estás sin conexión — no pude cargar este día.')
+      expect(wrapper.text()).toContain('No pude cargar este día: estás sin conexión.')
       expect(wrapper.findComponent({ name: 'EmptyState' }).exists()).toBe(false)
     })
 

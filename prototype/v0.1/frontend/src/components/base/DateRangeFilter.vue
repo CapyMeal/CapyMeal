@@ -2,14 +2,14 @@
   <div class="date-range-filter">
     <v-text-field
       :model-value="from"
-      label="Desde"
+      :label="t('dateRangeFilter.from')"
       type="date"
       density="compact"
       @update:model-value="$emit('update:from', $event)"
     />
     <v-text-field
       :model-value="to"
-      label="Hasta"
+      :label="t('dateRangeFilter.to')"
       type="date"
       density="compact"
       @update:model-value="$emit('update:to', $event)"
@@ -18,6 +18,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   from: { type: String, default: '' },
   to:   { type: String, default: '' },

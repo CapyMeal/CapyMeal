@@ -1,3 +1,8 @@
+// Lee el locale actual del plugin de i18n en vez de recibirlo como
+// parámetro en cada llamada -- así ningún llamador tiene que pasarlo a
+// mano, y formatDate() sigue al toggle de idioma sin más cambios.
+import i18n from '../plugins/i18n'
+
 // Convierte una fecha ISO ("YYYY-MM-DD") a un Date local. `new Date(str)`
 // a secas la interpreta como medianoche UTC, lo que corta al día anterior
 // en cualquier huso horario negativo (todo Argentina) -- este parseo
@@ -7,11 +12,12 @@ export function parseISODate(dateStr) {
   return new Date(year, month - 1, day)
 }
 
-// Formatea una fecha ISO en español, con las opciones de
+// Formatea una fecha ISO en el idioma activo, con las opciones de
 // Intl.DateTimeFormat que pida cada pantalla (algunas quieren día de la
 // semana, otras no).
-export function formatDateEs(dateStr, options) {
-  return parseISODate(dateStr).toLocaleDateString('es-AR', options)
+export function formatDate(dateStr, options) {
+  const intlLocale = i18n.global.locale.value === 'en' ? 'en-US' : 'es-AR'
+  return parseISODate(dateStr).toLocaleDateString(intlLocale, options)
 }
 
 // Serializa un Date a "YYYY-MM-DD" en hora local (Date#toISOString() usa

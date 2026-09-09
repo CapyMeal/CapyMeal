@@ -2,13 +2,13 @@
   <MainLayout>
     <div class="export-heading">
       <img src="../assets/icons/pdf.png" alt="" class="export-heading__icon">
-      <h1 class="export-heading__title">Exportar PDF</h1>
+      <h1 class="export-heading__title">{{ t('export.title') }}</h1>
     </div>
 
     <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
 
     <p v-if="errorMessage" class="export-error">{{ errorMessage }}</p>
-    <CapyLoader v-if="loading" message="Cargando registros para exportar..." />
+    <CapyLoader v-if="loading" :message="t('export.loading')" />
 
     <CapyButton
       v-if="!loading && entries.length > 0"
@@ -16,12 +16,12 @@
       :disabled="exporting"
       @click="printPdf"
     >
-      {{ exporting ? 'Preparando PDF...' : '🤎 Descargar PDF' }}
+      {{ exporting ? t('common.preparingPdf') : t('export.downloadButton') }}
     </CapyButton>
 
     <EmptyState
       v-if="!loading && entries.length === 0"
-      message="No encontré registros para esas fechas."
+      :message="t('export.emptyMessage')"
     />
 
     <div v-if="!loading && entries.length > 0" id="print-section" class="export-preview">
@@ -33,11 +33,11 @@
       >
         <v-card-text>
           <h2>{{ formatDate(date) }}</h2>
-          <p><strong>☀️ Desayuno:</strong> {{ entry.breakfast || 'No registrado' }}</p>
-          <p><strong>🍝 Almuerzo:</strong> {{ entry.lunch || 'No registrado' }}</p>
-          <p><strong>🧁 Merienda:</strong> {{ entry.snack || 'No registrado' }}</p>
-          <p><strong>🌙 Cena:</strong> {{ entry.dinner || 'No registrado' }}</p>
-          <p v-if="entry.notes"><strong>📝 Recuerdo:</strong> {{ entry.notes }}</p>
+          <p><strong>☀️ {{ t('meals.breakfast') }}:</strong> {{ entry.breakfast || t('common.notRecorded') }}</p>
+          <p><strong>🍝 {{ t('meals.lunch') }}:</strong> {{ entry.lunch || t('common.notRecorded') }}</p>
+          <p><strong>🧁 {{ t('meals.snack') }}:</strong> {{ entry.snack || t('common.notRecorded') }}</p>
+          <p><strong>🌙 {{ t('meals.dinner') }}:</strong> {{ entry.dinner || t('common.notRecorded') }}</p>
+          <p v-if="entry.notes"><strong>📝 {{ t('export.notesLabel') }}:</strong> {{ entry.notes }}</p>
         </v-card-text>
       </v-card>
     </div>
@@ -45,25 +45,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MainLayout      from '../layouts/MainLayout.vue'
 import EmptyState      from '../components/diary/EmptyState.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import DateRangeFilter from '../components/base/DateRangeFilter.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
 import { exportMealEntriesPdf } from '../services/mealEntriesApi'
-import { formatDateEs } from '../utils/date'
+import { formatDate as formatDateUtil } from '../utils/date'
 import { useMealEntriesByRange } from '../utils/useMealEntriesByRange'
 
+const { t } = useI18n()
+
 const { entries, loading, errorMessage, fromDate, toDate } = useMealEntriesByRange({
-  networkErrorMessage: 'No pude cargar los registros para exportar: estás sin conexión.',
-  genericErrorMessage: 'No pude cargar los registros para exportar.',
+  networkErrorMessage: computed(() => t('export.networkError')),
+  genericErrorMessage: computed(() => t('export.genericError')),
 })
 
 const exporting = ref(false)
 
 function formatDate(date) {
-  return formatDateEs(date, {
+  return formatDateUtil(date, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -88,7 +91,7 @@ async function printPdf() {
     link.click()
     window.URL.revokeObjectURL(fileURL)
   } catch {
-    errorMessage.value = 'No pude generar el PDF. Intentá nuevamente.'
+    errorMessage.value = t('export.genericExportError')
   } finally {
     exporting.value = false
   }

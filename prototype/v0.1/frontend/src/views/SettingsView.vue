@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="settings-heading">
       <img src="../assets/icons/ajustes.png" alt="" class="settings-heading__icon">
-      <h1 class="settings-heading__title">Ajustes</h1>
+      <h1 class="settings-heading__title">{{ t('settings.title') }}</h1>
     </div>
 
     <div class="settings-list">
@@ -12,8 +12,8 @@
         <div class="settings-item__info">
           <span class="settings-item__icon">🎨</span>
           <div>
-            <p class="settings-item__label">Tema</p>
-            <p class="settings-item__desc">{{ isDark ? 'Oscuro' : 'Claro' }}</p>
+            <p class="settings-item__label">{{ t('settings.theme') }}</p>
+            <p class="settings-item__desc">{{ isDark ? t('settings.themeDark') : t('settings.themeLight') }}</p>
           </div>
         </div>
         <v-switch
@@ -27,10 +27,30 @@
 
       <hr class="settings-divider" />
 
+      <!-- Idioma -->
+      <div class="settings-item">
+        <div class="settings-item__info">
+          <component :is="isEnglish ? UKFlagIcon : ArgentinaFlagIcon" />
+          <div>
+            <p class="settings-item__label">{{ t('settings.language') }}</p>
+            <p class="settings-item__desc">{{ isEnglish ? t('settings.languageEnglish') : t('settings.languageSpanish') }}</p>
+          </div>
+        </div>
+        <v-switch
+          :model-value="isEnglish"
+          color="primary"
+          hide-details
+          density="compact"
+          @update:model-value="toggleLocale"
+        />
+      </div>
+
+      <hr class="settings-divider" />
+
       <!-- Avatar -->
       <div class="settings-item settings-item--static">
         <div class="settings-avatar-picker">
-          <p class="settings-item__label">Avatar</p>
+          <p class="settings-item__label">{{ t('settings.avatar') }}</p>
           <p v-if="avatarError" class="settings-avatar-picker__error">{{ avatarError }}</p>
           <div class="settings-avatar-picker__options">
             <button
@@ -38,7 +58,7 @@
               class="settings-avatar-picker__option"
               :class="{ 'settings-avatar-picker__option--active': !currentUser?.avatar }"
               :disabled="savingAvatar"
-              title="Gravatar"
+              :title="t('settings.gravatarTitle')"
               @click="selectAvatar(null)"
             >
               <UserAvatar :avatar="null" :email="currentUser?.email" :size="44" />
@@ -65,12 +85,12 @@
       <div class="settings-item settings-item--static">
         <img src="../assets/icons/capy2.png" alt="Capi" class="settings-item__capi">
         <div>
-          <p class="settings-item__label">Sobre CapyMeal</p>
-          <p class="settings-item__desc">Un lugar tranquilo para guardar los pequeños momentos alrededor de la comida.</p>
+          <p class="settings-item__label">{{ t('settings.aboutTitle') }}</p>
+          <p class="settings-item__desc">{{ t('settings.aboutDesc') }}</p>
           <div class="settings-item__links">
-            <router-link to="/privacidad" class="settings-item__link">Política de privacidad</router-link>
-            <router-link to="/terminos" class="settings-item__link">Términos de servicio</router-link>
-            <router-link to="/instalar-app" class="settings-item__link">Descargar app para Android</router-link>
+            <router-link to="/privacidad" class="settings-item__link">{{ t('settings.privacyPolicy') }}</router-link>
+            <router-link to="/terminos" class="settings-item__link">{{ t('settings.termsOfService') }}</router-link>
+            <router-link to="/instalar-app" class="settings-item__link">{{ t('settings.downloadApp') }}</router-link>
           </div>
         </div>
       </div>
@@ -78,8 +98,8 @@
       <div class="settings-item settings-item--static">
         <span class="settings-item__icon">❤️</span>
         <div>
-          <p class="settings-item__label">Versión</p>
-          <p class="settings-item__desc">v0.1 — prototipo</p>
+          <p class="settings-item__label">{{ t('settings.version') }}</p>
+          <p class="settings-item__desc">{{ t('settings.versionValue') }}</p>
         </div>
       </div>
 
@@ -100,7 +120,7 @@
 
       <button type="button" class="settings-item settings-item--danger" @click="handleLogout">
         <span class="settings-item__icon">🚪</span>
-        <p class="settings-item__label">Cerrar sesión</p>
+        <p class="settings-item__label">{{ t('settings.logout') }}</p>
       </button>
 
       <hr class="settings-divider" />
@@ -112,24 +132,24 @@
         @click="confirmingDeleteAccount = true"
       >
         <span class="settings-item__icon">🗑</span>
-        <p class="settings-item__label">Eliminar mi cuenta</p>
+        <p class="settings-item__label">{{ t('settings.deleteAccount') }}</p>
       </button>
 
       <div v-else class="settings-delete-account">
         <p class="settings-delete-account__warning">
-          Esto borra tu cuenta y todo tu diario para siempre. No se puede deshacer.
+          {{ t('settings.deleteAccountWarning') }}
         </p>
         <PasswordField
           v-model="deletePassword"
-          label="Confirmá tu contraseña"
+          :label="t('settings.confirmPassword')"
           autocomplete="current-password"
         />
         <p v-if="deleteError" class="settings-delete-account__error">{{ deleteError }}</p>
         <div class="settings-delete-account__actions">
           <CapyButton variant="danger" :disabled="deletingAccount" @click="handleDeleteAccount">
-            {{ deletingAccount ? 'Eliminando...' : 'Sí, eliminar mi cuenta' }}
+            {{ deletingAccount ? t('settings.deleting') : t('settings.confirmDelete') }}
           </CapyButton>
-          <CapyButton variant="ghost" :disabled="deletingAccount" @click="cancelDeleteAccount">Cancelar</CapyButton>
+          <CapyButton variant="ghost" :disabled="deletingAccount" @click="cancelDeleteAccount">{{ t('settings.cancel') }}</CapyButton>
         </div>
       </div>
 
@@ -138,25 +158,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
+import { useI18n } from 'vue-i18n'
 import MainLayout from '../layouts/MainLayout.vue'
 import UserAvatar  from '../components/base/UserAvatar.vue'
 import PasswordField from '../components/base/PasswordField.vue'
 import CapyButton  from '../components/base/CapyButton.vue'
+import ArgentinaFlagIcon from '../components/base/ArgentinaFlagIcon.vue'
+import UKFlagIcon from '../components/base/UKFlagIcon.vue'
 import { logout, currentUser, updateAvatar, deleteAccount } from '../stores/authStore'
 import { isNetworkError } from '../services/mealEntriesApi'
 
 const router      = useRouter()
 const vuetifyTheme = useTheme()
+const { t, locale } = useI18n()
 const isDark      = ref(document.documentElement.getAttribute('data-theme') === 'dark')
+const isEnglish   = computed(() => locale.value === 'en')
 
-const avatarOptions = [
-  { value: 'capy1', label: 'Capi con mate' },
-  { value: 'capy2', label: 'Capi con flor' },
-  { value: 'capy3', label: 'Capi' },
-]
+const avatarOptions = computed(() => [
+  { value: 'capy1', label: t('settings.avatarOption1') },
+  { value: 'capy2', label: t('settings.avatarOption2') },
+  { value: 'capy3', label: t('settings.avatarOption3') },
+])
 const savingAvatar  = ref(false)
 const avatarError   = ref('')
 
@@ -171,7 +196,7 @@ async function selectAvatar(value) {
   try {
     await updateAvatar(value)
   } catch {
-    avatarError.value = 'No pude guardar el avatar. Intentá nuevamente.'
+    avatarError.value = t('settings.avatarError')
   } finally {
     savingAvatar.value = false
   }
@@ -185,6 +210,15 @@ function toggleTheme(value) {
   // data-theme/localStorage siguen siendo la fuente de verdad; Vuetify
   // solo se mantiene sincronizado con eso.
   vuetifyTheme.change(isDark.value ? 'capymealDark' : 'capymealLight')
+}
+
+// Mismo patrón que toggleTheme: local ref (via locale.value del i18n
+// global) + atributo en <html> + localStorage, en ese orden.
+function toggleLocale(value) {
+  const newLocale = value ? 'en' : 'es'
+  locale.value = newLocale
+  document.documentElement.setAttribute('lang', newLocale)
+  localStorage.setItem('capymeal-locale', newLocale)
 }
 
 async function handleLogout() {
@@ -205,7 +239,7 @@ function cancelDeleteAccount() {
 
 async function handleDeleteAccount() {
   if (!deletePassword.value) {
-    deleteError.value = 'Ingresá tu contraseña para confirmar.'
+    deleteError.value = t('settings.confirmPasswordRequired')
     return
   }
 
@@ -217,7 +251,7 @@ async function handleDeleteAccount() {
     router.push('/login')
   } catch (error) {
     deleteError.value = isNetworkError(error)
-      ? 'No se pudo eliminar: estás sin conexión.'
+      ? t('settings.deleteOfflineError')
       : error.message
   } finally {
     deletingAccount.value = false

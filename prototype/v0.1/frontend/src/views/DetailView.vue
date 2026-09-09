@@ -12,14 +12,14 @@
     <!-- Confirmar eliminar -->
     <div v-if="confirmingDelete" class="detail-confirm">
       <img src="../assets/icons/eliminar.webp" alt="Capi" class="detail-confirm__capi">
-      <p class="detail-confirm__message">¿Segura que querés eliminar este recuerdo?</p>
+      <p class="detail-confirm__message">{{ t('detail.deleteConfirmMessage') }}</p>
       <div class="detail-confirm__actions">
-        <CapyButton variant="danger" @click="deleteEntry">Sí, eliminar</CapyButton>
-        <CapyButton variant="ghost" @click="confirmingDelete = false">Cancelar</CapyButton>
+        <CapyButton variant="danger" @click="deleteEntry">{{ t('detail.deleteConfirmYes') }}</CapyButton>
+        <CapyButton variant="ghost" @click="confirmingDelete = false">{{ t('detail.cancel') }}</CapyButton>
       </div>
     </div>
 
-    <CapyLoader v-else-if="loading" message="Cargando el detalle del día..." />
+    <CapyLoader v-else-if="loading" :message="t('detail.loading')" />
 
     <!-- Sin entry: puede ser porque de verdad no hay registro, o porque el
          load falló (ver el mensaje de arriba). El resto del template asume
@@ -30,8 +30,8 @@
     <template v-else-if="!entry">
       <EmptyState
         v-if="!errorMessage"
-        message="No encontré ese recuerdo."
-        action-label="Volver al diario"
+        :message="t('detail.emptyMessage')"
+        :action-label="t('detail.emptyAction')"
         @action="$router.push('/recuerdos')"
       />
     </template>
@@ -40,7 +40,7 @@
     <template v-else>
       <div class="detail-header">
         <button class="detail-back" @click="$router.push('/recuerdos')">
-          ← Volver
+          {{ t('detail.back') }}
         </button>
         <p class="detail-date">{{ formattedDate }}</p>
       </div>
@@ -64,27 +64,27 @@
         </div>
 
         <StickyActionBar>
-          <CapyButton @click="startEdit">✏️ Editar</CapyButton>
+          <CapyButton @click="startEdit">{{ t('detail.editButton') }}</CapyButton>
           <CapyButton :disabled="exportingPdf" variant="ghost" @click="exportDayPdf">
-            {{ exportingPdf ? 'Preparando PDF...' : '📄 Exportar este día' }}
+            {{ exportingPdf ? t('common.preparingPdf') : t('detail.exportDayButton') }}
           </CapyButton>
-          <CapyButton variant="ghost" @click="confirmingDelete = true">🗑 Eliminar</CapyButton>
+          <CapyButton variant="ghost" @click="confirmingDelete = true">{{ t('detail.deleteButton') }}</CapyButton>
         </StickyActionBar>
       </template>
 
       <!-- Modo edición -->
       <template v-else>
         <div class="detail-edit-meals detail-edit-meals--with-bar">
-          <MealCard v-model="form.breakfast" :icon-image="breakfastIcon"      title="Desayuno"  placeholder="¿Qué desayunaste?" />
-          <MealCard v-model="form.lunch" :icon-image="lunchIcon"      title="Almuerzo"   placeholder="¿Qué almorzaste?"      />
-          <MealCard v-model="form.snack" :icon-image="snackIcon"      title="Merienda"  placeholder="¿Merendaste algo?"     />
-          <MealCard v-model="form.dinner" :icon-image="dinnerIcon"          title="Cena"      placeholder="¿Qué cenaste?"    />
-          <MealCard v-model="form.notes" icon="📝" title="Recuerdo del día" placeholder="¿Hubo algo especial?" />
+          <MealCard v-model="form.breakfast" :icon-image="breakfastIcon" :title="t('meals.breakfast')" :placeholder="t('detail.editBreakfastPlaceholder')" />
+          <MealCard v-model="form.lunch" :icon-image="lunchIcon" :title="t('meals.lunch')" :placeholder="t('detail.editLunchPlaceholder')" />
+          <MealCard v-model="form.snack" :icon-image="snackIcon" :title="t('meals.snack')" :placeholder="t('detail.editSnackPlaceholder')" />
+          <MealCard v-model="form.dinner" :icon-image="dinnerIcon" :title="t('meals.dinner')" :placeholder="t('detail.editDinnerPlaceholder')" />
+          <MealCard v-model="form.notes" icon="📝" :title="t('meals.notes')" :placeholder="t('detail.editNotesPlaceholder')" />
         </div>
 
         <StickyActionBar>
-          <CapyButton @click="saveEdit">🤎 Guardar cambios</CapyButton>
-          <CapyButton variant="ghost" @click="cancelEdit">Cancelar</CapyButton>
+          <CapyButton @click="saveEdit">{{ t('detail.saveChangesButton') }}</CapyButton>
+          <CapyButton variant="ghost" @click="cancelEdit">{{ t('detail.cancel') }}</CapyButton>
         </StickyActionBar>
       </template>
     </template>
@@ -95,6 +95,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import MainLayout      from '../layouts/MainLayout.vue'
 import MealCard        from '../components/meal/MealCard.vue'
 import MealDetailCard  from '../components/meal/MealDetailCard.vue'
@@ -113,10 +114,11 @@ import {
   upsertMealEntry,
   isNetworkError,
 } from '../services/mealEntriesApi'
-import { formatDateEs } from '../utils/date'
+import { formatDate } from '../utils/date'
 
 const route  = useRoute()
 const router = useRouter()
+const { t }  = useI18n()
 
 const dateKey = route.params.date
 
@@ -132,20 +134,20 @@ const savingMealKey = ref('')
 
 const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
 
-const allMeals = [
-  { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno', label: 'desayuno' },
-  { key: 'lunch',     iconImage: lunchIcon, title: 'Almuerzo', label: 'almuerzo' },
-  { key: 'snack',     iconImage: snackIcon, title: 'Merienda', label: 'merienda' },
-  { key: 'dinner',    iconImage: dinnerIcon, title: 'Cena', label: 'cena' },
-]
+const allMeals = computed(() => [
+  { key: 'breakfast', iconImage: breakfastIcon, title: t('meals.breakfast'), label: t('meals.breakfast').toLowerCase() },
+  { key: 'lunch',     iconImage: lunchIcon, title: t('meals.lunch'), label: t('meals.lunch').toLowerCase() },
+  { key: 'snack',     iconImage: snackIcon, title: t('meals.snack'), label: t('meals.snack').toLowerCase() },
+  { key: 'dinner',    iconImage: dinnerIcon, title: t('meals.dinner'), label: t('meals.dinner').toLowerCase() },
+])
 
 // label es lo que va en el botón/mensajes ("Editar recuerdo", "Completá
 // recuerdo antes de guardar") -- deliberadamente más corto que el title que
 // se muestra como encabezado de la tarjeta ("Recuerdo del día").
-const notesMeal = { key: 'notes', icon: '📝', title: 'Recuerdo del día', label: 'recuerdo' }
-const allMealsWithNotes = [...allMeals, notesMeal]
+const notesMeal = computed(() => ({ key: 'notes', icon: '📝', title: t('meals.notes'), label: t('meals.notesShortLabel') }))
+const allMealsWithNotes = computed(() => [...allMeals.value, notesMeal.value])
 
-const formattedDate = computed(() => formatDateEs(dateKey, {
+const formattedDate = computed(() => formatDate(dateKey, {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 }))
 
@@ -187,8 +189,8 @@ async function saveEdit() {
     editing.value = false
   } catch (error) {
     errorMessage.value = isNetworkError(error)
-      ? 'No se pudo guardar: estás sin conexión.'
-      : 'No pude guardar los cambios. Intentá nuevamente.'
+      ? t('detail.saveOfflineError')
+      : t('detail.saveGenericError')
   }
 }
 
@@ -200,8 +202,8 @@ async function deleteEntry() {
     router.push('/recuerdos')
   } catch (error) {
     errorMessage.value = isNetworkError(error)
-      ? 'No se pudo eliminar: estás sin conexión.'
-      : 'No pude eliminar este día. Intentá nuevamente.'
+      ? t('detail.deleteOfflineError')
+      : t('detail.deleteGenericError')
   }
 }
 
@@ -213,8 +215,8 @@ async function loadEntry() {
     entry.value = await getMealEntry(dateKey)
   } catch (error) {
     errorMessage.value = isNetworkError(error)
-      ? 'Estás sin conexión — no pude cargar este día.'
-      : 'No pude cargar este día. Intentá nuevamente.'
+      ? t('detail.loadOfflineError')
+      : t('detail.loadGenericError')
   } finally {
     loading.value = false
   }
@@ -237,7 +239,7 @@ async function exportDayPdf() {
     link.click()
     window.URL.revokeObjectURL(fileURL)
   } catch {
-    errorMessage.value = 'No pude exportar este día. Intentá nuevamente.'
+    errorMessage.value = t('detail.exportError')
   } finally {
     exportingPdf.value = false
   }
@@ -246,7 +248,7 @@ async function exportDayPdf() {
 async function saveSingleMeal(fieldKey, fieldLabel) {
   const value = mealDraftValue.value.trim()
   if (!value) {
-    errorMessage.value = `Completá ${fieldLabel.toLowerCase()} antes de guardar.`
+    errorMessage.value = t('detail.fieldRequired', { field: fieldLabel.toLowerCase() })
     return
   }
 
@@ -266,8 +268,8 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
     cancelMealEdit()
   } catch (error) {
     errorMessage.value = isNetworkError(error)
-      ? 'No se pudo guardar: estás sin conexión.'
-      : `No pude guardar ${fieldLabel.toLowerCase()}. Intentá nuevamente.`
+      ? t('detail.saveOfflineError')
+      : t('detail.saveFieldGenericError', { field: fieldLabel.toLowerCase() })
   } finally {
     savingMealKey.value = ''
   }

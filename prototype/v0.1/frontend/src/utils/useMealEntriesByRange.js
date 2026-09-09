@@ -1,4 +1,4 @@
-import { ref, watch, onMounted } from 'vue'
+import { ref, unref, watch, onMounted } from 'vue'
 import { getMealEntries, isNetworkError } from '../services/mealEntriesApi'
 
 // Compartido entre DiaryView y ExportView, que repetían casi verbatim el
@@ -6,6 +6,11 @@ import { getMealEntries, isNetworkError } from '../services/mealEntriesApi'
 // guard de rango inválido -- los mensajes de error quedan a cargo de cada
 // vista porque el tono es distinto ("cargar el diario" vs "cargar los
 // registros para exportar").
+//
+// networkErrorMessage/genericErrorMessage aceptan un string plano o un ref
+// (ej: un computed que llama a t(...)) -- así el mensaje se resuelve recién
+// cuando ocurre el error, con el idioma vigente en ese momento, en vez de
+// quedar fijado al idioma que estaba activo cuando se montó la vista.
 export function useMealEntriesByRange({ networkErrorMessage, genericErrorMessage }) {
   const entries = ref([])
   const loading = ref(false)
@@ -29,7 +34,7 @@ export function useMealEntriesByRange({ networkErrorMessage, genericErrorMessage
       const data = await getMealEntries({ from: fromDate.value, to: toDate.value })
       entries.value = data.map((entry) => ({ date: entry.date, entry }))
     } catch (error) {
-      errorMessage.value = isNetworkError(error) ? networkErrorMessage : genericErrorMessage
+      errorMessage.value = isNetworkError(error) ? unref(networkErrorMessage) : unref(genericErrorMessage)
     } finally {
       loading.value = false
     }

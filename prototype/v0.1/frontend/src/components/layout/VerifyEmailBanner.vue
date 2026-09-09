@@ -6,7 +6,7 @@
     class="verify-email-banner"
   >
     <p class="verify-email-banner__text">
-      {{ sent ? '¡Listo, te lo mandamos de nuevo! Revisá tu bandeja de entrada (y spam) 📬' : 'Todavía no confirmaste tu email. Revisá tu bandeja de entrada (y spam), o volvé a mandarte el enlace.' }}
+      {{ sent ? t('verifyEmail.resentMessage') : t('verifyEmail.pendingMessage') }}
     </p>
 
     <v-btn
@@ -17,14 +17,17 @@
       :disabled="sending || sent"
       @click="resend"
     >
-      {{ sending ? 'Enviando…' : 'Reenviar enlace' }}
+      {{ sending ? t('verifyEmail.sendingButton') : t('verifyEmail.resendButton') }}
     </v-btn>
   </v-alert>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { apiFetch } from '../../services/mealEntriesApi'
+
+const { t } = useI18n()
 
 const sending = ref(false)
 const sent    = ref(false)

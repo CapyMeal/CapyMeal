@@ -9,11 +9,13 @@ import * as Sentry from '@sentry/vue'
 import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
+import i18n from './plugins/i18n'
 import { getInitialTheme } from './utils/theme'
 
 import './styles/vuetify-overrides.css'
 
 document.documentElement.setAttribute('data-theme', getInitialTheme())
+document.documentElement.setAttribute('lang', i18n.global.locale.value)
 
 const app = createApp(App)
 
@@ -52,4 +54,4 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   })
 }
 
-app.use(router).use(vuetify).mount('#app')
+app.use(router).use(vuetify).use(i18n).mount('#app')
