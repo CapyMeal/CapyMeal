@@ -16,6 +16,7 @@ return [
     // Password reset
     'password_reset_throttled' => 'We already sent a link a moment ago. Wait a minute before trying again.',
     'password_reset_link_sent' => "If there's an account with that email, you'll get a link in the next few minutes.",
+    'password_reset_success' => 'Your password has been reset.',
 
     // Diary entries
     'meal_entry_duplicate_date' => 'There is already an entry for that date.',

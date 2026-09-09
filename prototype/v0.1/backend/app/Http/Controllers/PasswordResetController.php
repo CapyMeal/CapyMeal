@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 
 class PasswordResetController extends Controller
@@ -50,7 +51,7 @@ class PasswordResetController extends Controller
         $data = $request->validate([
             'token' => 'required|string',
             'email' => 'required|email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'confirmed', PasswordRule::min(8)->uncompromised()],
         ]);
 
         $status = Password::reset($data, function ($user, $password) {
@@ -71,7 +72,7 @@ class PasswordResetController extends Controller
         }
 
         return response()->json([
-            'message' => 'Tu contraseña fue actualizada.',
+            'message' => __('messages.password_reset_success'),
         ]);
     }
 }

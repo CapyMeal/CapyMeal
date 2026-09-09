@@ -76,6 +76,9 @@ return [
     ],
     'not_in' => 'The selected :attribute is invalid.',
     'numeric' => 'The :attribute field must be a number.',
+    'password' => [
+        'uncompromised' => 'The :attribute you entered has appeared in a known data leak. Please choose a different one.',
+    ],
     'present' => 'The :attribute field must be present.',
     'regex' => 'The :attribute field format is invalid.',
     'required' => 'The :attribute field is required.',

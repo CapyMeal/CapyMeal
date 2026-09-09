@@ -76,6 +76,9 @@ return [
     ],
     'not_in' => 'El :attribute seleccionado no es válido.',
     'numeric' => 'El campo :attribute debe ser un número.',
+    'password' => [
+        'uncompromised' => 'La :attribute ingresada apareció en una filtración de datos conocida. Elegí una diferente.',
+    ],
     'present' => 'El campo :attribute debe estar presente.',
     'regex' => 'El formato del campo :attribute no es válido.',
     'required' => 'El campo :attribute es obligatorio.',

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -18,6 +19,13 @@ class AuthController extends Controller
     // que es el default cuando 'avatar' es null). Mantener en sync con
     // las opciones que muestra Settingsview.vue en el frontend.
     private const AVAILABLE_AVATARS = ['capy1', 'capy2', 'capy3'];
+
+    // Hash bcrypt válido de una contraseña que no es de nadie -- se usa
+    // sólo para gastar el mismo tiempo de cómputo que un Hash::check()
+    // real cuando el email ni siquiera existe (ver login()). No hace
+    // falta regenerarlo nunca: lo único que importa es que sea un hash
+    // bcrypt válido, no que corresponda a una contraseña real.
+    private const DUMMY_PASSWORD_HASH = '$2y$12$EV1lpiNLh0NIKbVZewtBIeyxzXwhK2z6WQsRXmHfBf85D5F2P/PFC';
 
     // El patrón habitual de Sanctum (cookie XSRF-TOKEN, legible por JS) no
     // sirve acá: frontend y backend son dominios sin ninguna relación
@@ -37,7 +45,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'confirmed', Password::min(8)->uncompromised()],
         ]);
 
         $user = User::create($data)->fresh();
@@ -70,6 +78,13 @@ class AuthController extends Controller
         $user = User::where('email', $data['email'])->first();
 
         if (! $user) {
+            // Gasta el mismo tiempo que assertPasswordMatches() de abajo
+            // (un Hash::check() real) para que la respuesta no tarde
+            // distinto según si el email existe o no -- sin esto, alguien
+            // podía usar esa diferencia de tiempo para enumerar cuentas
+            // registradas aunque el mensaje de error ya sea genérico.
+            Hash::check($data['password'], self::DUMMY_PASSWORD_HASH);
+
             throw ValidationException::withMessages([
                 'email' => [__('messages.login_failed')],
             ]);
