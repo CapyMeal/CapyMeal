@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\RestoreConfiguredSessionSameSite;
 use App\Http\Middleware\SetLocaleFromHeader;
 use Illuminate\Auth\AuthenticationException;
@@ -36,6 +37,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // RestoreConfiguredSessionSameSite) -- se restaura después, en el
         // mismo grupo "api", el valor real de SESSION_SAME_SITE.
         $middleware->api(append: [RestoreConfiguredSessionSameSite::class]);
+
+        // Headers de seguridad en toda respuesta de la API -- no vienen
+        // gratis con FrankenPHP/Caddy ni con Render, hay que agregarlos a
+        // mano (ver AddSecurityHeaders).
+        $middleware->api(append: [AddSecurityHeaders::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // El mensaje por defecto de Laravel para esto es "Unauthenticated."
