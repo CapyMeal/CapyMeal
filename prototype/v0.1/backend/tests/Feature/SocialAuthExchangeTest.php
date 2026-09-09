@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Notification;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -45,6 +46,22 @@ class SocialAuthExchangeTest extends TestCase
         $response->assertJsonMissingPath('token');
         $response->assertJsonPath('user.email', $user->email);
         $this->assertAuthenticated();
+    }
+
+    #[DataProvider('providers')]
+    public function test_exchange_does_not_send_a_verification_email(string $driver, string $column): void
+    {
+        // Las cuentas sociales ya llegan con email_verified_at seteado
+        // (ver SocialAuthController::findOrCreateUser()) -- a diferencia
+        // de AuthController::register(), acá no hay nada que confirmar.
+        Notification::fake();
+
+        $user = User::factory()->create([$column => 'p-1', 'password' => null]);
+        Cache::put('social-auth-exchange:test-code', ['user_id' => $user->id], now()->addMinute());
+
+        $this->postJson("/api/auth/{$driver}/exchange", ['code' => 'test-code'])->assertOk();
+
+        Notification::assertNothingSent();
     }
 
     #[DataProvider('providers')]

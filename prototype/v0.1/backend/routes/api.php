@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\MealEntryController;
 use App\Http\Controllers\MicrosoftAuthController;
@@ -21,6 +22,15 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,
 // Recuperación de contraseña
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])->middleware('throttle:6,1');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:6,1');
+
+// El link del mail de verificación abre esto directo desde el cliente de
+// correo, en cualquier dispositivo -- no necesariamente el que tiene la
+// sesión abierta, así que va sin auth:sanctum. "signed" es la única
+// protección real: valida que la URL no fue alterada ni venció (ver
+// EmailVerificationController::verify()).
+Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+    ->middleware('signed')
+    ->name('verification.verify');
 
 // Login con Google. redirect()/callback() van con middleware "web" (no
 // stateless()) a propósito: el round-trip a Google es una navegación real
@@ -63,6 +73,10 @@ Route::middleware(['auth:sanctum', 'throttle:60,1,api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me/avatar', [AuthController::class, 'updateAvatar']);
     Route::delete('/me', [AuthController::class, 'destroy']);
+    // Prefijo "email-verify" distinto del throttle del grupo, mismo motivo
+    // que "pdf-export" arriba: sin él comparte contador con el piso 60,1,api.
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:3,1,email-verify');
 
     Route::get('/meal-entries', [MealEntryController::class, 'index']);
     // Generar el PDF es lo más pesado de la API (renderiza la vista con

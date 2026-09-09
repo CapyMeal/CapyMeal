@@ -15,6 +15,8 @@
       Estás sin conexión. Podés ver tu diario, pero los cambios no se van a guardar hasta que vuelva la señal.
     </v-alert>
 
+    <VerifyEmailBanner v-if="currentUser && !currentUser.email_verified" />
+
     <main class="layout__content">
       <slot />
     </main>
@@ -25,7 +27,9 @@
 
 <script setup>
 import BottomNavigation from '../components/layout/BottomNavigation.vue'
+import VerifyEmailBanner from '../components/layout/VerifyEmailBanner.vue'
 import { useOnlineStatus } from '../utils/useOnlineStatus'
+import { currentUser } from '../stores/authStore'
 
 const { isOnline } = useOnlineStatus()
 </script>

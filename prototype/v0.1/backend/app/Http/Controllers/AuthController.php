@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Notifications\VerifyEmailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,15 @@ class AuthController extends Controller
 
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
+
+        try {
+            $user->notify(new VerifyEmailNotification);
+        } catch (\Throwable $e) {
+            // El registro tiene que completarse igual aunque el mail
+            // falle (verificación blanda, no gatea nada) -- mismo patrón
+            // de resiliencia que PasswordResetController::forgotPassword().
+            report($e);
+        }
 
         return response()->json([
             'user' => new UserResource($user),
