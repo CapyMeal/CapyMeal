@@ -5,12 +5,12 @@
     <div v-if="saved" class="confirmation">
       <img src="../assets/icons/diaGuardado.webp" alt="Capi" class="confirmation__capi">
       <p class="confirmation__message">
-        Listo 🍂<br>
-        <span>Este día ya forma parte de tu diario.</span>
+        {{ t('today.confirmationTitle') }}<br>
+        <span>{{ t('today.confirmationSubtitle') }}</span>
       </p>
       <div class="confirmation__actions">
-        <CapyButton @click="goToDiary">Ver mi diario</CapyButton>
-        <CapyButton variant="ghost" @click="resetForm">Registrar otro día</CapyButton>
+        <CapyButton @click="goToDiary">{{ t('today.viewDiary') }}</CapyButton>
+        <CapyButton variant="ghost" @click="resetForm">{{ t('today.registerAnotherDay') }}</CapyButton>
       </div>
     </div>
 
@@ -22,7 +22,7 @@
         <div class="today-header__capi-row">
           <UserAvatar :avatar="currentUser?.avatar" :email="currentUser?.email" :size="56" />
           <div>
-            <p class="today-header__greeting">Hola, {{ currentUser?.name?.split(' ')[0] }} 🍂</p>
+            <p class="today-header__greeting">{{ t('today.greeting', { name: currentUser?.name?.split(' ')[0] }) }}</p>
             <p class="today-header__date">{{ formattedDate }}</p>
           </div>
         </div>
@@ -35,7 +35,7 @@
           aria-controls="today-date-panel"
           @click="showDatePicker = !showDatePicker"
         >
-          📅 {{ showDatePicker ? 'Cerrar' : 'Cambiar día' }}
+          📅 {{ showDatePicker ? t('today.closeDatePicker') : t('today.changeDayLabel') }}
         </button>
 
         <div v-if="showDatePicker" id="today-date-panel" class="today-header__date-panel">
@@ -48,9 +48,9 @@
             :max="todayISO"
           />
           <div class="today-header__quick-dates">
-            <button type="button" class="today-header__quick-btn" @click="setQuickDate(0)">Hoy</button>
-            <button type="button" class="today-header__quick-btn" @click="setQuickDate(1)">Ayer</button>
-            <button type="button" class="today-header__quick-btn" @click="setQuickDate(7)">Hace 7 días</button>
+            <button type="button" class="today-header__quick-btn" @click="setQuickDate(0)">{{ t('today.today') }}</button>
+            <button type="button" class="today-header__quick-btn" @click="setQuickDate(1)">{{ t('today.yesterday') }}</button>
+            <button type="button" class="today-header__quick-btn" @click="setQuickDate(7)">{{ t('today.sevenDaysAgo') }}</button>
           </div>
         </div>
       </div>
@@ -64,15 +64,15 @@
         class="today-status today-gap-banner"
       >
         <div class="today-gap-banner__text">
-          Tu último recuerdo fue el {{ gapDateFormatted }}. ¿Seguimos desde ahí?
+          {{ t('today.gapBanner', { date: gapDateFormatted }) }}
         </div>
         <CapyButton variant="ghost" class="today-gap-banner__button" @click="goToGap">
-          Seguir desde ahí
+          {{ t('today.gapBannerButton') }}
         </CapyButton>
       </v-alert>
 
       <!-- Feedback inline -->
-      <CapyLoader v-if="loading" message="Cargando…" />
+      <CapyLoader v-if="loading" :message="t('today.loading')" />
       <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="today-status">
         {{ errorMessage }}
       </v-alert>
@@ -98,7 +98,7 @@
 
       <StickyActionBar>
         <CapyButton :disabled="loading" @click="saveDay">
-          🤎 Guardar mi día
+          {{ t('today.saveDay') }}
         </CapyButton>
       </StickyActionBar>
 
@@ -110,6 +110,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import MainLayout      from '../layouts/MainLayout.vue'
 import MealCard        from '../components/meal/MealCard.vue'
 import StickyActionBar from '../components/base/StickyActionBar.vue'
@@ -118,13 +119,14 @@ import CapyLoader      from '../components/base/CapyLoader.vue'
 import UserAvatar      from '../components/base/UserAvatar.vue'
 import { getMealEntries, getMealEntry, upsertMealEntry, isNetworkError } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
-import { formatDateEs, formatDateISO, addDays } from '../utils/date'
+import { formatDate, formatDateISO, addDays } from '../utils/date'
 import breakfastIcon from '../assets/icons/desayuno.png'
 import lunchIcon     from '../assets/icons/almuerzo.png'
 import snackIcon     from '../assets/icons/merienda.png'
 import dinnerIcon    from '../assets/icons/cena.png'
 
 const router = useRouter()
+const { t }  = useI18n()
 
 const today    = new Date()
 const todayISO = formatDateISO(today)
@@ -148,15 +150,15 @@ const successMessage = ref('')
 const savedFields    = ref(new Set())
 const lastRecordedDate = ref(null)
 
-const mealFields = [
-  { key: 'breakfast', iconImage: breakfastIcon, title: 'Desayuno',  placeholder: 'Ej: café con leche y tostadas' },
-  { key: 'lunch',     iconImage: lunchIcon,     title: 'Almuerzo',  placeholder: 'Ej: fideos con tuco y ensalada' },
-  { key: 'snack',     iconImage: snackIcon,     title: 'Merienda',  placeholder: 'Ej: mate con facturas' },
-  { key: 'dinner',    iconImage: dinnerIcon,    title: 'Cena',      placeholder: 'Ej: pizza con familia' },
-  { key: 'notes',     icon: '📝',              title: 'Recuerdo del día', placeholder: '¿Hubo algo especial hoy?' },
-]
+const mealFields = computed(() => [
+  { key: 'breakfast', iconImage: breakfastIcon, title: t('meals.breakfast'), placeholder: t('meals.breakfastPlaceholder') },
+  { key: 'lunch',     iconImage: lunchIcon,     title: t('meals.lunch'),     placeholder: t('meals.lunchPlaceholder') },
+  { key: 'snack',     iconImage: snackIcon,     title: t('meals.snack'),     placeholder: t('meals.snackPlaceholder') },
+  { key: 'dinner',    iconImage: dinnerIcon,    title: t('meals.dinner'),    placeholder: t('meals.dinnerPlaceholder') },
+  { key: 'notes',     icon: '📝',              title: t('meals.notes'),    placeholder: t('meals.notesPlaceholder') },
+])
 
-const formattedDate = computed(() => formatDateEs(selectedDate.value, {
+const formattedDate = computed(() => formatDate(selectedDate.value, {
   weekday: 'long',
   day:     'numeric',
   month:   'long',
@@ -175,7 +177,7 @@ const showGapBanner = computed(() =>
 
 const gapDateFormatted = computed(() => {
   if (!lastRecordedDate.value) return ''
-  return formatDateEs(lastRecordedDate.value, {
+  return formatDate(lastRecordedDate.value, {
     day:   'numeric',
     month: 'long',
   })
@@ -211,7 +213,7 @@ async function loadEntryByDate(date) {
       })
     }
   } catch {
-    errorMessage.value = 'No pude cargar ese día. Intentá nuevamente.'
+    errorMessage.value = t('today.loadError')
   } finally {
     loading.value = false
   }
@@ -229,7 +231,7 @@ async function loadLastRecordedDate() {
 
 async function saveDay() {
   if (!hasAnyContent()) {
-    errorMessage.value = 'Completá al menos una comida o recuerdo antes de guardar.'
+    errorMessage.value = t('today.atLeastOneFieldRequired')
     return
   }
 
@@ -242,8 +244,8 @@ async function saveDay() {
     saved.value = true
   } catch (error) {
     errorMessage.value = isNetworkError(error)
-      ? 'No se pudo guardar: estás sin conexión.'
-      : 'No pude guardar este día. Intentá nuevamente.'
+      ? t('today.saveOfflineError')
+      : t('today.saveError')
   } finally {
     loading.value = false
   }
@@ -266,8 +268,8 @@ async function saveSingleField(fieldKey) {
     }, 2500)
   } catch (error) {
     errorMessage.value = isNetworkError(error)
-      ? 'No se pudo guardar automáticamente: estás sin conexión.'
-      : 'No pude guardar ese cambio. Intentá nuevamente.'
+      ? t('today.saveFieldOfflineError')
+      : t('today.saveFieldError')
   } finally {
     loadingFieldKey.value = ''
   }
@@ -294,7 +296,7 @@ function goToDiary() {
 }
 
 function hasAnyContent() {
-  return mealFields.some((meal) => {
+  return mealFields.value.some((meal) => {
     const v = form[meal.key]
     return typeof v === 'string' && v.trim().length > 0
   })

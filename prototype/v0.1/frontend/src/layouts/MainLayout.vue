@@ -12,7 +12,7 @@
       density="compact"
       class="layout__offline-banner"
     >
-      Estás sin conexión. Podés ver tu diario, pero los cambios no se van a guardar hasta que vuelva la señal.
+      {{ t('layout.offlineBanner') }}
     </v-alert>
 
     <VerifyEmailBanner v-if="currentUser && !currentUser.email_verified" />
@@ -26,11 +26,13 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import BottomNavigation from '../components/layout/BottomNavigation.vue'
 import VerifyEmailBanner from '../components/layout/VerifyEmailBanner.vue'
 import { useOnlineStatus } from '../utils/useOnlineStatus'
 import { currentUser } from '../stores/authStore'
 
+const { t } = useI18n()
 const { isOnline } = useOnlineStatus()
 </script>
 

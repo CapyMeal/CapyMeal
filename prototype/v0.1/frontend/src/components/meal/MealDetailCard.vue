@@ -11,7 +11,7 @@
         <span v-else>{{ meal.icon }}</span> {{ meal.title }}
       </p>
       <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !value }">
-        {{ value || 'No registrado' }}
+        {{ value || t('common.notRecorded') }}
       </p>
       <div class="detail-meal__actions">
         <CapyButton
@@ -19,7 +19,7 @@
           :disabled="saving"
           @click="$emit('start-edit')"
         >
-          {{ editing ? 'Editando...' : `Editar ${meal.label}` }}
+          {{ editing ? t('detail.editingLabel') : t('detail.editLabel', { label: meal.label }) }}
         </CapyButton>
       </div>
       <div v-if="editing" class="detail-meal-editor">
@@ -34,9 +34,9 @@
         />
         <div class="detail-meal-editor__actions">
           <CapyButton :disabled="saving" @click="$emit('save')">
-            {{ saving ? 'Guardando...' : 'Guardar' }}
+            {{ saving ? t('detail.savingLabel') : t('detail.saveLabel') }}
           </CapyButton>
-          <CapyButton variant="ghost" @click="$emit('cancel')">Cancelar</CapyButton>
+          <CapyButton variant="ghost" @click="$emit('cancel')">{{ t('detail.cancel') }}</CapyButton>
         </div>
       </div>
     </v-card-text>
@@ -44,7 +44,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import CapyButton from '../base/CapyButton.vue'
+
+const { t } = useI18n()
 
 defineProps({
   meal: { type: Object, required: true },

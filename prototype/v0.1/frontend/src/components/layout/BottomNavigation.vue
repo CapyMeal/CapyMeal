@@ -2,25 +2,28 @@
   <nav class="bottom-nav">
     <RouterLink to="/hoy" class="bottom-nav__item" active-class="bottom-nav__item--active">
       <v-icon :icon="`svg:${mdiCalendarToday}`" size="26" />
-      <span class="bottom-nav__label">Hoy</span>
+      <span class="bottom-nav__label">{{ t('nav.today') }}</span>
     </RouterLink>
     <RouterLink to="/recuerdos" class="bottom-nav__item" active-class="bottom-nav__item--active">
       <v-icon :icon="`svg:${mdiNotebook}`" size="26" />
-      <span class="bottom-nav__label">Diario</span>
+      <span class="bottom-nav__label">{{ t('nav.diary') }}</span>
     </RouterLink>
     <RouterLink to="/exportar" class="bottom-nav__item" active-class="bottom-nav__item--active">
       <v-icon :icon="`svg:${mdiFilePdfBox}`" size="26" />
-      <span class="bottom-nav__label">PDF</span>
+      <span class="bottom-nav__label">{{ t('nav.pdf') }}</span>
     </RouterLink>
     <RouterLink to="/ajustes" class="bottom-nav__item" active-class="bottom-nav__item--active">
       <v-icon :icon="`svg:${mdiCog}`" size="26" />
-      <span class="bottom-nav__label">Ajustes</span>
+      <span class="bottom-nav__label">{{ t('nav.settings') }}</span>
     </RouterLink>
   </nav>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { mdiCalendarToday, mdiCog, mdiFilePdfBox, mdiNotebook } from '@mdi/js'
+
+const { t } = useI18n()
 </script>
 
 <style scoped>
