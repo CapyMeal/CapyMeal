@@ -17,6 +17,27 @@ import './styles/vuetify-overrides.css'
 document.documentElement.setAttribute('data-theme', getInitialTheme())
 document.documentElement.setAttribute('lang', i18n.global.locale.value)
 
+// Si llegamos hasta acá, el HTML actual cargó bien -- se limpia la marca
+// de abajo para que un deploy futuro (más adelante, en la misma pestaña
+// de larga vida) pueda volver a disparar una recarga si hace falta.
+sessionStorage.removeItem('capymeal-reloaded-after-stale-chunk')
+
+// Después de un deploy nuevo, una pestaña que ya tenía la app abierta
+// sigue con el HTML/mapa de chunks viejo en memoria -- cualquier ruta que
+// todavía no se pidió (los imports perezosos de Vue Router, ver
+// router/index.js) explota al pedir un archivo que el build nuevo ya
+// reemplazó. Vite dispara este evento en vez de dejar la promesa
+// rechazada en silencio ("no me deja avanzar" al tocar un botón); una
+// recarga completa trae el HTML y el mapa de chunks actuales. El flag en
+// sessionStorage evita un loop si la recarga por algún motivo sigue
+// sirviendo algo viejo (ej. un proxy/CDN cacheando el HTML): un solo
+// intento por pestaña y listo.
+window.addEventListener('vite:preloadError', () => {
+  if (sessionStorage.getItem('capymeal-reloaded-after-stale-chunk')) return
+  sessionStorage.setItem('capymeal-reloaded-after-stale-chunk', '1')
+  window.location.reload()
+})
+
 const app = createApp(App)
 
 // Sin DSN (ej. en desarrollo local, si no se configuró) queda desactivado
