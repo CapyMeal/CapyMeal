@@ -1,7 +1,7 @@
 <template>
   <AuthLayout>
-    <AuthCard title="Un momento… 🍂" :subtitle="`Te estamos conectando con ${providerLabel}.`">
-      <CapyLoader v-if="!errorMessage" message="Entrando…" />
+    <AuthCard :title="t('socialCallback.title')" :subtitle="t('socialCallback.subtitle', { provider: providerLabel })">
+      <CapyLoader v-if="!errorMessage" :message="t('socialCallback.loadingMessage')" />
 
       <template v-if="errorMessage">
         <v-alert type="error" variant="tonal" density="compact">
@@ -9,7 +9,7 @@
         </v-alert>
 
         <CapyButton class="auth-submit" @click="router.push('/login')">
-          Volver a intentar
+          {{ t('socialCallback.retryButton') }}
         </CapyButton>
       </template>
     </AuthCard>
@@ -19,6 +19,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
@@ -31,6 +32,7 @@ const props = defineProps({
 
 const route  = useRoute()
 const router = useRouter()
+const { t }  = useI18n()
 
 const providerLabel = computed(() => props.provider === 'google' ? 'Google' : 'Microsoft')
 const errorMessage  = ref('')
@@ -39,7 +41,7 @@ onMounted(async () => {
   const code = route.query.code
 
   if (!code) {
-    errorMessage.value = `No pudimos completar el ingreso con ${providerLabel.value}.`
+    errorMessage.value = t('socialCallback.connectionError', { provider: providerLabel.value })
     return
   }
 
@@ -47,7 +49,7 @@ onMounted(async () => {
     await exchangeSocialCode(props.provider, code)
     router.replace('/hoy')
   } catch (error) {
-    errorMessage.value = error.message || `No pudimos completar el ingreso con ${providerLabel.value}.`
+    errorMessage.value = error.message || t('socialCallback.connectionError', { provider: providerLabel.value })
   }
 })
 </script>

@@ -1,36 +1,36 @@
 <template>
   <AuthLayout>
-    <AuthCard title="Crear cuenta 🌱" subtitle="Tu diario de comidas te espera.">
+    <AuthCard :title="t('register.title')" :subtitle="t('register.subtitle')">
       <form class="auth-form" @submit.prevent="submit">
         <v-text-field
           v-model="name"
-          label="Nombre"
+          :label="t('register.nameLabel')"
           type="text"
-          placeholder="¿Cómo te llamás?"
+          :placeholder="t('register.namePlaceholder')"
           autocomplete="name"
           required
         />
 
         <v-text-field
           v-model="email"
-          label="Email"
+          :label="t('common.email')"
           type="email"
-          placeholder="tu@email.com"
+          :placeholder="t('common.emailPlaceholder')"
           autocomplete="email"
           required
         />
 
         <PasswordField
           v-model="password"
-          label="Contraseña"
-          placeholder="Mínimo 8 caracteres"
+          :label="t('register.passwordLabel')"
+          :placeholder="t('register.passwordPlaceholder')"
           autocomplete="new-password"
         />
 
         <PasswordField
           v-model="passwordConfirm"
-          label="Repetir contraseña"
-          placeholder="Repetí tu contraseña"
+          :label="t('register.passwordConfirmLabel')"
+          :placeholder="t('register.passwordConfirmPlaceholder')"
           autocomplete="new-password"
         />
 
@@ -43,29 +43,29 @@
         </CapyButton>
       </form>
 
-      <p class="auth-divider">o</p>
+      <p class="auth-divider">{{ t('common.or') }}</p>
 
       <!-- href real, no @click con router: ver la misma nota en LoginView.vue. -->
       <CapyButton variant="ghost" :href="googleRedirectUrl" class="social-button">
         <GoogleIcon />
-        Registrarte con Google
+        {{ t('register.googleButton') }}
       </CapyButton>
 
       <!-- href real, mismo motivo que el botón de Google de arriba. -->
       <CapyButton variant="ghost" :href="microsoftRedirectUrl" class="social-button">
         <MicrosoftIcon />
-        Registrarte con Microsoft
+        {{ t('register.microsoftButton') }}
       </CapyButton>
 
       <template #footer>
         <p>
-          ¿Ya tenés cuenta?
-          <RouterLink to="/login">Entrá</RouterLink>
+          {{ t('register.haveAccount') }}
+          <RouterLink to="/login">{{ t('register.loginLink') }}</RouterLink>
         </p>
         <p class="auth-card__legal">
-          Al registrarte, aceptás nuestros
-          <RouterLink to="/terminos">Términos de servicio</RouterLink> y nuestra
-          <RouterLink to="/privacidad">Política de privacidad</RouterLink>.
+          {{ t('register.legalPrefix') }}
+          <RouterLink to="/terminos">{{ t('register.termsLink') }}</RouterLink> {{ t('register.legalAnd') }}
+          <RouterLink to="/privacidad">{{ t('register.privacyLink') }}</RouterLink>.
         </p>
       </template>
     </AuthCard>
@@ -75,6 +75,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
@@ -84,6 +85,7 @@ import PasswordField from '../components/base/PasswordField.vue'
 import { register } from '../stores/authStore'
 
 const router = useRouter()
+const { t }  = useI18n()
 
 // Mismo fallback que ya usan authStore.js/mealEntriesApi.js -- la
 // constante está duplicada en varios lugares, aceptado y fuera de
@@ -101,13 +103,13 @@ const errorMessage       = ref('')
 const slowLogin          = ref(false)
 
 const loadingButtonLabel = computed(() => {
-  if (!loading.value) return '🍂 Crear mi cuenta'
-  return slowLogin.value ? 'Despertando a Capi… 🦫' : 'Creando cuenta…'
+  if (!loading.value) return t('register.submitButton')
+  return slowLogin.value ? t('common.slowBackendMessage') : t('register.creatingAccount')
 })
 
 async function submit() {
   if (password.value !== passwordConfirm.value) {
-    errorMessage.value = 'Las contraseñas no coinciden.'
+    errorMessage.value = t('common.passwordMismatch')
     return
   }
 
@@ -128,7 +130,7 @@ async function submit() {
     })
     router.push('/hoy')
   } catch (error) {
-    errorMessage.value = error.message || 'No pude crear la cuenta. Intentá nuevamente.'
+    errorMessage.value = error.message || t('register.genericError')
   } finally {
     clearTimeout(slowTimer)
     loading.value = false

@@ -1,7 +1,13 @@
 {
   "common": {
     "notRecorded": "Not recorded",
-    "preparingPdf": "Preparing PDF..."
+    "preparingPdf": "Preparing PDF...",
+    "email": "Email",
+    "emailPlaceholder": "you{'@'}email.com",
+    "or": "or",
+    "slowBackendMessage": "Waking Capi up… 🦫",
+    "passwordMismatch": "Passwords don't match.",
+    "forgotPasswordLink": "Forgot your password?"
   },
   "meals": {
     "breakfast": "Breakfast",
@@ -137,5 +143,123 @@
   "dateRangeFilter": {
     "from": "From",
     "to": "To"
+  },
+  "login": {
+    "title": "Welcome 🍂",
+    "subtitle": "Let's save today's little moments together.",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Your password",
+    "googleButton": "Sign in with Google",
+    "microsoftButton": "Sign in with Microsoft",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Sign up",
+    "sessionExpired": "Your session expired. Sign in again.",
+    "submitButton": "🍂 Sign in",
+    "loggingIn": "Signing in…",
+    "genericError": "Couldn't sign you in. Try again."
+  },
+  "register": {
+    "title": "Create account 🌱",
+    "subtitle": "Your meal diary is waiting for you.",
+    "nameLabel": "Name",
+    "namePlaceholder": "What's your name?",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "passwordConfirmLabel": "Repeat password",
+    "passwordConfirmPlaceholder": "Type your password again",
+    "googleButton": "Sign up with Google",
+    "microsoftButton": "Sign up with Microsoft",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Sign in",
+    "legalPrefix": "By signing up, you agree to our",
+    "termsLink": "Terms of service",
+    "legalAnd": "and our",
+    "privacyLink": "Privacy policy",
+    "submitButton": "🍂 Create my account",
+    "creatingAccount": "Creating account…",
+    "genericError": "Couldn't create your account. Try again."
+  },
+  "forgotPassword": {
+    "titleSent": "All set! 🍂",
+    "titleNotSent": "Forgot your password? 🔑",
+    "subtitleSent": "If there's an account with that email, you'll get a link in the next few minutes. Check your spam folder too.",
+    "subtitleNotSent": "Enter your email and we'll send you a link to reset it.",
+    "submitButton": "✉️ Send link",
+    "sending": "Sending…",
+    "backToLogin": "← Back to sign in",
+    "rateLimitError": "We already sent a link a moment ago. Wait a minute before trying again.",
+    "genericError": "Check the email you entered and try again.",
+    "networkError": "Couldn't connect. Check your connection and try again."
+  },
+  "resetPassword": {
+    "invalidLinkTitle": "Invalid link 🔒",
+    "invalidLinkMessage": "This password reset link isn't valid. Request a new one from",
+    "title": "New password 🔒",
+    "subtitle": "Choose a new password for your account.",
+    "newPasswordLabel": "New password",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "confirmPasswordLabel": "Confirm your password",
+    "confirmPasswordPlaceholder": "Type your password again",
+    "submitButton": "✨ Save password",
+    "saving": "Saving…",
+    "genericError": "This link is invalid or expired. Request a new one.",
+    "doneTitle": "All done! 🍂",
+    "doneSubtitle": "Your password was updated. You can sign in now.",
+    "loginLink": "Go to sign in →"
+  },
+  "socialCallback": {
+    "title": "One moment… 🍂",
+    "subtitle": "Connecting you with {provider}.",
+    "loadingMessage": "Signing in…",
+    "connectionError": "We couldn't finish signing you in with {provider}.",
+    "retryButton": "Try again"
+  },
+  "emailVerified": {
+    "alreadyTitle": "Already confirmed 🍂",
+    "okTitle": "Email confirmed! 🌱",
+    "alreadySubtitle": "This email was already verified, nothing else to do.",
+    "okSubtitle": "All set, Capi now knows this email is really yours.",
+    "defaultSubtitle": "If you were confirming your email, you can head back to CapyMeal now.",
+    "goToDiary": "Go to my diary"
+  },
+  "home": {
+    "taglineLine1": "Meals come and go.",
+    "taglineLine2": "Memories stay.",
+    "startButton": "🍂 Get started"
+  },
+  "notFound": {
+    "title": "404",
+    "taglineLine1": "This page got lost, like an unlogged day.",
+    "taglineLine2": "We couldn't find it anywhere.",
+    "backButton": "🏠 Back to diary"
+  },
+  "installApp": {
+    "backLink": "← Back",
+    "title": "Download CapyMeal for Android",
+    "intro": "CapyMeal wants to be an app for everyone, so besides using it from the browser you can install it directly on your Android, without going through the Play Store. We're distributing it this way, instead of publishing it there, so it stays 100% free: we don't charge anyone, we don't show ads, we don't sell your data, and there's nothing hidden inside. The only purpose of this app is to help you keep your meal diary.",
+    "downloadButton": "⬇️ Download the .apk",
+    "downloading": "Downloading…",
+    "downloadError": "We couldn't download the file. Check your connection and try again.",
+    "warningsHeading": "Before installing: two normal warnings",
+    "warningsBody": "Since this version doesn't come from the Play Store, your Android will show you a couple of security warnings when installing it. This happens to {emphasis} app installed this way, it's not a sign that something's wrong: it just means Android doesn't recognize the Play Store as the source. Below we walk you through what to do with each one.",
+    "warningsEmphasis": "any",
+    "stepsHeading": "Step by step",
+    "step1": "Tap the button above. The file downloads as {filename}.",
+    "step2": "Open the downloaded file (from the download notification, or from your Downloads folder).",
+    "step3": "A first warning will show up, something like {warning}, with a {settings} button. Tap it, turn on {trustSource}, and go back.",
+    "step3Warning": "Install unknown apps",
+    "step3Settings": "Settings",
+    "step3TrustSource": "Allow from this source",
+    "step4": "Tap {install} again.",
+    "step4Install": "Install",
+    "step5": "A second warning from {playProtect} may show up, something like {blockedMsg}. Tap {moreDetails} and then {installAnyway}.",
+    "step5PlayProtect": "Google Play Protect",
+    "step5BlockedMsg": "App blocked to protect your device",
+    "step5MoreDetails": "More details",
+    "step5InstallAnyway": "Install anyway",
+    "step6": "When it's done, tap {open}. All set!",
+    "step6Open": "Open",
+    "updatesHeading": "What about updates?",
+    "updatesBody": "The app's content (your diary, your meals) is always up to date on its own, because it connects live to the same place as the web version. If we ever release a new version of the installer itself, you'll need to come back to this page and repeat these steps with the new {filename}."
   }
 }

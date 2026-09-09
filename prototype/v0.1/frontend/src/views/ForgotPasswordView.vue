@@ -1,17 +1,15 @@
 <template>
   <AuthLayout>
     <AuthCard
-      :title="sent ? '¡Listo! 🍂' : '¿Olvidaste tu contraseña? 🔑'"
-      :subtitle="sent
-        ? 'Si existe una cuenta con ese email, vas a recibir un enlace en los próximos minutos. Revisá también la carpeta de spam.'
-        : 'Ingresá tu email y te mandamos un enlace para recuperarla.'"
+      :title="sent ? t('forgotPassword.titleSent') : t('forgotPassword.titleNotSent')"
+      :subtitle="sent ? t('forgotPassword.subtitleSent') : t('forgotPassword.subtitleNotSent')"
     >
       <form v-if="!sent" class="auth-form" @submit.prevent="submit">
         <v-text-field
           v-model="email"
-          label="Email"
+          :label="t('common.email')"
           type="email"
-          placeholder="tu@email.com"
+          :placeholder="t('common.emailPlaceholder')"
           autocomplete="email"
           required
         />
@@ -21,13 +19,13 @@
         </v-alert>
 
         <CapyButton class="auth-submit" :disabled="loading" type="submit">
-          {{ loading ? 'Enviando…' : '✉️ Enviar enlace' }}
+          {{ loading ? t('forgotPassword.sending') : t('forgotPassword.submitButton') }}
         </CapyButton>
       </form>
 
       <template #footer>
         <p>
-          <RouterLink to="/login">← Volver al inicio de sesión</RouterLink>
+          <RouterLink to="/login">{{ t('forgotPassword.backToLogin') }}</RouterLink>
         </p>
       </template>
     </AuthCard>
@@ -36,10 +34,13 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import AuthCard   from '../components/auth/AuthCard.vue'
 import CapyButton from '../components/base/CapyButton.vue'
 import { apiFetch } from '../services/mealEntriesApi'
+
+const { t } = useI18n()
 
 const email        = ref('')
 const loading      = ref(false)
@@ -58,11 +59,11 @@ async function submit() {
     sent.value = true
   } catch (error) {
     if (error.status === 429) {
-      errorMessage.value = error.message || 'Ya enviamos un enlace hace poco. Esperá un minuto antes de volver a intentarlo.'
+      errorMessage.value = error.message || t('forgotPassword.rateLimitError')
     } else if (error.status) {
-      errorMessage.value = error.message || 'Revisá el email ingresado e intentá de nuevo.'
+      errorMessage.value = error.message || t('forgotPassword.genericError')
     } else {
-      errorMessage.value = 'No pudimos conectar. Revisá tu conexión e intentá de nuevo.'
+      errorMessage.value = t('forgotPassword.networkError')
     }
   } finally {
     loading.value = false

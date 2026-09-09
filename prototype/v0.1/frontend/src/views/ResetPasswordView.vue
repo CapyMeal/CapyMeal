@@ -2,34 +2,34 @@
   <AuthLayout>
     <AuthCard
       v-if="!hasLinkParams"
-      title="Enlace inválido 🔒"
+      :title="t('resetPassword.invalidLinkTitle')"
     >
       <p class="auth-note">
-        Este enlace de recuperación no es válido. Pedí uno nuevo desde
+        {{ t('resetPassword.invalidLinkMessage') }}
       </p>
       <template #footer>
-        <p><RouterLink to="/olvide-contrasena">¿Olvidaste tu contraseña?</RouterLink></p>
+        <p><RouterLink to="/olvide-contrasena">{{ t('common.forgotPasswordLink') }}</RouterLink></p>
       </template>
     </AuthCard>
 
     <AuthCard
       v-else-if="!done"
-      title="Nueva contraseña 🔒"
-      subtitle="Elegí una contraseña nueva para tu cuenta."
+      :title="t('resetPassword.title')"
+      :subtitle="t('resetPassword.subtitle')"
     >
       <form class="auth-form" @submit.prevent="submit">
         <PasswordField
           v-model="password"
-          label="Nueva contraseña"
-          placeholder="Mínimo 8 caracteres"
+          :label="t('resetPassword.newPasswordLabel')"
+          :placeholder="t('resetPassword.newPasswordPlaceholder')"
           autocomplete="new-password"
           minlength="8"
         />
 
         <PasswordField
           v-model="passwordConfirmation"
-          label="Confirmá la contraseña"
-          placeholder="Repetí tu contraseña"
+          :label="t('resetPassword.confirmPasswordLabel')"
+          :placeholder="t('resetPassword.confirmPasswordPlaceholder')"
           autocomplete="new-password"
         />
 
@@ -38,18 +38,18 @@
         </v-alert>
 
         <CapyButton class="auth-submit" :disabled="loading" type="submit">
-          {{ loading ? 'Guardando…' : '✨ Guardar contraseña' }}
+          {{ loading ? t('resetPassword.saving') : t('resetPassword.submitButton') }}
         </CapyButton>
       </form>
     </AuthCard>
 
     <AuthCard
       v-else
-      title="¡Todo listo! 🍂"
-      subtitle="Tu contraseña fue actualizada. Ya podés iniciar sesión."
+      :title="t('resetPassword.doneTitle')"
+      :subtitle="t('resetPassword.doneSubtitle')"
     >
       <template #footer>
-        <p><RouterLink to="/login">Ir al inicio de sesión →</RouterLink></p>
+        <p><RouterLink to="/login">{{ t('resetPassword.loginLink') }}</RouterLink></p>
       </template>
     </AuthCard>
   </AuthLayout>
@@ -58,6 +58,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
@@ -65,6 +66,7 @@ import PasswordField from '../components/base/PasswordField.vue'
 import { apiFetch } from '../services/mealEntriesApi'
 
 const route = useRoute()
+const { t } = useI18n()
 
 const token                = ref('')
 const email                = ref('')
@@ -85,7 +87,7 @@ async function submit() {
   errorMessage.value = ''
 
   if (password.value !== passwordConfirmation.value) {
-    errorMessage.value = 'Las contraseñas no coinciden.'
+    errorMessage.value = t('common.passwordMismatch')
     return
   }
 
@@ -103,7 +105,7 @@ async function submit() {
     })
     done.value = true
   } catch (error) {
-    errorMessage.value = error.message || 'El enlace es inválido o expiró. Pedí uno nuevo.'
+    errorMessage.value = error.message || t('resetPassword.genericError')
   } finally {
     loading.value = false
   }
