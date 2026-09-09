@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest'
+import { describe, it, expect, vi, beforeEach, beforeAll, afterEach } from 'vitest'
 import { login, exchangeSocialCode, currentUser, authReady, handleUnauthorized } from '../../../src/stores/authStore'
 import { setCsrfToken } from '../../../src/services/httpClient'
 
@@ -91,6 +91,47 @@ describe('authStore', () => {
         .rejects.toThrow('Este enlace ya no es válido. Iniciá sesión de nuevo.')
 
       expect(currentUser.value).toEqual(userAntes)
+    })
+  })
+
+  describe('refresco al volver a la pestaña', () => {
+    // document.visibilityState es de sólo lectura en el navegador real,
+    // pero jsdom permite redefinirla -- se restaura a 'visible' (su valor
+    // por default en jsdom) después de cada test para no ensuciar el resto
+    // del archivo.
+    afterEach(() => {
+      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true })
+    })
+
+    it('vuelve a pedir /api/me si la pestaña pasa a visible y hay sesión (ej: se verificó el email en otra pestaña)', async () => {
+      global.fetch.mockResolvedValue(
+        new Response(JSON.stringify({ user: { id: 1, email_verified: true } }), { status: 200 })
+      )
+      await login({ email: 'mer@example.com', password: '123' })
+
+      global.fetch.mockClear()
+      global.fetch.mockResolvedValue(
+        new Response(JSON.stringify({ user: { id: 1, email_verified: true } }), { status: 200 })
+      )
+
+      Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true })
+      document.dispatchEvent(new Event('visibilitychange'))
+      await vi.waitFor(() => expect(global.fetch).toHaveBeenCalled())
+
+      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/api/me'), expect.anything())
+    })
+
+    it('no pide nada si la pestaña pasa a oculta', async () => {
+      global.fetch.mockResolvedValue(new Response(JSON.stringify({ user: { id: 1 } }), { status: 200 }))
+      await login({ email: 'mer@example.com', password: '123' })
+
+      global.fetch.mockClear()
+
+      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true })
+      document.dispatchEvent(new Event('visibilitychange'))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(global.fetch).not.toHaveBeenCalled()
     })
   })
 
