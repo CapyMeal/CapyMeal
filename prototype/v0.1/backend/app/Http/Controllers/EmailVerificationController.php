@@ -39,7 +39,7 @@ class EmailVerificationController extends Controller
         $user = $request->user();
 
         if ($user->email_verified_at !== null) {
-            return response()->json(['message' => 'Tu email ya está verificado.']);
+            return response()->json(['message' => __('messages.email_already_verified')]);
         }
 
         try {
@@ -51,12 +51,12 @@ class EmailVerificationController extends Controller
             report($e);
 
             return response()->json([
-                'message' => 'No pudimos enviar el email en este momento. Intentá de nuevo en un rato.',
+                'message' => __('messages.email_send_failed'),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Te mandamos un nuevo enlace. Revisá tu bandeja de entrada (y spam).',
+            'message' => __('messages.email_verification_resent'),
         ]);
     }
 }

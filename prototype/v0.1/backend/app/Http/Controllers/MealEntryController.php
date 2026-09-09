@@ -71,7 +71,7 @@ class MealEntryController extends Controller
             );
         } catch (UniqueConstraintViolationException) {
             throw ValidationException::withMessages([
-                'date' => ['Ya existe un registro para esa fecha.'],
+                'date' => [__('messages.meal_entry_duplicate_date')],
             ]);
         }
 
@@ -113,7 +113,7 @@ class MealEntryController extends Controller
 
         $entries = $query->get();
 
-        Carbon::setLocale('es');
+        Carbon::setLocale(app()->getLocale());
 
         // isRemoteEnabled queda deshabilitado (default de DomPDF): todas las
         // imagenes de la vista (iconos, emojis) se incrustan como data URIs

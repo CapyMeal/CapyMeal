@@ -23,12 +23,12 @@ class ResetPasswordNotification extends Notification
         $expireMinutes = config('auth.passwords.users.expire', 60);
 
         return (new MailMessage)
-            ->subject('Recuperá tu contraseña de CapyMeal 🍂')
-            ->greeting('¡Hola! 🍂')
-            ->line('Capi recibió un pedido para restablecer la contraseña de tu cuenta de CapyMeal.')
-            ->action('Elegir nueva contraseña', $url)
-            ->line("Este enlace vence en {$expireMinutes} minutos.")
-            ->line('Si vos no pediste esto, podés ignorar este email tranquilamente — tu contraseña sigue siendo la misma.')
-            ->salutation('Con cariño, 🤎'."\n".'El equipo de CapyMeal');
+            ->subject(__('messages.mail_reset_subject'))
+            ->greeting(__('messages.mail_greeting'))
+            ->line(__('messages.mail_reset_line'))
+            ->action(__('messages.mail_reset_action'), $url)
+            ->line(__('messages.mail_link_expire', ['minutes' => $expireMinutes]))
+            ->line(__('messages.mail_reset_ignore'))
+            ->salutation(__('messages.mail_salutation'));
     }
 }

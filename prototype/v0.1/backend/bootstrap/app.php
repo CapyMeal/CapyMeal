@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\RestoreConfiguredSessionSameSite;
+use App\Http\Middleware\SetLocaleFromHeader;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -23,6 +24,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // sin tocar las rutas.
         $middleware->statefulApi();
 
+        // Lee el header X-Locale que manda el frontend en cada request (ver
+        // httpClient.js) y fija el locale de la app antes de que corra
+        // cualquier otra cosa del grupo "api" -- tiene que ir prepend, no
+        // append, porque validación/controllers/notificaciones ya resuelven
+        // strings traducidos vía __()/trans() apenas arrancan.
+        $middleware->api(prepend: [SetLocaleFromHeader::class]);
+
         // Sanctum pisa session.same_site a "lax" en cada request stateful,
         // sin forma de desactivarlo (ver el comentario en
         // RestoreConfiguredSessionSameSite) -- se restaura después, en el
@@ -36,7 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Tu sesión expiró. Volvé a iniciar sesión.',
+                    'message' => __('messages.session_expired'),
                 ], 401);
             }
         });

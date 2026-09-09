@@ -3,10 +3,19 @@
      inyectar HTML/markup a traves del propio diario. --}}
 @php
 use App\Support\MealDiaryPdfRenderer;
+
+// Los patrones translatedFormat() de Carbon traen la palabra "de" (\d\e)
+// hardcodeada para que el español lea natural ("j de F de Y") -- ese
+// patrón no tiene sentido en inglés, así que el formato en sí (no sólo
+// el locale de Carbon::setLocale, ya fijado en el controller) depende
+// de app()->getLocale().
+$isEnglish = app()->getLocale() === 'en';
+$dayDateFormat = $isEnglish ? 'l, F j, Y' : 'l, j \d\e F \d\e Y';
+$footerDateFormat = $isEnglish ? 'F j, Y' : 'j \d\e F \d\e Y';
 @endphp
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <style>
@@ -212,14 +221,14 @@ use App\Support\MealDiaryPdfRenderer;
         </div>
         <div class="cover__info">
             <div class="cover__title">CapyMeal</div>
-            <div class="cover__tagline">Las comidas pasan. Los recuerdos quedan.</div>
+            <div class="cover__tagline">{{ __('messages.pdf_tagline') }}</div>
         </div>
         <div class="cover__badge-cell">
             <span class="cover__badge">
                 @if ($from || $to)
-                    {{ $from ?? '...' }} → {{ $to ?? 'hoy' }}
+                    {{ $from ?? '...' }} → {{ $to ?? __('messages.pdf_today') }}
                 @else
-                    Todos los registros
+                    {{ __('messages.pdf_all_records') }}
                 @endif
             </span>
         </div>
@@ -231,7 +240,7 @@ use App\Support\MealDiaryPdfRenderer;
 
             <div class="day-card__header">
                 <div class="day-card__date">
-                    {{ \Carbon\Carbon::parse($entry->date)->translatedFormat('l, j \d\e F \d\e Y') }}
+                    {{ \Carbon\Carbon::parse($entry->date)->translatedFormat($dayDateFormat) }}
                 </div>
             </div>
 
@@ -239,63 +248,63 @@ use App\Support\MealDiaryPdfRenderer;
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('desayuno.png') }}" alt="Desayuno">
+                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('desayuno.png') }}" alt="{{ __('messages.pdf_breakfast') }}">
                     </div>
                     <div class="meal-row__content">
-                        <div class="meal-row__label">Desayuno</div>
+                        <div class="meal-row__label">{{ __('messages.pdf_breakfast') }}</div>
                         @if ($entry->breakfast)
                             <div class="meal-row__value">{!! MealDiaryPdfRenderer::renderText($entry->breakfast) !!}</div>
                         @else
-                            <div class="meal-row__empty">No registrado</div>
+                            <div class="meal-row__empty">{{ __('messages.pdf_not_recorded') }}</div>
                         @endif
                     </div>
                 </div>
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('almuerzo.png') }}" alt="Almuerzo">
+                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('almuerzo.png') }}" alt="{{ __('messages.pdf_lunch') }}">
                     </div>
                     <div class="meal-row__content">
-                        <div class="meal-row__label">Almuerzo</div>
+                        <div class="meal-row__label">{{ __('messages.pdf_lunch') }}</div>
                         @if ($entry->lunch)
                             <div class="meal-row__value">{!! MealDiaryPdfRenderer::renderText($entry->lunch) !!}</div>
                         @else
-                            <div class="meal-row__empty">No registrado</div>
+                            <div class="meal-row__empty">{{ __('messages.pdf_not_recorded') }}</div>
                         @endif
                     </div>
                 </div>
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('merienda.png') }}" alt="Merienda">
+                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('merienda.png') }}" alt="{{ __('messages.pdf_snack') }}">
                     </div>
                     <div class="meal-row__content">
-                        <div class="meal-row__label">Merienda</div>
+                        <div class="meal-row__label">{{ __('messages.pdf_snack') }}</div>
                         @if ($entry->snack)
                             <div class="meal-row__value">{!! MealDiaryPdfRenderer::renderText($entry->snack) !!}</div>
                         @else
-                            <div class="meal-row__empty">No registrado</div>
+                            <div class="meal-row__empty">{{ __('messages.pdf_not_recorded') }}</div>
                         @endif
                     </div>
                 </div>
 
                 <div class="meal-row">
                     <div class="meal-row__icon-cell">
-                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('cena.png') }}" alt="Cena">
+                        <img class="meal-row__icon" src="{{ MealDiaryPdfRenderer::iconDataUri('cena.png') }}" alt="{{ __('messages.pdf_dinner') }}">
                     </div>
                     <div class="meal-row__content">
-                        <div class="meal-row__label">Cena</div>
+                        <div class="meal-row__label">{{ __('messages.pdf_dinner') }}</div>
                         @if ($entry->dinner)
                             <div class="meal-row__value">{!! MealDiaryPdfRenderer::renderText($entry->dinner) !!}</div>
                         @else
-                            <div class="meal-row__empty">No registrado</div>
+                            <div class="meal-row__empty">{{ __('messages.pdf_not_recorded') }}</div>
                         @endif
                     </div>
                 </div>
 
                 @if ($entry->notes)
                     <div class="notes-row">
-                        <div class="notes-row__label">{!! MealDiaryPdfRenderer::renderText('📝 Recuerdo del día') !!}</div>
+                        <div class="notes-row__label">{!! MealDiaryPdfRenderer::renderText(__('messages.pdf_notes_label')) !!}</div>
                         <div class="notes-row__value">{!! MealDiaryPdfRenderer::renderText($entry->notes) !!}</div>
                     </div>
                 @endif
@@ -305,12 +314,12 @@ use App\Support\MealDiaryPdfRenderer;
     @empty
         <div class="empty-state">
             <img class="empty-state__chef" src="{{ MealDiaryPdfRenderer::iconDataUri('Chef.png') }}" alt="Capi">
-            <p>No hay registros para ese rango.</p>
+            <p>{{ __('messages.pdf_no_records') }}</p>
         </div>
     @endforelse
 
     <div class="footer">
-        CapyMeal · Generado el {{ now()->translatedFormat('j \d\e F \d\e Y') }}
+        {{ __('messages.pdf_footer', ['date' => now()->translatedFormat($footerDateFormat)]) }}
     </div>
 
 </body>

@@ -28,12 +28,12 @@ class VerifyEmailNotification extends Notification
         );
 
         return (new MailMessage)
-            ->subject('Confirmá tu email de CapyMeal 🍂')
-            ->greeting('¡Hola! 🍂')
-            ->line('Capi quiere confirmar que este email es realmente tuyo antes de guardar tu diario de comidas.')
-            ->action('Confirmar mi email', $url)
-            ->line('Este enlace vence en '.self::EXPIRE_MINUTES.' minutos.')
-            ->line('Si vos no creaste esta cuenta, podés ignorar este email tranquilamente.')
-            ->salutation('Con cariño, 🤎'."\n".'El equipo de CapyMeal');
+            ->subject(__('messages.mail_verify_subject'))
+            ->greeting(__('messages.mail_greeting'))
+            ->line(__('messages.mail_verify_line'))
+            ->action(__('messages.mail_verify_action'), $url)
+            ->line(__('messages.mail_link_expire', ['minutes' => self::EXPIRE_MINUTES]))
+            ->line(__('messages.mail_verify_ignore'))
+            ->salutation(__('messages.mail_salutation'));
     }
 }
