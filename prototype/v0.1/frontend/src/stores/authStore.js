@@ -34,6 +34,22 @@ export const authReady = apiRequest(API_BASE_URL, '/api/me')
   .then((user) => { state.user = user })
   .catch(() => { state.user = null })
 
+// El caso real que esto resuelve: alguien verifica su email (o cambia el
+// avatar, etc.) desde otra pestaña/dispositivo -- ej. abre el link del
+// mail de verificación -- y vuelve a esta pestaña, que ya tenía cargado
+// el /api/me viejo (sin el cambio) desde que arrancó. Sin esto, el
+// banner de "confirmá tu email" seguía apareciendo hasta un F5 manual.
+// Silencioso a propósito: un hiccup de red al volver a la pestaña no
+// debería desloguear a nadie, eso ya lo maneja onUnauthorized en las
+// llamadas mutantes reales.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && state.user) {
+    apiRequest(API_BASE_URL, '/api/me')
+      .then((user) => { state.user = user })
+      .catch(() => {})
+  }
+})
+
 // Un 401 de la API significa que el token ya no sirve (expiró o se revocó
 // en otro lado) -- a diferencia de un logout manual, acá hay que avisar
 // por qué se cerró la sesión. Import dinámico para no crear una
