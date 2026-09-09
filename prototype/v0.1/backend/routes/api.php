@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\Route;
 
 // El frontend la pide antes del primer login/register para tener el token
 // CSRF que Sanctum exige en esos POST -- ver el comentario en
-// AuthController::csrfToken().
-Route::get('/csrf-token', [AuthController::class, 'csrfToken']);
+// AuthController::csrfToken(). Sin límite antes era la única ruta pública
+// totalmente libre; abre sesión en cada llamada, así que igual vale un
+// throttle generoso (no debería afectar el uso normal, que la cachea).
+Route::get('/csrf-token', [AuthController::class, 'csrfToken'])->middleware('throttle:20,1');
 
 // Rutas públicas de autenticación
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
@@ -43,11 +45,14 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 've
 // son GET.
 Route::middleware('web')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:20,1');
-    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback']);
+    // callback() se llega vía el redirect de Google, pero sigue siendo una
+    // URL pública que cualquiera puede pegar directo -- mismo límite que
+    // redirect() de arriba, antes quedaba sin ninguno.
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:20,1');
 
     // Mismo razonamiento que el bloque de Google de arriba.
     Route::get('/auth/microsoft/redirect', [MicrosoftAuthController::class, 'redirect'])->middleware('throttle:20,1');
-    Route::get('/auth/microsoft/callback', [MicrosoftAuthController::class, 'callback']);
+    Route::get('/auth/microsoft/callback', [MicrosoftAuthController::class, 'callback'])->middleware('throttle:20,1');
 });
 // exchange() sí es bearer-token/stateless como el resto de la API: recibe
 // el código de un solo uso que callback() generó y devuelve el token real.
