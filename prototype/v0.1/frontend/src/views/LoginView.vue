@@ -1,20 +1,20 @@
 <template>
   <AuthLayout>
-    <AuthCard title="Bienvenida 🍂" subtitle="Guardemos juntos los pequeños momentos de hoy.">
+    <AuthCard :title="t('login.title')" :subtitle="t('login.subtitle')">
       <form class="auth-form" @submit.prevent="submit">
         <v-text-field
           v-model="email"
-          label="Email"
+          :label="t('common.email')"
           type="email"
-          placeholder="tu@email.com"
+          :placeholder="t('common.emailPlaceholder')"
           autocomplete="email"
           required
         />
 
         <PasswordField
           v-model="password"
-          label="Contraseña"
-          placeholder="Tu contraseña"
+          :label="t('login.passwordLabel')"
+          :placeholder="t('login.passwordPlaceholder')"
           autocomplete="current-password"
         />
 
@@ -27,29 +27,29 @@
         </CapyButton>
       </form>
 
-      <p class="auth-divider">o</p>
+      <p class="auth-divider">{{ t('common.or') }}</p>
 
       <!-- href real, no @click con router: el login con Google necesita una
            navegación real de nivel superior del navegador para completarse
            (Google no permite terminarlo dentro de un fetch/XHR). -->
       <CapyButton variant="ghost" :href="googleRedirectUrl" class="social-button">
         <GoogleIcon />
-        Iniciar sesión con Google
+        {{ t('login.googleButton') }}
       </CapyButton>
 
       <!-- href real, mismo motivo que el botón de Google de arriba. -->
       <CapyButton variant="ghost" :href="microsoftRedirectUrl" class="social-button">
         <MicrosoftIcon />
-        Iniciar sesión con Microsoft
+        {{ t('login.microsoftButton') }}
       </CapyButton>
 
       <template #footer>
         <p>
-          ¿No tenés cuenta?
-          <RouterLink to="/registro">Registrate</RouterLink>
+          {{ t('login.noAccount') }}
+          <RouterLink to="/registro">{{ t('login.registerLink') }}</RouterLink>
         </p>
         <p>
-          <RouterLink to="/olvide-contrasena">¿Olvidaste tu contraseña?</RouterLink>
+          <RouterLink to="/olvide-contrasena">{{ t('common.forgotPasswordLink') }}</RouterLink>
         </p>
       </template>
     </AuthCard>
@@ -59,6 +59,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
@@ -69,6 +70,7 @@ import { login } from '../stores/authStore'
 
 const router = useRouter()
 const route  = useRoute()
+const { t }  = useI18n()
 
 // Mismo fallback que ya usan authStore.js/mealEntriesApi.js -- la
 // constante está duplicada en varios lugares, aceptado y fuera de
@@ -85,12 +87,12 @@ const slowLogin      = ref(false)
 // authStore.js), avisamos por qué en vez de dejar que parezca que el
 // login en sí falló.
 const sessionExpired = ref(!!route.query.expired)
-const errorMessage   = ref(sessionExpired.value ? 'Tu sesión expiró. Iniciá sesión de nuevo.' : '')
+const errorMessage   = ref(sessionExpired.value ? t('login.sessionExpired') : '')
 const errorType      = computed(() => sessionExpired.value ? 'warning' : 'error')
 
 const loadingButtonLabel = computed(() => {
-  if (!loading.value) return '🍂 Entrar'
-  return slowLogin.value ? 'Despertando a Capi… 🦫' : 'Entrando…'
+  if (!loading.value) return t('login.submitButton')
+  return slowLogin.value ? t('common.slowBackendMessage') : t('login.loggingIn')
 })
 
 async function submit() {
@@ -108,7 +110,7 @@ async function submit() {
     await login({ email: email.value, password: password.value })
     router.push('/hoy')
   } catch (error) {
-    errorMessage.value = error.message || 'No pude iniciar sesión. Intentá nuevamente.'
+    errorMessage.value = error.message || t('login.genericError')
   } finally {
     clearTimeout(slowTimer)
     loading.value = false

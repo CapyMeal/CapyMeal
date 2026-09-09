@@ -1,7 +1,13 @@
 {
   "common": {
     "notRecorded": "No registrado",
-    "preparingPdf": "Preparando PDF..."
+    "preparingPdf": "Preparando PDF...",
+    "email": "Email",
+    "emailPlaceholder": "tu{'@'}email.com",
+    "or": "o",
+    "slowBackendMessage": "Despertando a Capi… 🦫",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "forgotPasswordLink": "¿Olvidaste tu contraseña?"
   },
   "meals": {
     "breakfast": "Desayuno",
@@ -137,5 +143,123 @@
   "dateRangeFilter": {
     "from": "Desde",
     "to": "Hasta"
+  },
+  "login": {
+    "title": "Bienvenida 🍂",
+    "subtitle": "Guardemos juntos los pequeños momentos de hoy.",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "Tu contraseña",
+    "googleButton": "Iniciar sesión con Google",
+    "microsoftButton": "Iniciar sesión con Microsoft",
+    "noAccount": "¿No tenés cuenta?",
+    "registerLink": "Registrate",
+    "sessionExpired": "Tu sesión expiró. Iniciá sesión de nuevo.",
+    "submitButton": "🍂 Entrar",
+    "loggingIn": "Entrando…",
+    "genericError": "No pude iniciar sesión. Intentá nuevamente."
+  },
+  "register": {
+    "title": "Crear cuenta 🌱",
+    "subtitle": "Tu diario de comidas te espera.",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "¿Cómo te llamás?",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "Mínimo 8 caracteres",
+    "passwordConfirmLabel": "Repetir contraseña",
+    "passwordConfirmPlaceholder": "Repetí tu contraseña",
+    "googleButton": "Registrarte con Google",
+    "microsoftButton": "Registrarte con Microsoft",
+    "haveAccount": "¿Ya tenés cuenta?",
+    "loginLink": "Entrá",
+    "legalPrefix": "Al registrarte, aceptás nuestros",
+    "termsLink": "Términos de servicio",
+    "legalAnd": "y nuestra",
+    "privacyLink": "Política de privacidad",
+    "submitButton": "🍂 Crear mi cuenta",
+    "creatingAccount": "Creando cuenta…",
+    "genericError": "No pude crear la cuenta. Intentá nuevamente."
+  },
+  "forgotPassword": {
+    "titleSent": "¡Listo! 🍂",
+    "titleNotSent": "¿Olvidaste tu contraseña? 🔑",
+    "subtitleSent": "Si existe una cuenta con ese email, vas a recibir un enlace en los próximos minutos. Revisá también la carpeta de spam.",
+    "subtitleNotSent": "Ingresá tu email y te mandamos un enlace para recuperarla.",
+    "submitButton": "✉️ Enviar enlace",
+    "sending": "Enviando…",
+    "backToLogin": "← Volver al inicio de sesión",
+    "rateLimitError": "Ya enviamos un enlace hace poco. Esperá un minuto antes de volver a intentarlo.",
+    "genericError": "Revisá el email ingresado e intentá de nuevo.",
+    "networkError": "No pudimos conectar. Revisá tu conexión e intentá de nuevo."
+  },
+  "resetPassword": {
+    "invalidLinkTitle": "Enlace inválido 🔒",
+    "invalidLinkMessage": "Este enlace de recuperación no es válido. Pedí uno nuevo desde",
+    "title": "Nueva contraseña 🔒",
+    "subtitle": "Elegí una contraseña nueva para tu cuenta.",
+    "newPasswordLabel": "Nueva contraseña",
+    "newPasswordPlaceholder": "Mínimo 8 caracteres",
+    "confirmPasswordLabel": "Confirmá la contraseña",
+    "confirmPasswordPlaceholder": "Repetí tu contraseña",
+    "submitButton": "✨ Guardar contraseña",
+    "saving": "Guardando…",
+    "genericError": "El enlace es inválido o expiró. Pedí uno nuevo.",
+    "doneTitle": "¡Todo listo! 🍂",
+    "doneSubtitle": "Tu contraseña fue actualizada. Ya podés iniciar sesión.",
+    "loginLink": "Ir al inicio de sesión →"
+  },
+  "socialCallback": {
+    "title": "Un momento… 🍂",
+    "subtitle": "Te estamos conectando con {provider}.",
+    "loadingMessage": "Entrando…",
+    "connectionError": "No pudimos completar el ingreso con {provider}.",
+    "retryButton": "Volver a intentar"
+  },
+  "emailVerified": {
+    "alreadyTitle": "Ya estaba confirmado 🍂",
+    "okTitle": "¡Email confirmado! 🌱",
+    "alreadySubtitle": "Este email ya estaba verificado, no había nada más que hacer.",
+    "okSubtitle": "Listo, Capi ya sabe que este email es tuyo de verdad.",
+    "defaultSubtitle": "Si venías de confirmar tu email, ya podés volver a CapyMeal tranquilo.",
+    "goToDiary": "Ir a mi diario"
+  },
+  "home": {
+    "taglineLine1": "Las comidas pasan.",
+    "taglineLine2": "Los recuerdos quedan.",
+    "startButton": "🍂 Comenzar"
+  },
+  "notFound": {
+    "title": "404",
+    "taglineLine1": "Esta página se perdió, como un día sin anotar.",
+    "taglineLine2": "No la encontramos por ningún lado.",
+    "backButton": "🏠 Volver al diario"
+  },
+  "installApp": {
+    "backLink": "← Volver",
+    "title": "Descargar CapyMeal para Android",
+    "intro": "CapyMeal quiere ser una app para todos, así que además de usarla desde el navegador la podés instalar directo en tu Android, sin pasar por Play Store. La bajamos así, en vez de publicarla ahí, para que siga siendo 100% gratuita: no le pedimos plata a nadie, no mostramos publicidad, no vendemos tus datos ni escondemos nada raro adentro. El único propósito de esta app es ayudarte a llevar tu diario de comidas.",
+    "downloadButton": "⬇️ Descargar el .apk",
+    "downloading": "Descargando…",
+    "downloadError": "No pudimos descargar el archivo. Revisá tu conexión e intentá de nuevo.",
+    "warningsHeading": "Antes de instalar: dos avisos normales",
+    "warningsBody": "Como esta versión no viene de Play Store, tu Android va a mostrarte un par de avisos de seguridad al instalarla. Le pasa a {emphasis} app que se instala así, no es una señal de que algo esté mal: es simplemente que Android no reconoce a Play Store como origen. Abajo te explicamos paso a paso qué hacer con cada uno.",
+    "warningsEmphasis": "cualquier",
+    "stepsHeading": "Paso a paso",
+    "step1": "Tocá el botón de arriba. El archivo se descarga como {filename}.",
+    "step2": "Abrí el archivo descargado (desde la notificación de descarga, o desde tu carpeta de Descargas).",
+    "step3": "Va a aparecer un primer aviso, algo como {warning}, con un botón {settings}. Tocalo, activá {trustSource} y volvé para atrás.",
+    "step3Warning": "Instalar apps desconocidas",
+    "step3Settings": "Configuración",
+    "step3TrustSource": "Confiar en esta fuente",
+    "step4": "Tocá {install} de nuevo.",
+    "step4Install": "Instalar",
+    "step5": "Puede aparecer un segundo aviso de {playProtect}, algo como {blockedMsg}. Tocá {moreDetails} y después {installAnyway}.",
+    "step5PlayProtect": "Google Play Protect",
+    "step5BlockedMsg": "Se bloqueó la app para proteger tu dispositivo",
+    "step5MoreDetails": "Más detalles",
+    "step5InstallAnyway": "Instalar de todos modos",
+    "step6": "Cuando termine, tocá {open}. ¡Listo!",
+    "step6Open": "Abrir",
+    "updatesHeading": "¿Y las actualizaciones?",
+    "updatesBody": "El contenido de la app (tu diario, tus comidas) siempre está al día solo, porque se conecta en vivo al mismo lugar que la versión web. Si en algún momento sacamos una versión nueva del instalador en sí, vas a tener que volver a esta página y repetir estos pasos con el {filename} nuevo."
   }
 }

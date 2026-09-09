@@ -11,20 +11,23 @@
       <div class="splash__brand">
         <h1 class="splash__title">CapyMeal</h1>
         <p class="splash__tagline">
-          Las comidas pasan.<br>
-          Los recuerdos quedan.
+          {{ t('home.taglineLine1') }}<br>
+          {{ t('home.taglineLine2') }}
         </p>
       </div>
 
       <CapyButton class="splash__btn" @click="$router.push('/hoy')">
-        🍂 Comenzar
+        {{ t('home.startButton') }}
       </CapyButton>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import CapyButton from '../components/base/CapyButton.vue'
+
+const { t } = useI18n()
 </script>
 
 <style scoped>

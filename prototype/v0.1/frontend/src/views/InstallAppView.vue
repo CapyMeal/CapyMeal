@@ -1,19 +1,13 @@
 <template>
   <div class="privacy-page">
     <div class="privacy-card">
-      <RouterLink :to="backTo" class="privacy-back">← Volver</RouterLink>
+      <RouterLink :to="backTo" class="privacy-back">{{ t('installApp.backLink') }}</RouterLink>
 
       <div class="privacy-heading">
         <img src="../assets/icons/capy2.png" alt="Capi" class="privacy-heading__icon">
-        <h1 class="privacy-heading__title">Descargar CapyMeal para Android</h1>
+        <h1 class="privacy-heading__title">{{ t('installApp.title') }}</h1>
       </div>
-      <p class="privacy-updated">
-        CapyMeal quiere ser una app para todos, así que además de usarla desde el navegador la
-        podés instalar directo en tu Android, sin pasar por Play Store. La bajamos así, en vez de
-        publicarla ahí, para que siga siendo 100% gratuita: no le pedimos plata a nadie, no
-        mostramos publicidad, no vendemos tus datos ni escondemos nada raro adentro. El único
-        propósito de esta app es ayudarte a llevar tu diario de comidas.
-      </p>
+      <p class="privacy-updated">{{ t('installApp.intro') }}</p>
 
       <div class="install-download">
         <CapyButton
@@ -21,7 +15,7 @@
           :disabled="downloading"
           @click="downloadApk"
         >
-          {{ downloading ? 'Descargando…' : '⬇️ Descargar el .apk' }}
+          {{ downloading ? t('installApp.downloading') : t('installApp.downloadButton') }}
         </CapyButton>
         <v-alert v-if="downloadError" type="error" variant="tonal" density="compact">
           {{ downloadError }}
@@ -29,46 +23,44 @@
       </div>
 
       <section class="privacy-section">
-        <h2>Antes de instalar: dos avisos normales</h2>
-        <p>
-          Como esta versión no viene de Play Store, tu Android va a mostrarte un par de avisos de
-          seguridad al instalarla. Le pasa a <strong>cualquier</strong> app que se instala así, no
-          es una señal de que algo esté mal: es simplemente que Android no reconoce a Play Store
-          como origen. Abajo te explicamos paso a paso qué hacer con cada uno.
-        </p>
+        <h2>{{ t('installApp.warningsHeading') }}</h2>
+        <i18n-t keypath="installApp.warningsBody" tag="p">
+          <template #emphasis><strong>{{ t('installApp.warningsEmphasis') }}</strong></template>
+        </i18n-t>
       </section>
 
       <section class="privacy-section">
-        <h2>Paso a paso</h2>
+        <h2>{{ t('installApp.stepsHeading') }}</h2>
         <ol class="install-steps">
-          <li>Tocá el botón de arriba. El archivo se descarga como <code>capymeal.apk</code>.</li>
-          <li>
-            Abrí el archivo descargado (desde la notificación de descarga, o desde tu carpeta de
-            Descargas).
-          </li>
-          <li>
-            Va a aparecer un primer aviso, algo como <strong>"Instalar apps desconocidas"</strong>,
-            con un botón <strong>"Configuración"</strong>. Tocalo, activá <strong>"Confiar en esta
-            fuente"</strong> y volvé para atrás.
-          </li>
-          <li>Tocá <strong>"Instalar"</strong> de nuevo.</li>
-          <li>
-            Puede aparecer un segundo aviso de <strong>Google Play Protect</strong>, algo como
-            <strong>"Se bloqueó la app para proteger tu dispositivo"</strong>. Tocá
-            <strong>"Más detalles"</strong> y después <strong>"Instalar de todos modos"</strong>.
-          </li>
-          <li>Cuando termine, tocá <strong>"Abrir"</strong>. ¡Listo!</li>
+          <i18n-t keypath="installApp.step1" tag="li">
+            <template #filename><code>capymeal.apk</code></template>
+          </i18n-t>
+          <li>{{ t('installApp.step2') }}</li>
+          <i18n-t keypath="installApp.step3" tag="li">
+            <template #warning><strong>&quot;{{ t('installApp.step3Warning') }}&quot;</strong></template>
+            <template #settings><strong>&quot;{{ t('installApp.step3Settings') }}&quot;</strong></template>
+            <template #trustSource><strong>&quot;{{ t('installApp.step3TrustSource') }}&quot;</strong></template>
+          </i18n-t>
+          <i18n-t keypath="installApp.step4" tag="li">
+            <template #install><strong>&quot;{{ t('installApp.step4Install') }}&quot;</strong></template>
+          </i18n-t>
+          <i18n-t keypath="installApp.step5" tag="li">
+            <template #playProtect><strong>{{ t('installApp.step5PlayProtect') }}</strong></template>
+            <template #blockedMsg><strong>&quot;{{ t('installApp.step5BlockedMsg') }}&quot;</strong></template>
+            <template #moreDetails><strong>&quot;{{ t('installApp.step5MoreDetails') }}&quot;</strong></template>
+            <template #installAnyway><strong>&quot;{{ t('installApp.step5InstallAnyway') }}&quot;</strong></template>
+          </i18n-t>
+          <i18n-t keypath="installApp.step6" tag="li">
+            <template #open><strong>&quot;{{ t('installApp.step6Open') }}&quot;</strong></template>
+          </i18n-t>
         </ol>
       </section>
 
       <section class="privacy-section">
-        <h2>¿Y las actualizaciones?</h2>
-        <p>
-          El contenido de la app (tu diario, tus comidas) siempre está al día solo, porque se
-          conecta en vivo al mismo lugar que la versión web. Si en algún momento sacamos una
-          versión nueva del instalador en sí, vas a tener que volver a esta página y repetir estos
-          pasos con el <code>.apk</code> nuevo.
-        </p>
+        <h2>{{ t('installApp.updatesHeading') }}</h2>
+        <i18n-t keypath="installApp.updatesBody" tag="p">
+          <template #filename><code>.apk</code></template>
+        </i18n-t>
       </section>
     </div>
   </div>
@@ -76,8 +68,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { isAuthenticated } from '../stores/authStore'
 import CapyButton from '../components/base/CapyButton.vue'
+
+const { t } = useI18n()
 
 // Mismo patrón que TermsOfServiceView.vue/PrivacyPolicyView.vue: desde
 // Ajustes (logueada) vuelve al Diario, sin sesión vuelve a la portada,
@@ -112,7 +107,7 @@ async function downloadApk() {
     link.remove()
     URL.revokeObjectURL(blobUrl)
   } catch {
-    downloadError.value = 'No pudimos descargar el archivo. Revisá tu conexión e intentá de nuevo.'
+    downloadError.value = t('installApp.downloadError')
   } finally {
     downloading.value = false
   }

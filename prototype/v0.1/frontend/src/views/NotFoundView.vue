@@ -9,15 +9,15 @@
       />
 
       <div class="not-found__brand">
-        <h1 class="not-found__title">404</h1>
+        <h1 class="not-found__title">{{ t('notFound.title') }}</h1>
         <p class="not-found__tagline">
-          Esta página se perdió, como un día sin anotar.<br>
-          No la encontramos por ningún lado.
+          {{ t('notFound.taglineLine1') }}<br>
+          {{ t('notFound.taglineLine2') }}
         </p>
       </div>
 
       <CapyButton class="not-found__btn" @click="goHome">
-        🏠 Volver al diario
+        {{ t('notFound.backButton') }}
       </CapyButton>
     </div>
   </div>
@@ -25,10 +25,12 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import CapyButton from '../components/base/CapyButton.vue'
 import { isAuthenticated } from '../stores/authStore'
 
 const router = useRouter()
+const { t }  = useI18n()
 
 function goHome() {
   router.push(isAuthenticated.value ? '/hoy' : '/')
