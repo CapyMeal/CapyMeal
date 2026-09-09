@@ -71,11 +71,11 @@ class AuthController extends Controller
 
         if (! $user) {
             throw ValidationException::withMessages([
-                'email' => ['El email o la contraseña son incorrectos.'],
+                'email' => [__('messages.login_failed')],
             ]);
         }
 
-        $this->assertPasswordMatches($user, $data['password'], 'email', 'El email o la contraseña son incorrectos.');
+        $this->assertPasswordMatches($user, $data['password'], 'email', __('messages.login_failed'));
 
         // A propósito no se invalidan las sesiones existentes acá: CapyMeal
         // es una PWA pensada para usarse desde varios dispositivos (celular
@@ -149,7 +149,7 @@ class AuthController extends Controller
         // sólo cuando existía.
         if ($user->password) {
             $data = $request->validate(['password' => 'required|string']);
-            $this->assertPasswordMatches($user, $data['password'], 'password', 'La contraseña no es correcta.');
+            $this->assertPasswordMatches($user, $data['password'], 'password', __('messages.password_incorrect'));
         }
 
         DB::transaction(function () use ($user) {

@@ -27,7 +27,7 @@ trait ValidatesMealEntryFields
                 ->contains(fn (string $field) => trim((string) ($data[$field] ?? '')) !== '');
 
             if (! $hasContent) {
-                $validator->errors()->add('entry', 'Tenés que completar al menos una comida o recuerdo antes de guardar.');
+                $validator->errors()->add('entry', __('messages.meal_entry_empty'));
             }
         });
     }

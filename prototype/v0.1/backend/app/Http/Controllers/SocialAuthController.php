@@ -67,7 +67,7 @@ abstract class SocialAuthController extends Controller
 
         if (! $user) {
             throw ValidationException::withMessages([
-                'code' => ['Este enlace ya no es válido. Iniciá sesión de nuevo.'],
+                'code' => [__('messages.social_login_expired')],
             ]);
         }
 

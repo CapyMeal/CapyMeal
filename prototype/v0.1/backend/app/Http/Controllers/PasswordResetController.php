@@ -28,20 +28,20 @@ class PasswordResetController extends Controller
             report($e);
 
             return response()->json([
-                'message' => 'No pudimos enviar el email en este momento. Intentá de nuevo en un rato.',
+                'message' => __('messages.email_send_failed'),
             ], 500);
         }
 
         if ($status === Password::RESET_THROTTLED) {
             return response()->json([
-                'message' => 'Ya enviamos un enlace hace poco. Esperá un minuto antes de volver a intentarlo.',
+                'message' => __('messages.password_reset_throttled'),
             ], 429);
         }
 
         // Siempre la misma respuesta genérica exista o no la cuenta,
         // para no filtrar si un email está registrado.
         return response()->json([
-            'message' => 'Si existe una cuenta con ese email, vas a recibir un enlace en los próximos minutos.',
+            'message' => __('messages.password_reset_link_sent'),
         ]);
     }
 

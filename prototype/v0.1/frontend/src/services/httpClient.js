@@ -4,6 +4,8 @@
 // session()->token() -- justo lo que hace falta acá, porque el token viaja
 // en texto plano en el body de la respuesta (ver el comentario más abajo),
 // no como el valor encriptado de una cookie real.
+import i18n from '../plugins/i18n'
+
 const CSRF_HEADER_NAME = 'X-CSRF-TOKEN'
 const MUTATING_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE']
 
@@ -62,6 +64,12 @@ export async function apiRequest(baseUrl, path, opts = {}) {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      // Le dice al backend en qué idioma responder (mensajes de
+      // validación, errores, mails) -- ver SetLocaleFromHeader en el
+      // backend. Va en todas las requests, no sólo las mutantes: un GET
+      // también puede devolver un error de validación (ej. rango de
+      // fechas inválido).
+      'X-Locale': i18n.global.locale.value,
       ...(isMutating ? { [CSRF_HEADER_NAME]: cachedCsrfToken } : {}),
       ...(options.headers || {}),
     },
