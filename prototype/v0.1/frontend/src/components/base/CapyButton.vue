@@ -3,8 +3,8 @@
     :class="['capy-button', `capy-button--${variant}`]"
     :color="vuetifyColor"
     :variant="vuetifyVariant"
-    size="large"
-    block
+    :size="compact ? 'default' : 'large'"
+    :block="!compact"
   >
     <slot />
   </v-btn>
@@ -18,6 +18,13 @@ const props = defineProps({
     type: String,
     default: 'primary',
     validator: v => ['primary', 'ghost', 'danger'].includes(v),
+  },
+  // Para una acción suelta dentro de una fila (ej. "Activar"/"Desactivar"
+  // en Ajustes) en vez del ancho completo + tamaño grande de siempre,
+  // pensado para un botón de acción principal (Guardar, Entrar, etc.).
+  compact: {
+    type: Boolean,
+    default: false,
   },
 })
 

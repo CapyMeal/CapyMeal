@@ -136,12 +136,13 @@
           <CapyButton
             v-if="!currentUser?.two_factor_enabled"
             variant="ghost"
+            compact
             :disabled="startingSetup"
             @click="startTwoFactorSetup"
           >
             {{ t('twoFactor.enableButton') }}
           </CapyButton>
-          <CapyButton v-else variant="ghost" @click="confirmingDisableTwoFactor = true">
+          <CapyButton v-else variant="ghost" compact @click="confirmingDisableTwoFactor = true">
             {{ t('twoFactor.disableButton') }}
           </CapyButton>
         </div>
