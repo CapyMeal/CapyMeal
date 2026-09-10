@@ -35,7 +35,10 @@ const props = defineProps({
   iconImage:   { type: String, default: '' },
   title:       { type: String, required: true },
   modelValue:  { type: String, default: '' },
-  placeholder: { type: String, default: '¿Qué comiste?' },
+  // Sin default en español -- mismo motivo que "title" de arriba, todos
+  // los usos actuales ya pasan su propio placeholder traducido (ver
+  // TodayView/DetailView).
+  placeholder: { type: String, required: true },
   saving:      { type: Boolean, default: false },
   justSaved:   { type: Boolean, default: false },
 })
