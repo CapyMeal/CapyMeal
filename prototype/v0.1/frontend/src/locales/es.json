@@ -123,7 +123,8 @@
     "emptyMessage": "No encontré registros para esas fechas.",
     "networkError": "No pude cargar los registros para exportar: estás sin conexión.",
     "genericError": "No pude cargar los registros para exportar.",
-    "genericExportError": "No pude generar el PDF. Intentá nuevamente."
+    "genericExportError": "No pude generar el PDF. Intentá nuevamente.",
+    "downloadFilename": "capymeal-diario.pdf"
   },
   "layout": {
     "offlineBanner": "Estás sin conexión. Podés ver tu diario, pero los cambios no se van a guardar hasta que vuelva la señal."
@@ -228,6 +229,7 @@
     "startButton": "🍂 Comenzar"
   },
   "notFound": {
+    "capiAlt": "Capi confundido, buscando",
     "title": "404",
     "taglineLine1": "Esta página se perdió, como un día sin anotar.",
     "taglineLine2": "No la encontramos por ningún lado.",
