@@ -32,6 +32,10 @@ APP_ENV=production
 APP_DEBUG=false
 APP_URL=${APP_URL:-http://localhost:8000}
 APP_LOCALE=es
+# Sin esto, cualquier clave de traducción faltante cae al default de
+# Laravel ("en") en vez de español -- mismo motivo que .env.example ya
+# documenta para local, pero acá nunca se había seteado.
+APP_FALLBACK_LOCALE=es
 APP_KEY=${APP_KEY:-}
 
 LOG_CHANNEL=stderr
@@ -46,15 +50,19 @@ DB_USERNAME=${DB_USERNAME:-capymeal}
 DB_PASSWORD=${DB_PASSWORD:-capymeal}
 DB_SSLMODE=require
 
-CACHE_STORE=file
-# "database" y no "file": el plan free de Render no tiene disco persistente
-# (ver render.yaml, sin sección "disk:") -- el filesystem es efímero y se
-# pisa en cada redeploy, y probablemente en cada reinicio del servicio tras
-# dormirse por inactividad. Una sesión en archivo se perdería ahí,
-# desconectando a todo el mundo en silencio mucho más seguido que con los
-# bearer tokens de antes (que vivían en Postgres). La tabla "sessions" ya
-# existe (viene con la migración default de Laravel, junto con "users"),
-# no hace falta ninguna migración nueva para este cambio.
+# "database" y no "file" para las dos: el plan free de Render no tiene
+# disco persistente (ver render.yaml, sin sección "disk:") -- el
+# filesystem es efímero y se pisa en cada redeploy, y probablemente en
+# cada reinicio del servicio tras dormirse por inactividad. Una sesión
+# en archivo se perdería ahí, desconectando a todo el mundo en silencio
+# mucho más seguido que con los bearer tokens de antes (que vivían en
+# Postgres) -- y un cache en archivo perdería igual de silencioso
+# cualquier cosa que dependiera de él (rate limiting, el cache del
+# desafío de 2FA entre login() y su segundo paso, etc.), fallando abierto
+# en vez de simplemente más lento. Las tablas "sessions" y "cache" ya
+# existen (vienen con las migraciones default de Laravel), no hace falta
+# ninguna migración nueva para este cambio.
+CACHE_STORE=database
 SESSION_DRIVER=database
 QUEUE_CONNECTION=sync
 
