@@ -1,5 +1,5 @@
 <template>
-  <MainLayout>
+  <MainLayout :hide-nav="!!recoveryCodes">
     <div class="settings-heading">
       <img src="../assets/icons/ajustes.png" alt="" class="settings-heading__icon">
       <h1 class="settings-heading__title">{{ t('settings.title') }}</h1>
@@ -237,8 +237,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { useTheme } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import MainLayout from '../layouts/MainLayout.vue'
@@ -348,6 +348,27 @@ const confirmCode      = ref('')
 const confirmingCode   = ref(false)
 const confirmError     = ref('')
 const recoveryCodes    = ref(null)
+
+// Los códigos se muestran una sola vez -- además de esconder la barra
+// de navegación de abajo (ver :hide-nav en el template), esto cubre el
+// resto de las formas de irse sin querer (atrás del navegador, cerrar
+// la pestaña) mientras siguen en pantalla sin haberlos guardado.
+onBeforeRouteLeave(() => {
+  if (recoveryCodes.value && !window.confirm(t('twoFactor.recoveryCodesLeaveConfirm'))) {
+    return false
+  }
+})
+
+// Mismo motivo que la guarda de arriba, pero para cerrar la pestaña o
+// recargar -- onBeforeRouteLeave no cubre esos casos.
+function warnBeforeClosingTab(event) {
+  if (recoveryCodes.value) {
+    event.preventDefault()
+  }
+}
+
+onMounted(() => window.addEventListener('beforeunload', warnBeforeClosingTab))
+onUnmounted(() => window.removeEventListener('beforeunload', warnBeforeClosingTab))
 
 async function startTwoFactorSetup() {
   startingSetup.value = true

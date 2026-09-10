@@ -340,6 +340,7 @@
     "recoveryCodesTitle": "Save your recovery codes",
     "recoveryCodesWarning": "If you lose access to your authenticator app, these are the only codes that will let you back in. Each one works once, and we won't show them again.",
     "recoveryCodesSavedButton": "I saved them",
+    "recoveryCodesLeaveConfirm": "Are you sure you want to leave? You haven't saved your recovery codes yet, and we won't be able to show them again.",
     "disableConfirmButton": "Yes, disable",
     "disabling": "Disabling..."
   }

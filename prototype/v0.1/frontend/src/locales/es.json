@@ -340,6 +340,7 @@
     "recoveryCodesTitle": "Guardá tus códigos de recuperación",
     "recoveryCodesWarning": "Si perdés el acceso a tu app de autenticación, estos son los únicos códigos que te van a dejar entrar. Cada uno sirve una sola vez, y no los vamos a mostrar de nuevo.",
     "recoveryCodesSavedButton": "Ya los guardé",
+    "recoveryCodesLeaveConfirm": "¿Seguro que querés salir? Todavía no guardaste tus códigos de recuperación y no los vamos a poder mostrar de nuevo.",
     "disableConfirmButton": "Sí, desactivar",
     "disabling": "Desactivando..."
   }
