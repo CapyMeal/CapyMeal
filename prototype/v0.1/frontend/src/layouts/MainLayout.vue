@@ -21,7 +21,7 @@
       <slot />
     </main>
 
-    <BottomNavigation />
+    <BottomNavigation v-if="!hideNav" />
   </div>
 </template>
 
@@ -31,6 +31,17 @@ import BottomNavigation from '../components/layout/BottomNavigation.vue'
 import VerifyEmailBanner from '../components/layout/VerifyEmailBanner.vue'
 import { useOnlineStatus } from '../utils/useOnlineStatus'
 import { currentUser } from '../stores/authStore'
+
+// Para pantallas donde navegar por error tiene un costo real (ej. los
+// códigos de recuperación de 2FA, que sólo se muestran una vez) -- sin
+// esto, la barra de navegación de abajo seguía tocable encima de esa
+// pantalla y era fácil perderlos sin querer.
+defineProps({
+  hideNav: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const { t } = useI18n()
 const { isOnline } = useOnlineStatus()
