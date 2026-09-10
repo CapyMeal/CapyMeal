@@ -11,6 +11,7 @@ use BaconQrCode\Writer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -119,14 +120,40 @@ class TwoFactorController extends Controller
 
         // No era un TOTP válido -- se prueba como código de recuperación
         // (cada uno sirve una sola vez, se saca del array apenas se usa).
-        $recoveryCodes = $user->two_factor_recovery_codes ?? [];
-        foreach ($recoveryCodes as $index => $hashedCode) {
-            if (Hash::check($data['code'], $hashedCode)) {
-                unset($recoveryCodes[$index]);
-                $user->forceFill(['two_factor_recovery_codes' => array_values($recoveryCodes)])->save();
+        // lockForUpdate() serializa dos usos concurrentes del mismo código
+        // (ej. doble clic, o dos pestañas reenviando el mismo challenge):
+        // sin el lock, ambas requests podían pasar el Hash::check() antes
+        // de que cualquiera guardara, y las dos terminaban logueando con
+        // el mismo código de un solo uso.
+        $consumed = DB::transaction(function () use ($user, $data) {
+            $lockedUser = User::whereKey($user->id)->lockForUpdate()->first();
 
-                return $this->completeLogin($request, $user);
+            if (! $lockedUser) {
+                return false;
             }
+
+            // Larastan no reconoce el cast "encrypted:array" al resolver el
+            // tipo de esta propiedad dentro de un closure (a diferencia de
+            // fuera de uno, donde sí lo infiere bien) -- el @var de acá evita
+            // el falso positivo "Empty array passed to foreach" sin
+            // silenciar el chequeo real.
+            /** @var array<int, string> $recoveryCodes */
+            $recoveryCodes = $lockedUser->two_factor_recovery_codes ?? [];
+
+            foreach ($recoveryCodes as $index => $hashedCode) {
+                if (Hash::check($data['code'], $hashedCode)) {
+                    unset($recoveryCodes[$index]);
+                    $lockedUser->forceFill(['two_factor_recovery_codes' => array_values($recoveryCodes)])->save();
+
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        if ($consumed) {
+            return $this->completeLogin($request, $user);
         }
 
         throw ValidationException::withMessages([
