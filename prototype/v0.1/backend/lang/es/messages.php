@@ -16,6 +16,7 @@ return [
     // Recuperación de contraseña
     'password_reset_throttled' => 'Ya enviamos un enlace hace poco. Esperá un minuto antes de volver a intentarlo.',
     'password_reset_link_sent' => 'Si existe una cuenta con ese email, vas a recibir un enlace en los próximos minutos.',
+    'password_reset_success' => 'Tu contraseña fue actualizada.',
 
     // Registros del diario
     'meal_entry_duplicate_date' => 'Ya existe un registro para esa fecha.',

@@ -77,7 +77,7 @@ class PasswordResetController extends Controller
         }
 
         return response()->json([
-            'message' => 'Tu contraseña fue actualizada.',
+            'message' => __('messages.password_reset_success'),
         ]);
     }
 }
