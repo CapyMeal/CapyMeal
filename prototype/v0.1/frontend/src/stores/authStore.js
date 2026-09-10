@@ -5,10 +5,18 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
 const state = reactive({
   user: null,
+  // Sólo se usa mientras se completa el segundo paso del login con 2FA --
+  // nunca se persiste (ni localStorage ni la cookie), vive sólo en memoria
+  // durante esta pestaña. TwoFactorChallengeView.vue lo lee para saber a
+  // qué desafío responder; si esta pestaña se cierra a mitad de camino, se
+  // pierde y hay que volver a loguearse desde cero (aceptable, el desafío
+  // igual vence solo a los 5 minutos del lado del servidor).
+  twoFactorChallenge: null,
 })
 
 export const isAuthenticated = computed(() => !!state.user)
 export const currentUser     = computed(() => state.user)
+export const twoFactorChallenge = computed(() => state.twoFactorChallenge)
 
 function persist(user) {
   state.user = user
@@ -82,8 +90,34 @@ export async function register({ name, email, password, password_confirmation })
   return data.user
 }
 
+// Con 2FA activo, el backend todavía no abre sesión (ver
+// AuthController::login()) -- devuelve un desafío en vez de {user,
+// csrfToken}. El llamador distingue este caso mirando si el resultado
+// trae "twoFactorRequired" en vez de asumir que login() siempre termina
+// logueado.
 export async function login({ email, password }) {
   const data = await authRequest('/api/login', { email, password })
+
+  if (data.twoFactorRequired) {
+    state.twoFactorChallenge = data.challenge
+    return { twoFactorRequired: true }
+  }
+
+  setCsrfToken(data.csrfToken)
+  persist(data.user)
+  return data.user
+}
+
+// Segundo paso del login con 2FA -- code es el de la app autenticadora o
+// un código de recuperación, el backend prueba ambos. Mismo shape de
+// respuesta que un login normal en éxito.
+export async function verifyTwoFactorCode(code) {
+  const data = await authRequest('/api/login/two-factor', {
+    challenge: state.twoFactorChallenge,
+    code,
+  })
+
+  state.twoFactorChallenge = null
   setCsrfToken(data.csrfToken)
   persist(data.user)
   return data.user
@@ -130,4 +164,44 @@ export async function updateAvatar(avatar) {
 
   persist(data)
   return data
+}
+
+// Refresca currentUser desde /api/me -- confirm()/disable() de abajo no
+// devuelven el usuario completo en su propia respuesta (confirm() sólo
+// trae los códigos de recuperación, disable() no trae nada), así que sin
+// esto "two_factor_enabled" quedaría desactualizado en la UI hasta la
+// próxima recarga.
+async function refreshUser() {
+  const user = await apiRequest(API_BASE_URL, '/api/me', { onUnauthorized: handleUnauthorized })
+  persist(user)
+}
+
+export async function setupTwoFactor() {
+  return apiRequest(API_BASE_URL, '/api/two-factor/setup', {
+    method: 'POST',
+    onUnauthorized: handleUnauthorized,
+  })
+}
+
+// Devuelve los códigos de recuperación en texto plano -- es la única vez
+// que el backend los entrega así, no se pueden volver a pedir después.
+export async function confirmTwoFactor(code) {
+  const data = await apiRequest(API_BASE_URL, '/api/two-factor/confirm', {
+    method: 'POST',
+    onUnauthorized: handleUnauthorized,
+    body: JSON.stringify({ code }),
+  })
+
+  await refreshUser()
+  return data.recoveryCodes
+}
+
+export async function disableTwoFactor(password) {
+  await apiRequest(API_BASE_URL, '/api/two-factor/disable', {
+    method: 'POST',
+    onUnauthorized: handleUnauthorized,
+    body: JSON.stringify({ password }),
+  })
+
+  await refreshUser()
 }

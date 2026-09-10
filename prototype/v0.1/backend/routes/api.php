@@ -7,6 +7,7 @@ use App\Http\Controllers\MealEntryController;
 use App\Http\Controllers\MicrosoftAuthController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SchedulerController;
+use App\Http\Controllers\TwoFactorController;
 use App\Http\Middleware\VerifySchedulerToken;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,13 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,
 // Recuperación de contraseña
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])->middleware('throttle:6,1');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:6,1');
+
+// Segundo paso del login cuando la cuenta tiene 2FA activo -- login() ya
+// validó la contraseña y dejó un desafío de un solo uso en cache en vez de
+// abrir sesión (ver AuthController::login()). Mismo límite que /login: es
+// la puerta de fuerza bruta contra el código de 6 dígitos, no puede quedar
+// sin throttle.
+Route::post('/login/two-factor', [TwoFactorController::class, 'verifyLogin'])->middleware('throttle:6,1');
 
 // El link del mail de verificación abre esto directo desde el cliente de
 // correo, en cualquier dispositivo -- no necesariamente el que tiene la
@@ -82,6 +90,10 @@ Route::middleware(['auth:sanctum', 'throttle:60,1,api'])->group(function () {
     // que "pdf-export" arriba: sin él comparte contador con el piso 60,1,api.
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
         ->middleware('throttle:3,1,email-verify');
+
+    Route::post('/two-factor/setup', [TwoFactorController::class, 'setup']);
+    Route::post('/two-factor/confirm', [TwoFactorController::class, 'confirm']);
+    Route::post('/two-factor/disable', [TwoFactorController::class, 'disable']);
 
     Route::get('/meal-entries', [MealEntryController::class, 'index']);
     // Generar el PDF es lo más pesado de la API (renderiza la vista con

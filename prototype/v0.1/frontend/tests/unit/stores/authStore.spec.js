@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterEach } from 'vitest'
-import { login, exchangeSocialCode, currentUser, authReady, handleUnauthorized } from '../../../src/stores/authStore'
+import { login, exchangeSocialCode, currentUser, authReady, handleUnauthorized, verifyTwoFactorCode } from '../../../src/stores/authStore'
 import { setCsrfToken } from '../../../src/services/httpClient'
 
 const pushMock = vi.fn()
@@ -61,6 +61,41 @@ describe('authStore', () => {
         .rejects.toThrow('El email o la contraseña son incorrectos.')
 
       expect(currentUser.value).toEqual(userAntes)
+    })
+
+    it('con 2FA activo, devuelve twoFactorRequired en vez de loguear', async () => {
+      global.fetch.mockResolvedValue(
+        new Response(JSON.stringify({ twoFactorRequired: true, challenge: 'un-challenge' }), { status: 200 })
+      )
+
+      const userAntes = currentUser.value
+
+      const result = await login({ email: 'mer@example.com', password: '123' })
+
+      expect(result).toEqual({ twoFactorRequired: true })
+      // No se pisa la sesión existente (si la había) hasta el segundo paso.
+      expect(currentUser.value).toEqual(userAntes)
+    })
+  })
+
+  describe('verifyTwoFactorCode', () => {
+    it('completa el login con el código correcto', async () => {
+      // Primero login() deja el challenge guardado.
+      global.fetch.mockResolvedValueOnce(
+        new Response(JSON.stringify({ twoFactorRequired: true, challenge: 'un-challenge' }), { status: 200 })
+      )
+      await login({ email: 'mer@example.com', password: '123' })
+
+      global.fetch.mockResolvedValueOnce(
+        new Response(JSON.stringify({ user: { id: 9, name: 'Mercedes' } }), { status: 200 })
+      )
+
+      const user = await verifyTwoFactorCode('123456')
+
+      expect(user).toEqual({ id: 9, name: 'Mercedes' })
+      expect(currentUser.value).toEqual({ id: 9, name: 'Mercedes' })
+      const [, options] = global.fetch.mock.calls.at(-1)
+      expect(JSON.parse(options.body)).toEqual({ challenge: 'un-challenge', code: '123456' })
     })
   })
 
