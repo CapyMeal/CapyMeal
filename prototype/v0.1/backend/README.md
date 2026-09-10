@@ -26,6 +26,8 @@ docker exec -it capymeal-backend composer format  # aplica los arreglos
 
 - Laravel 12, PHP 8.4
 - Sanctum (auth por cookie de sesión httpOnly, con bearer token como fallback para clientes viejos)
+- pragmarx/google2fa + bacon/bacon-qr-code (verificación en dos pasos por TOTP, opcional)
+- Traducciones en `lang/{es,en}`, con detección automática del idioma por cabecera
 - PostgreSQL 18 (Neon en producción)
 - DomPDF (export del diario a PDF)
 - Sentry (monitoreo de errores)

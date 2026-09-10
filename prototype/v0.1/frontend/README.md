@@ -20,8 +20,10 @@ npm test         # Vitest
 
 - Vue 3 (`<script setup>`) + Vue Router + Vuetify 4
 - Vite + `vite-plugin-pwa` (instalable, con caché offline del diario ya guardado)
+- vue-i18n (español / inglés, con toggle manual además de la detección automática)
 - Vitest + Vue Test Utils
 - Sentry (monitoreo de errores)
+- Vercel Analytics (uso agregado, sin cookies de terceros)
 
 ## Deploy
 
