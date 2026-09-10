@@ -43,6 +43,23 @@ class TwoFactorTest extends TestCase
         $this->assertNull($user->fresh()->two_factor_confirmed_at);
     }
 
+    public function test_setup_rejects_when_two_factor_is_already_enabled(): void
+    {
+        $secret = (new Google2FA)->generateSecretKey();
+        $user = User::factory()->create([
+            'two_factor_secret' => $secret,
+            'two_factor_confirmed_at' => now(),
+            'two_factor_recovery_codes' => [Hash::make('codigo')],
+        ]);
+
+        $this->withHeader('Authorization', 'Bearer '.$this->bearerToken($user))
+            ->postJson('/api/two-factor/setup')
+            ->assertStatus(422);
+
+        // Ni el secreto ni los códigos de recuperación se tocaron.
+        $this->assertSame($secret, $user->fresh()->two_factor_secret);
+    }
+
     public function test_confirm_with_a_valid_code_activates_two_factor_and_returns_recovery_codes(): void
     {
         $user = User::factory()->create();

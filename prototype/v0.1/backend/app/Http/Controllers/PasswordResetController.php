@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
@@ -60,8 +61,13 @@ class PasswordResetController extends Controller
 
             // Cerramos sesión en todos los dispositivos: si alguien
             // resetea su contraseña, probablemente sospecha que otra
-            // persona tenía acceso a la cuenta.
+            // persona tenía acceso a la cuenta. tokens() cubre los bearer
+            // tokens (clientes viejos); la tabla "sessions" es aparte
+            // (SESSION_DRIVER=database) y necesita su propio delete -- sin
+            // esto, una sesión de cookie ya abierta en otro dispositivo
+            // seguía funcionando después del reset.
             $user->tokens()->delete();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
         });
 
         if ($status !== Password::PASSWORD_RESET) {
