@@ -18,7 +18,9 @@ No busca controlar calorías ni imponer objetivos nutricionales. Su propósito e
 - ✅ Registro diario de comidas
 - ✅ Diario / historial con filtro por fechas
 - ✅ Exportación a PDF
-- ✅ Cuenta de usuario con recuperación de contraseña por email
+- ✅ Cuenta de usuario con verificación de email y recuperación de contraseña
+- ✅ Verificación en dos pasos (2FA) por app autenticadora, opcional
+- ✅ Bilingüe: español / inglés, con detección automática y toggle manual
 - ✅ Identidad visual cálida basada en carpinchos, con tema claro y oscuro
 - ✅ Diseño Material Design 3, paleta "Tierra"
 
