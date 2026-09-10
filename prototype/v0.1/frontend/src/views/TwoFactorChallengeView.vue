@@ -53,10 +53,13 @@ const errorMessage     = ref('')
 
 // Si alguien entra directo a esta URL (sin haber pasado por login()
 // primero) no hay ningún desafío guardado -- no tiene sentido mostrar el
-// formulario, se manda de vuelta a loguearse desde el principio.
+// formulario, se manda de vuelta a loguearse desde el principio. Mismo
+// query param que handleUnauthorized() en authStore.js, para que
+// LoginView explique por qué en vez de dejar que parezca que el login
+// en sí falló.
 onMounted(() => {
   if (!twoFactorChallenge.value) {
-    router.replace('/login')
+    router.replace({ name: 'login', query: { expired: '1' } })
   }
 })
 
