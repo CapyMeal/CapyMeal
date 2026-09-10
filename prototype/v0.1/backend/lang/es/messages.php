@@ -47,4 +47,9 @@ return [
     'pdf_no_records' => 'No hay registros para ese rango.',
     'pdf_footer' => 'CapyMeal · Generado el :date',
 
+    // Verificación en dos pasos
+    'two_factor_setup_not_started' => 'Todavía no generaste un código QR nuevo. Volvé a intentarlo desde el principio.',
+    'two_factor_invalid_code' => 'Ese código no es válido. Probá de nuevo.',
+    'two_factor_challenge_expired' => 'Esto venció o ya se usó. Volvé a iniciar sesión.',
+
 ];

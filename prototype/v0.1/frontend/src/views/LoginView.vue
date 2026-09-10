@@ -107,8 +107,8 @@ async function submit() {
   const slowTimer = setTimeout(() => { slowLogin.value = true }, 4000)
 
   try {
-    await login({ email: email.value, password: password.value })
-    router.push('/hoy')
+    const result = await login({ email: email.value, password: password.value })
+    router.push(result?.twoFactorRequired ? '/verificacion-dos-pasos' : '/hoy')
   } catch (error) {
     errorMessage.value = error.message || t('login.genericError')
   } finally {

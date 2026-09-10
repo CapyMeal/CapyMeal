@@ -19,6 +19,8 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'email_verified' => ! is_null($this->email_verified_at),
+            'two_factor_enabled' => $this->hasTwoFactorEnabled(),
+            'two_factor_recovery_codes_remaining' => count($this->two_factor_recovery_codes ?? []),
             'avatar' => $this->avatar,
             'created_at' => $this->created_at,
         ];

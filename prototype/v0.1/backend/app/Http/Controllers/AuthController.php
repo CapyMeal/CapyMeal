@@ -7,8 +7,10 @@ use App\Models\User;
 use App\Notifications\VerifyEmailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -18,6 +20,15 @@ class AuthController extends Controller
     // que es el default cuando 'avatar' es null). Mantener en sync con
     // las opciones que muestra Settingsview.vue en el frontend.
     private const AVAILABLE_AVATARS = ['capy1', 'capy2', 'capy3'];
+
+    // Prefijo del cache donde vive el desafío de 2FA entre login() (que lo
+    // crea) y TwoFactorController::verifyLogin() (que lo consume) -- public
+    // para que el otro controller lo use sin duplicar el string. Mismo
+    // patrón que EXCHANGE_CACHE_PREFIX ya usa SocialAuthController para su
+    // código de un solo uso.
+    public const TWO_FACTOR_CHALLENGE_PREFIX = 'two-factor-challenge:';
+
+    private const TWO_FACTOR_CHALLENGE_TTL_SECONDS = 300;
 
     // El patrón habitual de Sanctum (cookie XSRF-TOKEN, legible por JS) no
     // sirve acá: frontend y backend son dominios sin ninguna relación
@@ -76,6 +87,26 @@ class AuthController extends Controller
         }
 
         $this->assertPasswordMatches($user, $data['password'], 'email', __('messages.login_failed'));
+
+        // Con 2FA activo, la contraseña sola no alcanza -- todavía no se
+        // abre sesión. Se guarda un desafío de un solo uso en cache (mismo
+        // patrón que el código de intercambio de SocialAuthController) y el
+        // login de verdad queda a cargo de TwoFactorController::verifyLogin(),
+        // una vez que el código de la app autenticadora (o un código de
+        // recuperación) confirme que es la misma persona.
+        if ($user->hasTwoFactorEnabled()) {
+            $challenge = Str::random(40);
+            Cache::put(
+                self::TWO_FACTOR_CHALLENGE_PREFIX.$challenge,
+                ['user_id' => $user->id],
+                now()->addSeconds(self::TWO_FACTOR_CHALLENGE_TTL_SECONDS)
+            );
+
+            return response()->json([
+                'twoFactorRequired' => true,
+                'challenge' => $challenge,
+            ]);
+        }
 
         // A propósito no se invalidan las sesiones existentes acá: CapyMeal
         // es una PWA pensada para usarse desde varios dispositivos (celular

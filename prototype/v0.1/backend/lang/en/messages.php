@@ -47,4 +47,9 @@ return [
     'pdf_no_records' => 'There are no entries for that range.',
     'pdf_footer' => 'CapyMeal · Generated on :date',
 
+    // Two-factor authentication
+    'two_factor_setup_not_started' => "You haven't generated a new QR code yet. Start over.",
+    'two_factor_invalid_code' => "That code isn't valid. Try again.",
+    'two_factor_challenge_expired' => 'This expired or was already used. Log in again.',
+
 ];

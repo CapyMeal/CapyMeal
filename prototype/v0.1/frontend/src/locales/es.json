@@ -313,5 +313,34 @@
       "changesHeading": "Cambios a estos términos",
       "changesBody": "Si estos términos cambian de forma importante, vamos a actualizar la fecha de arriba."
     }
+  },
+  "twoFactor": {
+    "challengeTitle": "Verificá tu identidad",
+    "challengeSubtitle": "Ingresá el código de tu app de autenticación.",
+    "challengeRecoverySubtitle": "Ingresá uno de tus códigos de recuperación.",
+    "codeLabel": "Código",
+    "recoveryCodeLabel": "Código de recuperación",
+    "verifying": "Verificando...",
+    "verifyButton": "Verificar",
+    "useRecoveryCodeInstead": "Usar un código de recuperación",
+    "useAppCodeInstead": "Usar el código de la app",
+    "genericError": "No pude verificar el código. Intentá nuevamente.",
+    "settingsTitle": "Verificación en dos pasos",
+    "settingsDisabled": "Desactivada",
+    "settingsEnabled": "Activada ✅",
+    "settingsRecoveryCodesRemaining": "Te quedan {count} códigos de recuperación",
+    "enableButton": "Activar",
+    "disableButton": "Desactivar",
+    "settingUpTitle": "Escaneá este código",
+    "settingUpBody": "Abrí tu app de autenticación (Google Authenticator, Authy, etc.) y escaneá este código QR. Si no podés escanearlo, ingresá esta clave a mano:",
+    "settingUpError": "No pude generar el código QR. Intentá nuevamente.",
+    "confirmCodeLabel": "Código de confirmación",
+    "confirmButton": "Confirmar",
+    "cancelButton": "Cancelar",
+    "recoveryCodesTitle": "Guardá tus códigos de recuperación",
+    "recoveryCodesWarning": "Si perdés el acceso a tu app de autenticación, estos son los únicos códigos que te van a dejar entrar. Cada uno sirve una sola vez, y no los vamos a mostrar de nuevo.",
+    "recoveryCodesSavedButton": "Ya los guardé",
+    "disableConfirmButton": "Sí, desactivar",
+    "disabling": "Desactivando..."
   }
 }

@@ -118,6 +118,84 @@
 
       <hr class="settings-divider" />
 
+      <!-- Verificación en dos pasos -->
+      <template v-if="!settingUp && !recoveryCodes">
+        <div class="settings-item">
+          <div class="settings-item__info">
+            <span class="settings-item__icon">🔐</span>
+            <div>
+              <p class="settings-item__label">{{ t('twoFactor.settingsTitle') }}</p>
+              <p class="settings-item__desc">
+                {{ currentUser?.two_factor_enabled ? t('twoFactor.settingsEnabled') : t('twoFactor.settingsDisabled') }}
+                <template v-if="currentUser?.two_factor_enabled">
+                  · {{ t('twoFactor.settingsRecoveryCodesRemaining', { count: currentUser?.two_factor_recovery_codes_remaining }) }}
+                </template>
+              </p>
+            </div>
+          </div>
+          <CapyButton
+            v-if="!currentUser?.two_factor_enabled"
+            variant="ghost"
+            :disabled="startingSetup"
+            @click="startTwoFactorSetup"
+          >
+            {{ t('twoFactor.enableButton') }}
+          </CapyButton>
+          <CapyButton v-else variant="ghost" @click="confirmingDisableTwoFactor = true">
+            {{ t('twoFactor.disableButton') }}
+          </CapyButton>
+        </div>
+        <p v-if="settingUpError" class="settings-avatar-picker__error settings-two-factor-error">{{ settingUpError }}</p>
+
+        <div v-if="confirmingDisableTwoFactor" class="settings-panel">
+          <PasswordField
+            v-model="disableTwoFactorPassword"
+            :label="t('settings.confirmPassword')"
+            autocomplete="current-password"
+          />
+          <p v-if="disableTwoFactorError" class="settings-delete-account__error">{{ disableTwoFactorError }}</p>
+          <div class="settings-delete-account__actions">
+            <CapyButton variant="danger" :disabled="disablingTwoFactor" @click="handleDisableTwoFactor">
+              {{ disablingTwoFactor ? t('twoFactor.disabling') : t('twoFactor.disableConfirmButton') }}
+            </CapyButton>
+            <CapyButton variant="ghost" :disabled="disablingTwoFactor" @click="cancelDisableTwoFactor">{{ t('twoFactor.cancelButton') }}</CapyButton>
+          </div>
+        </div>
+      </template>
+
+      <!-- Setup de 2FA: QR + código de confirmación -->
+      <div v-else-if="settingUp" class="settings-panel">
+        <p class="settings-item__label">{{ t('twoFactor.settingUpTitle') }}</p>
+        <p class="settings-item__desc">{{ t('twoFactor.settingUpBody') }}</p>
+        <img v-if="setupData" :src="setupData.qrCodeSvg" alt="" class="settings-two-factor-qr">
+        <p v-if="setupData" class="settings-two-factor-key">{{ setupData.secret }}</p>
+        <v-text-field
+          v-model="confirmCode"
+          :label="t('twoFactor.confirmCodeLabel')"
+          placeholder="123456"
+          autocomplete="one-time-code"
+        />
+        <p v-if="confirmError" class="settings-delete-account__error">{{ confirmError }}</p>
+        <div class="settings-delete-account__actions">
+          <CapyButton :disabled="confirmingCode" @click="confirmTwoFactorSetup">
+            {{ confirmingCode ? t('twoFactor.verifying') : t('twoFactor.confirmButton') }}
+          </CapyButton>
+          <CapyButton variant="ghost" :disabled="confirmingCode" @click="cancelTwoFactorSetup">{{ t('twoFactor.cancelButton') }}</CapyButton>
+        </div>
+      </div>
+
+      <!-- Códigos de recuperación: se muestran una sola vez -->
+      <div v-else class="settings-panel">
+        <p class="settings-item__label">{{ t('twoFactor.recoveryCodesTitle') }}</p>
+        <p class="settings-delete-account__warning">{{ t('twoFactor.recoveryCodesWarning') }}</p>
+        <ul class="settings-two-factor-codes">
+          <li v-for="recoveryCode in recoveryCodes" :key="recoveryCode">{{ recoveryCode }}</li>
+        </ul>
+        <CapyButton @click="recoveryCodes = null">{{ t('twoFactor.recoveryCodesSavedButton') }}</CapyButton>
+      </div>
+
+      <hr class="settings-divider" />
+
       <button type="button" class="settings-item settings-item--danger" @click="handleLogout">
         <span class="settings-item__icon">🚪</span>
         <p class="settings-item__label">{{ t('settings.logout') }}</p>
@@ -168,7 +246,10 @@ import PasswordField from '../components/base/PasswordField.vue'
 import CapyButton  from '../components/base/CapyButton.vue'
 import ArgentinaFlagIcon from '../components/base/ArgentinaFlagIcon.vue'
 import UKFlagIcon from '../components/base/UKFlagIcon.vue'
-import { logout, currentUser, updateAvatar, deleteAccount } from '../stores/authStore'
+import {
+  logout, currentUser, updateAvatar, deleteAccount,
+  setupTwoFactor, confirmTwoFactor, disableTwoFactor,
+} from '../stores/authStore'
 import { isNetworkError } from '../services/mealEntriesApi'
 
 const router      = useRouter()
@@ -255,6 +336,77 @@ async function handleDeleteAccount() {
       : error.message
   } finally {
     deletingAccount.value = false
+  }
+}
+
+const startingSetup    = ref(false)
+const settingUp        = ref(false)
+const setupData        = ref(null)
+const settingUpError   = ref('')
+const confirmCode      = ref('')
+const confirmingCode   = ref(false)
+const confirmError     = ref('')
+const recoveryCodes    = ref(null)
+
+async function startTwoFactorSetup() {
+  startingSetup.value = true
+  settingUpError.value = ''
+
+  try {
+    setupData.value = await setupTwoFactor()
+    settingUp.value = true
+  } catch {
+    settingUpError.value = t('twoFactor.settingUpError')
+  } finally {
+    startingSetup.value = false
+  }
+}
+
+function cancelTwoFactorSetup() {
+  settingUp.value   = false
+  setupData.value   = null
+  confirmCode.value = ''
+  confirmError.value = ''
+}
+
+async function confirmTwoFactorSetup() {
+  confirmingCode.value = true
+  confirmError.value   = ''
+
+  try {
+    recoveryCodes.value = await confirmTwoFactor(confirmCode.value)
+    settingUp.value     = false
+    setupData.value     = null
+    confirmCode.value   = ''
+  } catch (error) {
+    confirmError.value = error.message || t('twoFactor.genericError')
+  } finally {
+    confirmingCode.value = false
+  }
+}
+
+const confirmingDisableTwoFactor = ref(false)
+const disableTwoFactorPassword   = ref('')
+const disablingTwoFactor         = ref(false)
+const disableTwoFactorError      = ref('')
+
+function cancelDisableTwoFactor() {
+  confirmingDisableTwoFactor.value = false
+  disableTwoFactorPassword.value   = ''
+  disableTwoFactorError.value      = ''
+}
+
+async function handleDisableTwoFactor() {
+  disablingTwoFactor.value    = true
+  disableTwoFactorError.value = ''
+
+  try {
+    await disableTwoFactor(disableTwoFactorPassword.value)
+    cancelDisableTwoFactor()
+  } catch (error) {
+    disableTwoFactorError.value = error.message || t('twoFactor.genericError')
+  } finally {
+    disablingTwoFactor.value = false
   }
 }
 </script>
@@ -380,11 +532,43 @@ async function handleDeleteAccount() {
   color: var(--color-primary);
 }
 
-.settings-delete-account {
+.settings-delete-account,
+.settings-panel {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
   padding: var(--space-lg);
+}
+
+.settings-two-factor-error {
+  padding: 0 var(--space-lg) var(--space-md);
+}
+
+.settings-two-factor-qr {
+  align-self: center;
+  width: 180px;
+  height: 180px;
+}
+
+.settings-two-factor-key {
+  align-self: center;
+  font-family: monospace;
+  font-size: .85rem;
+  letter-spacing: .05em;
+  color: var(--color-muted);
+  word-break: break-all;
+  text-align: center;
+}
+
+.settings-two-factor-codes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-md);
+  background: var(--color-background);
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+  font-size: .88rem;
 }
 
 .settings-delete-account__warning {

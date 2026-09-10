@@ -313,5 +313,34 @@
       "changesHeading": "Changes to these terms",
       "changesBody": "If these terms change in any meaningful way, we'll update the date above."
     }
+  },
+  "twoFactor": {
+    "challengeTitle": "Verify it's you",
+    "challengeSubtitle": "Enter the code from your authenticator app.",
+    "challengeRecoverySubtitle": "Enter one of your recovery codes.",
+    "codeLabel": "Code",
+    "recoveryCodeLabel": "Recovery code",
+    "verifying": "Verifying...",
+    "verifyButton": "Verify",
+    "useRecoveryCodeInstead": "Use a recovery code",
+    "useAppCodeInstead": "Use the app code",
+    "genericError": "Couldn't verify that code. Try again.",
+    "settingsTitle": "Two-factor authentication",
+    "settingsDisabled": "Off",
+    "settingsEnabled": "On ✅",
+    "settingsRecoveryCodesRemaining": "You have {count} recovery codes left",
+    "enableButton": "Enable",
+    "disableButton": "Disable",
+    "settingUpTitle": "Scan this code",
+    "settingUpBody": "Open your authenticator app (Google Authenticator, Authy, etc.) and scan this QR code. If you can't scan it, enter this key by hand instead:",
+    "settingUpError": "Couldn't generate the QR code. Try again.",
+    "confirmCodeLabel": "Confirmation code",
+    "confirmButton": "Confirm",
+    "cancelButton": "Cancel",
+    "recoveryCodesTitle": "Save your recovery codes",
+    "recoveryCodesWarning": "If you lose access to your authenticator app, these are the only codes that will let you back in. Each one works once, and we won't show them again.",
+    "recoveryCodesSavedButton": "I saved them",
+    "disableConfirmButton": "Yes, disable",
+    "disabling": "Disabling..."
   }
 }
