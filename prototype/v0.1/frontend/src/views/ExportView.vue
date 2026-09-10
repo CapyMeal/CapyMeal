@@ -87,7 +87,7 @@ async function printPdf() {
     const fileURL = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = fileURL
-    link.download = 'capymeal-diario.pdf'
+    link.download = t('export.downloadFilename')
     link.click()
     window.URL.revokeObjectURL(fileURL)
   } catch {

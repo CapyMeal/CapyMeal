@@ -19,7 +19,11 @@ import { mdiEye, mdiEyeOff } from '@mdi/js'
 
 defineProps({
   modelValue:   { type: String, default: '' },
-  label:        { type: String, default: 'Contraseña' },
+  // Sin default en español -- todos los usos actuales ya pasan su
+  // propia etiqueta traducida (ver LoginView/RegisterView/etc.), un
+  // default acá sería una trampa para un caller futuro que se olvide
+  // de pasarla en un idioma que no sea el español.
+  label:        { type: String, required: true },
   placeholder:  { type: String, default: '' },
   autocomplete: { type: String, default: 'current-password' },
   minlength:    { type: [String, Number], default: undefined },
