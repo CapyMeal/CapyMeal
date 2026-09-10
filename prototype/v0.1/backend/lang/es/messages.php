@@ -51,5 +51,6 @@ return [
     'two_factor_setup_not_started' => 'Todavía no generaste un código QR nuevo. Volvé a intentarlo desde el principio.',
     'two_factor_invalid_code' => 'Ese código no es válido. Probá de nuevo.',
     'two_factor_challenge_expired' => 'Esto venció o ya se usó. Volvé a iniciar sesión.',
+    'two_factor_already_enabled' => 'La verificación en dos pasos ya está activada. Desactivala primero si querés generar un código QR nuevo.',
 
 ];

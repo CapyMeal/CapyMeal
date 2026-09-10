@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
@@ -65,6 +66,32 @@ class PasswordResetTest extends TestCase
         $this->withHeader('Authorization', "Bearer {$oldToken}")
             ->getJson('/api/me')
             ->assertStatus(401);
+    }
+
+    public function test_reset_password_with_valid_token_invalidates_cookie_sessions(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('vieja-contraseña')]);
+        $resetToken = Password::createToken($user);
+
+        // Simula una sesión de cookie abierta en otro dispositivo -- si
+        // alguien resetea la contraseña porque sospecha que ese dispositivo
+        // no es de confianza, esa sesión también tiene que cerrarse.
+        DB::table('sessions')->insert([
+            'id' => 'sesion-de-otro-dispositivo',
+            'user_id' => $user->id,
+            'payload' => base64_encode('datos'),
+            'last_activity' => now()->timestamp,
+        ]);
+
+        $response = $this->postJson('/api/reset-password', [
+            'token' => $resetToken,
+            'email' => $user->email,
+            'password' => 'nueva-contraseña-123',
+            'password_confirmation' => 'nueva-contraseña-123',
+        ]);
+
+        $response->assertOk();
+        $this->assertSame(0, DB::table('sessions')->where('user_id', $user->id)->count());
     }
 
     public function test_reset_password_with_invalid_token_fails(): void

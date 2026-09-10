@@ -193,6 +193,12 @@ class AuthController extends Controller
             // -- a diferencia de meal_entries, hay que revocarlos a mano.
             $user->tokens()->delete();
 
+            // sessions tampoco tiene FK/cascade hacia users (ver la
+            // migración original) -- sin este delete, una sesión de cookie
+            // ya abierta en otro dispositivo seguía autenticada contra un
+            // usuario que ya no existe hasta que esa fila expirara sola.
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+
             $user->delete();
         });
 

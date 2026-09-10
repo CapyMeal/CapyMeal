@@ -24,6 +24,15 @@ class AccountDeletionTest extends TestCase
             'breakfast' => 'Café con leche',
         ]);
 
+        // Simula una sesión de cookie abierta en otro dispositivo -- no
+        // debería seguir autenticada contra un usuario que ya no existe.
+        DB::table('sessions')->insert([
+            'id' => 'sesion-de-otro-dispositivo',
+            'user_id' => $user->id,
+            'payload' => base64_encode('datos'),
+            'last_activity' => now()->timestamp,
+        ]);
+
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->deleteJson('/api/me', ['password' => 'capymeal123']);
 
@@ -32,6 +41,7 @@ class AccountDeletionTest extends TestCase
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
         $this->assertDatabaseMissing('meal_entries', ['user_id' => $user->id]);
         $this->assertSame(0, DB::table('personal_access_tokens')->where('tokenable_id', $user->id)->count());
+        $this->assertSame(0, DB::table('sessions')->where('user_id', $user->id)->count());
     }
 
     public function test_wrong_password_does_not_delete_anything(): void

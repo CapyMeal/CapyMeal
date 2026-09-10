@@ -22,6 +22,21 @@ class TwoFactorController extends Controller
 
     public function setup(Request $request)
     {
+        $user = $request->user();
+
+        // Si 2FA ya está confirmado, generar un secreto nuevo acá lo
+        // pisaría sin pedir nada -- cualquiera con la sesión abierta
+        // (ej. un dispositivo robado desbloqueado) podría reemplazar el
+        // secreto real por uno propio y desactivar de hecho la protección
+        // sin conocer la contraseña. disable() sí exige la contraseña para
+        // el mismo tipo de cambio; acá no hay ningún flujo legítimo que
+        // llame setup() con 2FA ya activo, así que se rechaza directo.
+        if ($user->hasTwoFactorEnabled()) {
+            throw ValidationException::withMessages([
+                'code' => [__('messages.two_factor_already_enabled')],
+            ]);
+        }
+
         $google2fa = new Google2FA;
 
         // Pisa cualquier secreto pendiente anterior a propósito: llamar
@@ -30,9 +45,9 @@ class TwoFactorController extends Controller
         // compitiendo. two_factor_confirmed_at no se toca acá -- 2FA sigue
         // sin estar activo hasta confirm().
         $secret = $google2fa->generateSecretKey();
-        $request->user()->forceFill(['two_factor_secret' => $secret])->save();
+        $user->forceFill(['two_factor_secret' => $secret])->save();
 
-        $otpauthUrl = $google2fa->getQRCodeUrl('CapyMeal', $request->user()->email, $secret);
+        $otpauthUrl = $google2fa->getQRCodeUrl('CapyMeal', $user->email, $secret);
 
         $renderer = new ImageRenderer(new RendererStyle(200), new SvgImageBackEnd);
         $qrCodeSvg = (new Writer($renderer))->writeString($otpauthUrl);

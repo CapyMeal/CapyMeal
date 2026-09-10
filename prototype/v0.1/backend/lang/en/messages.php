@@ -51,5 +51,6 @@ return [
     'two_factor_setup_not_started' => "You haven't generated a new QR code yet. Start over.",
     'two_factor_invalid_code' => "That code isn't valid. Try again.",
     'two_factor_challenge_expired' => 'This expired or was already used. Log in again.',
+    'two_factor_already_enabled' => 'Two-factor authentication is already on. Turn it off first if you want to generate a new QR code.',
 
 ];
