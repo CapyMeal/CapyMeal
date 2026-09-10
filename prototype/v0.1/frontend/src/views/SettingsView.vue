@@ -251,6 +251,7 @@ import {
   logout, currentUser, updateAvatar, deleteAccount,
   setupTwoFactor, confirmTwoFactor, disableTwoFactor,
 } from '../stores/authStore'
+import { switchLocale } from '../plugins/i18n'
 import { isNetworkError } from '../services/mealEntriesApi'
 
 const router      = useRouter()
@@ -295,10 +296,12 @@ function toggleTheme(value) {
 }
 
 // Mismo patrón que toggleTheme: local ref (via locale.value del i18n
-// global) + atributo en <html> + localStorage, en ese orden.
-function toggleLocale(value) {
+// global) + atributo en <html> + localStorage, en ese orden. switchLocale
+// (a diferencia de asignar locale.value directo) primero pide el catálogo
+// de ese idioma si todavía no se cargó -- ver plugins/i18n.js.
+async function toggleLocale(value) {
   const newLocale = value ? 'en' : 'es'
-  locale.value = newLocale
+  await switchLocale(newLocale)
   document.documentElement.setAttribute('lang', newLocale)
   localStorage.setItem('capymeal-locale', newLocale)
 }
