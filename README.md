@@ -13,12 +13,22 @@ No busca controlar calorías ni imponer objetivos nutricionales. Su propósito e
 🔗 **App en vivo:** [capy-meal.vercel.app](https://capy-meal.vercel.app)
 
 
+## Capturas
+
+<p align="center">
+  <img src="CapyMeal/design/mockups/app-onboarding.png" width="30%" alt="Pantalla de bienvenida de CapyMeal" />
+  <img src="CapyMeal/design/mockups/app-login.png" width="30%" alt="Pantalla de inicio de sesión con email, Google y Microsoft" />
+  <img src="CapyMeal/design/mockups/app-settings.png" width="30%" alt="Pantalla de ajustes con tema, idioma y avatar" />
+</p>
+
+
 ## Características
 
 - ✅ Registro diario de comidas
 - ✅ Diario / historial con filtro por fechas
 - ✅ Exportación a PDF
 - ✅ Cuenta de usuario con verificación de email y recuperación de contraseña
+- ✅ Inicio de sesión con Google y Microsoft, además de email/contraseña
 - ✅ Verificación en dos pasos (2FA) por app autenticadora, opcional
 - ✅ Bilingüe: español / inglés, con detección automática y toggle manual
 - ✅ Identidad visual cálida basada en carpinchos, con tema claro y oscuro
@@ -43,7 +53,7 @@ Para levantar el proyecto localmente con Docker, ver la [guía de desarrollo](pr
 
 CapyMeal corre con la misma disciplina que un proyecto en producción real, aunque sea chico:
 
-- ✅ **Tests automáticos** (backend): login, registro, diario, recuperación de contraseña y exportación de PDF.
+- ✅ **Tests automáticos**: ~115 tests de backend (auth, 2FA, login social, diario, recuperación de contraseña, borrado de cuenta, exportación de PDF, headers de seguridad) y ~57 de frontend (Vitest).
 - ✅ **CI/CD** (GitHub Actions): cada cambio corre tests + lint antes de poder mergearse.
 - ✅ **Monitoreo de errores** (Sentry): backend y frontend avisan solos si algo se rompe en producción.
 - ✅ **Monitoreo de disponibilidad** (UptimeRobot): aviso por email si el backend se cae.
