@@ -72,6 +72,18 @@ if (import.meta.env.VITE_SENTRY_DSN) {
       /^chrome-extension:\/\//i,
       /^moz-extension:\/\//i,
     ],
+    // El "Rejected ... wrsParams.serviceWorkers..." de arriba se escapaba de
+    // los dos filtros: su mensaje es solo "Rejected" (ignoreErrors no ve
+    // "wrsParams") y el código inyectado corre como <anonymous>, sin URL
+    // (denyUrls no tiene contra qué comparar). Es el wrapper que algún
+    // navegador/webview pone sobre navigator.serviceWorker.register, que
+    // rechaza el registro del SW de vite-plugin-pwa en ese entorno. No hay
+    // nada que arreglar: sin SW la app anda igual, solo sin offline.
+    beforeSend(event) {
+      const frames = event.exception?.values?.flatMap((ex) => ex.stacktrace?.frames ?? []) ?? []
+      if (frames.some((frame) => frame.function?.includes('wrsParams'))) return null
+      return event
+    },
   })
 }
 
