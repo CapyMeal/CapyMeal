@@ -23,7 +23,7 @@
     "vue-i18n": "^11.4.14",
 dev
     "vue-router": "^5.3.1",
-    "vuetify": "^4.2.0"
+    "vuetify": "^4.2.5"
   },
   "overrides": {
     "@vercel/analytics": {
