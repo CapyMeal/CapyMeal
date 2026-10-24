@@ -64,6 +64,8 @@ CapyMeal corre con la misma disciplina que un proyecto en producción real, aunq
 
 ## Capi 🤎
 
-Capi es un carpincho curioso y tranquilo. Le encanta compartir la mesa con sus amigos y cree que cada comida cuenta una historia.
+Capi es un carpincho curioso y tranquilo. Le encanta compartir la mesa con sus amigos y cree que cada comida cuenta una historia. 
+
+Capi es genial.
 
 No está interesado en dietas ni reglas estrictas; solo quiere ayudarte a recordar esos pequeños momentos del día que, con el tiempo, también forman parte de tus recuerdos.
