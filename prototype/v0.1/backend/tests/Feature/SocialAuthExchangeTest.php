@@ -33,6 +33,11 @@ class SocialAuthExchangeTest extends TestCase
         ];
     }
 
+    public static function drivers(): array
+    {
+        return array_map(fn (array $provider): array => [$provider[0]], self::providers());
+    }
+
     #[DataProvider('providers')]
     public function test_exchange_code_redeems_for_a_session_and_user(string $driver, string $column): void
     {
@@ -74,7 +79,7 @@ class SocialAuthExchangeTest extends TestCase
         $this->postJson("/api/auth/{$driver}/exchange", ['code' => 'test-code'])->assertStatus(422);
     }
 
-    #[DataProvider('providers')]
+    #[DataProvider('drivers')]
     public function test_expired_or_unknown_exchange_code_fails(string $driver): void
     {
         $this->postJson("/api/auth/{$driver}/exchange", ['code' => 'never-existed'])->assertStatus(422);
