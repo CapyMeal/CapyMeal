@@ -4391,16 +4391,16 @@
         },
         {
             "name": "resend/resend-php",
-            "version": "v1.10.0",
+            "version": "v1.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/resend/resend-php.git",
-                "reference": "736c59fda48a8c71b7ca8a5f17c905cb968b95aa"
+                "reference": "f615aaa9bde31a0235dd2f9856cbbea63bf14ac9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/resend/resend-php/zipball/736c59fda48a8c71b7ca8a5f17c905cb968b95aa",
-                "reference": "736c59fda48a8c71b7ca8a5f17c905cb968b95aa",
+                "url": "https://api.github.com/repos/resend/resend-php/zipball/f615aaa9bde31a0235dd2f9856cbbea63bf14ac9",
+                "reference": "f615aaa9bde31a0235dd2f9856cbbea63bf14ac9",
                 "shasum": ""
             },
             "require": {
@@ -4444,9 +4444,9 @@
             ],
             "support": {
                 "issues": "https://github.com/resend/resend-php/issues",
-                "source": "https://github.com/resend/resend-php/tree/v1.10.0"
+                "source": "https://github.com/resend/resend-php/tree/v1.18.0"
             },
-            "time": "2026-08-20T19:21:58+00:00"
+            "time": "2026-11-02T05:00:42+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",
