@@ -53,8 +53,8 @@ docker compose up
 ```
 docker-compose.yml
 │
-├── frontend/   → Vue 3 + Vite   (Node 20)
-├── backend/    → Laravel 12     (PHP 8.2)
+├── frontend/   → Vue 3 + Vite   (Node 24)
+├── backend/    → Laravel 13     (PHP 8.4)
 └── db          → PostgreSQL 18
 ```
 

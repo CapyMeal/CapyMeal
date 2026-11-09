@@ -1,6 +1,6 @@
 # CapyMeal — Backend
 
-API de Laravel 12 para CapyMeal, un diario personal de comidas (explícitamente no una app de fitness/calorías).
+API de Laravel 13 para CapyMeal, un diario personal de comidas (explícitamente no una app de fitness/calorías).
 
 Para levantar el proyecto completo (backend + frontend + base de datos) con Docker, ver la
 [guía de desarrollo](../README.md) en la raíz de `prototype/v0.1/` — ese es el README mantenido
@@ -24,7 +24,7 @@ docker exec -it capymeal-backend composer format  # aplica los arreglos
 
 ## Stack
 
-- Laravel 12, PHP 8.4
+- Laravel 13, PHP 8.4
 - Sanctum (auth por cookie de sesión httpOnly, con bearer token como fallback para clientes viejos)
 - pragmarx/google2fa + bacon/bacon-qr-code (verificación en dos pasos por TOTP, opcional)
 - Traducciones en `lang/{es,en}`, con detección automática del idioma por cabecera
