@@ -62,10 +62,73 @@ describe('apiRequest', () => {
 
   it('arma el mensaje de error a partir de "message" cuando el servidor lo manda', async () => {
     global.fetch.mockResolvedValue(
-      new Response(JSON.stringify({ message: 'Ocurrió un problema.' }), { status: 500 })
+      new Response(JSON.stringify({ message: 'Ocurrió un problema.' }), { status: 403 })
     )
 
     await expect(apiRequest(BASE_URL, '/api/algo')).rejects.toThrow('Ocurrió un problema.')
+  })
+
+  it('en un 5xx no muestra el mensaje técnico del servidor', async () => {
+    global.fetch.mockResolvedValue(
+      new Response(JSON.stringify({ message: 'Server Error' }), { status: 500 })
+    )
+
+    await expect(apiRequest(BASE_URL, '/api/algo')).rejects.toThrow('Algo falló de nuestro lado.')
+  })
+
+  it('una respuesta no-JSON nunca termina con el HTML crudo en el mensaje', async () => {
+    global.fetch.mockResolvedValue(new Response('<html>Bad Gateway</html>', { status: 502 }))
+
+    const error = await apiRequest(BASE_URL, '/api/algo').catch((e) => e)
+
+    expect(error.message).not.toContain('<html>')
+    expect(error.status).toBe(502)
+  })
+
+  it('en un 429 muestra un mensaje propio en vez de "Too Many Attempts."', async () => {
+    setCsrfToken('ya-cacheado')
+    global.fetch.mockResolvedValue(
+      new Response(JSON.stringify({ message: 'Too Many Attempts.' }), { status: 429 })
+    )
+
+    await expect(apiRequest(BASE_URL, '/api/login', { method: 'POST' }))
+      .rejects.toThrow('Demasiados intentos seguidos.')
+  })
+
+  it('en un 419 pide un token CSRF nuevo y reintenta una sola vez', async () => {
+    setCsrfToken('token-viejo')
+    global.fetch
+      .mockResolvedValueOnce(new Response(JSON.stringify({ message: 'CSRF token mismatch.' }), { status: 419 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ token: 'token-nuevo' }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ok: true }), { status: 200 }))
+
+    const result = await apiRequest(BASE_URL, '/api/login', { method: 'POST' })
+
+    expect(result).toEqual({ ok: true })
+    expect(global.fetch).toHaveBeenCalledTimes(3)
+    expect(global.fetch.mock.calls[1][0]).toBe(`${BASE_URL}/api/csrf-token`)
+    expect(global.fetch.mock.calls[2][1].headers['X-CSRF-TOKEN']).toBe('token-nuevo')
+  })
+
+  it('si el 419 se repite después del reintento, lanza un mensaje entendible', async () => {
+    setCsrfToken('token-viejo')
+    global.fetch
+      .mockResolvedValueOnce(new Response('{}', { status: 419 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ token: 'token-nuevo' }), { status: 200 }))
+      .mockResolvedValueOnce(new Response('{}', { status: 419 }))
+
+    await expect(apiRequest(BASE_URL, '/api/login', { method: 'POST' }))
+      .rejects.toThrow('No pudimos validar tu sesión.')
+    expect(global.fetch).toHaveBeenCalledTimes(3)
+  })
+
+  it('sin conexión lanza un mensaje en castellano y sin .status', async () => {
+    global.fetch.mockRejectedValue(new TypeError('Failed to fetch'))
+
+    const error = await apiRequest(BASE_URL, '/api/me').catch((e) => e)
+
+    expect(error.message).toBe('No pudimos conectar. Revisá tu conexión e intentá de nuevo.')
+    expect(error.status).toBeUndefined()
   })
 
   it('arma el mensaje de error a partir del primer campo de "errors" si no hay "message"', async () => {

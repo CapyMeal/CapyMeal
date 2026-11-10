@@ -32,13 +32,80 @@ function ensureCsrfToken(baseUrl) {
   if (cachedCsrfToken) return Promise.resolve()
 
   if (!csrfTokenPromise) {
-    csrfTokenPromise = fetch(`${baseUrl}/api/csrf-token`, { credentials: 'include' })
-      .then((response) => response.json())
+    csrfTokenPromise = send(`${baseUrl}/api/csrf-token`, { credentials: 'include' })
+      .then((response) => {
+        // Sin este chequeo, un 429/500 dejaba cachedCsrfToken en undefined
+        // y el request siguiente salía sin token, para terminar en un 419
+        // que escondía el error real.
+        if (!response.ok) throw buildHttpError(response.status, null)
+        return response.json()
+      })
       .then((data) => { cachedCsrfToken = data.token })
       .finally(() => { csrfTokenPromise = null })
   }
 
   return csrfTokenPromise
+}
+
+const HTTP_CSRF_MISMATCH = 419
+const HTTP_TOO_MANY_REQUESTS = 429
+const HTTP_SERVER_ERROR = 500
+
+// fetch sólo rechaza cuando el request no llega a completarse (sin
+// conexión, DNS, CORS): se reemplaza el "Failed to fetch" del navegador por
+// un mensaje para la usuaria. El error sigue sin .status a propósito, que es
+// lo que isNetworkError() usa para reconocerlo.
+async function send(url, init) {
+  try {
+    return await fetch(url, init)
+  } catch {
+    throw new Error(i18n.global.t('errors.network'))
+  }
+}
+
+// Los 419, 429 y 5xx traen mensajes técnicos en inglés que arma el framework
+// ("CSRF token mismatch.", "Too Many Attempts.", "Server Error"), así que se
+// traducen acá según el status. El resto (sobre todo los 422 de validación)
+// ya viene redactado y traducido por el backend según X-Locale.
+export function httpErrorMessage(status, data) {
+  const { t } = i18n.global
+
+  if (status === HTTP_CSRF_MISMATCH) return t('errors.csrfMismatch')
+  if (status === HTTP_TOO_MANY_REQUESTS) return t('errors.tooManyRequests')
+  if (status >= HTTP_SERVER_ERROR) return t('errors.unexpected')
+
+  return data?.message
+    || Object.values(data?.errors || {})[0]?.[0]
+    || t('errors.unexpected')
+}
+
+export function buildHttpError(status, data) {
+  const error = new Error(httpErrorMessage(status, data))
+  error.status = status
+  return error
+}
+
+async function sendApiRequest(baseUrl, path, options, isMutating) {
+  if (isMutating) {
+    await ensureCsrfToken(baseUrl)
+  }
+
+  return send(`${baseUrl}${path}`, {
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      // Le dice al backend en qué idioma responder (mensajes de
+      // validación, errores, mails); ver SetLocaleFromHeader en el
+      // backend. Va en todas las requests, no sólo las mutantes: un GET
+      // también puede devolver un error de validación (ej. rango de
+      // fechas inválido).
+      'X-Locale': i18n.global.locale.value,
+      ...(isMutating ? { [CSRF_HEADER_NAME]: cachedCsrfToken } : {}),
+      ...(options.headers || {}),
+    },
+    ...options,
+  })
 }
 
 // Cliente HTTP compartido: antes este mismo bloque (fetch -> chequear
@@ -55,26 +122,17 @@ export async function apiRequest(baseUrl, path, opts = {}) {
   const method = (options.method || 'GET').toUpperCase()
   const isMutating = MUTATING_METHODS.includes(method)
 
-  if (isMutating) {
-    await ensureCsrfToken(baseUrl)
-  }
+  let response = await sendApiRequest(baseUrl, path, options, isMutating)
 
-  const response = await fetch(`${baseUrl}${path}`, {
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      // Le dice al backend en qué idioma responder (mensajes de
-      // validación, errores, mails) -- ver SetLocaleFromHeader en el
-      // backend. Va en todas las requests, no sólo las mutantes: un GET
-      // también puede devolver un error de validación (ej. rango de
-      // fechas inválido).
-      'X-Locale': i18n.global.locale.value,
-      ...(isMutating ? { [CSRF_HEADER_NAME]: cachedCsrfToken } : {}),
-      ...(options.headers || {}),
-    },
-    ...options,
-  })
+  // Un 419 casi siempre es un token cacheado que quedó viejo: la sesión del
+  // backend venció o se reinició con la pestaña abierta. Se pide uno nuevo y
+  // se reintenta una sola vez, sin que la usuaria se entere. Si vuelve a
+  // fallar, el problema es otro (por ejemplo, el navegador bloquea la cookie
+  // de sesión) y el error llega a la vista.
+  if (isMutating && response.status === HTTP_CSRF_MISMATCH) {
+    cachedCsrfToken = null
+    response = await sendApiRequest(baseUrl, path, options, isMutating)
+  }
 
   if (!response.ok) {
     // Un 401 significa que la sesión ya no sirve: se dispara el manejo de
@@ -97,12 +155,7 @@ export async function apiRequest(baseUrl, path, opts = {}) {
       // respuesta no-JSON (ej. error de servidor/proxy), seguimos con data = null
     }
 
-    const message = data?.message
-      || Object.values(data?.errors || {})[0]?.[0]
-      || `API ${response.status}: ${text}`
-    const error = new Error(message)
-    error.status = response.status
-    throw error
+    throw buildHttpError(response.status, data)
   }
 
   if (response.status === 204) {

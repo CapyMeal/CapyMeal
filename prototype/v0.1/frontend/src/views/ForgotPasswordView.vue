@@ -59,7 +59,7 @@ async function submit() {
     sent.value = true
   } catch (error) {
     if (error.status === 429) {
-      errorMessage.value = error.message || t('forgotPassword.rateLimitError')
+      errorMessage.value = t('forgotPassword.rateLimitError')
     } else if (error.status) {
       errorMessage.value = error.message || t('forgotPassword.genericError')
     } else {

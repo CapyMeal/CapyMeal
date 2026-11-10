@@ -61,7 +61,7 @@ describe('upsertMealEntry', () => {
       new Response(JSON.stringify({ message: 'Error de servidor' }), { status: 500 })
     )
 
-    await expect(upsertMealEntry({ date: '2026-01-01' })).rejects.toThrow('Error de servidor')
+    await expect(upsertMealEntry({ date: '2026-01-01' })).rejects.toMatchObject({ status: 500 })
     expect(global.fetch).toHaveBeenCalledTimes(1)
   })
 })

@@ -1,5 +1,5 @@
 import { handleUnauthorized } from '../stores/authStore'
-import { apiRequest } from './httpClient'
+import { apiRequest, buildHttpError } from './httpClient'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
@@ -87,10 +87,7 @@ export async function exportMealEntriesPdf({ from, to }) {
       await handleUnauthorized()
     }
 
-    const text = await response.text()
-    const error = new Error(`API ${response.status}: ${text}`)
-    error.status = response.status
-    throw error
+    throw buildHttpError(response.status, null)
   }
 
   return response.blob()

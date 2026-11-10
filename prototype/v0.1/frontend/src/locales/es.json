@@ -9,6 +9,12 @@
     "passwordMismatch": "Las contraseñas no coinciden.",
     "forgotPasswordLink": "¿Olvidaste tu contraseña?"
   },
+  "errors": {
+    "network": "No pudimos conectar. Revisá tu conexión e intentá de nuevo.",
+    "csrfMismatch": "No pudimos validar tu sesión. Recargá la página e intentá de nuevo. Si sigue pasando, revisá que tu navegador permita las cookies de CapyMeal.",
+    "tooManyRequests": "Demasiados intentos seguidos. Esperá un minuto y volvé a intentar.",
+    "unexpected": "Algo falló de nuestro lado. Intentá de nuevo en un rato."
+  },
   "meals": {
     "breakfast": "Desayuno",
     "lunch": "Almuerzo",
