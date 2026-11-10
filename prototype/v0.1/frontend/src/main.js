@@ -32,8 +32,15 @@ sessionStorage.removeItem('capymeal-reloaded-after-stale-chunk')
 // sessionStorage evita un loop si la recarga por algún motivo sigue
 // sirviendo algo viejo (ej. un proxy/CDN cacheando el HTML): un solo
 // intento por pestaña y listo.
-window.addEventListener('vite:preloadError', () => {
+//
+// preventDefault() evita que Vite además lance el error: sin eso, Sentry
+// reportaba como issue nuevo ("Unable to preload CSS...") cada deploy que
+// encontraba una pestaña abierta, aunque la recarga ya lo resolviera. Si
+// la recarga ya se intentó y vuelve a fallar, no se llama, y el error sí
+// llega a Sentry porque ahí hay un problema real.
+window.addEventListener('vite:preloadError', (event) => {
   if (sessionStorage.getItem('capymeal-reloaded-after-stale-chunk')) return
+  event.preventDefault()
   sessionStorage.setItem('capymeal-reloaded-after-stale-chunk', '1')
   window.location.reload()
 })
