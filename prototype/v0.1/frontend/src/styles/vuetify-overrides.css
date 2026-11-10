@@ -69,3 +69,23 @@
 .v-field__append-inner .v-icon {
   font-size: 20px !important;
 }
+
+/* Con un ícono al final (el ojito de PasswordField), los 20px de
+   padding-inline-end que se fuerzan arriba quedaban dentro del <input>:
+   el fondo del input (autocompletado, texto seleccionado) llegaba hasta el
+   ícono y lo dejaba pegado. La separación la pone ahora el contenedor del
+   ícono, por fuera del input. */
+.v-field--appended .v-field__input {
+  padding-inline-end: 0 !important;
+}
+
+.v-field--appended .v-field__append-inner {
+  padding-inline-start: 12px;
+  padding-inline-end: 4px;
+}
+
+/* Los avisos viven dentro de tarjetas con text-align: center (AuthCard,
+   etc.), y el texto centrado quedaba despegado del ícono de la izquierda. */
+.v-alert {
+  text-align: start;
+}

@@ -155,6 +155,15 @@ a:focus-visible {
   box-shadow:0 0 0 3px rgba(150,104,74,.4);
 }
 
+/* Dentro de un campo de Vuetify el foco ya se marca con la línea inferior
+   del color primario. El anillo de arriba dibujaba un recuadro solo
+   alrededor del <input>, que dejaba afuera al ícono del final (el ojito de
+   la contraseña) como si estuviera en una caja aparte. */
+.v-field input:focus-visible,
+.v-field textarea:focus-visible {
+  box-shadow:none;
+}
+
 @media (min-width: 768px){
   :root{
     --space-lg: 1.75rem;
