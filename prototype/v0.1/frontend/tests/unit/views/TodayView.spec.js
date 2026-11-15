@@ -61,11 +61,11 @@ describe('TodayView', () => {
       const wrapper = mountTodayView()
       await flushPromises()
 
-      await findButtonByText(wrapper, 'Guardar mi día').trigger('click')
+      await findButtonByText(wrapper, 'Cerrar el día').trigger('click')
       await flushPromises()
 
       expect(upsertMealEntry).not.toHaveBeenCalled()
-      expect(wrapper.text()).toContain('Completá al menos una comida o recuerdo antes de guardar.')
+      expect(wrapper.text()).toContain('Completá al menos una comida o un recuerdo antes de cerrar el día.')
     })
 
     it('guarda el día y muestra la confirmación cuando hay al menos un campo lleno', async () => {
@@ -74,7 +74,7 @@ describe('TodayView', () => {
       await flushPromises()
 
       await wrapper.find('[data-test="Desayuno"]').setValue('Café con tostadas')
-      await findButtonByText(wrapper, 'Guardar mi día').trigger('click')
+      await findButtonByText(wrapper, 'Cerrar el día').trigger('click')
       await flushPromises()
 
       expect(upsertMealEntry).toHaveBeenCalledWith(
@@ -90,7 +90,7 @@ describe('TodayView', () => {
       await flushPromises()
 
       await wrapper.find('[data-test="Desayuno"]').setValue('Café')
-      await findButtonByText(wrapper, 'Guardar mi día').trigger('click')
+      await findButtonByText(wrapper, 'Cerrar el día').trigger('click')
       await flushPromises()
 
       expect(wrapper.text()).toContain('No se pudo guardar: estás sin conexión.')
@@ -103,7 +103,7 @@ describe('TodayView', () => {
       await flushPromises()
 
       await wrapper.find('[data-test="Desayuno"]').setValue('Café')
-      await findButtonByText(wrapper, 'Guardar mi día').trigger('click')
+      await findButtonByText(wrapper, 'Cerrar el día').trigger('click')
       await flushPromises()
 
       expect(wrapper.text()).toContain('No pude guardar este día. Intentá nuevamente.')

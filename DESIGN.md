@@ -138,7 +138,7 @@ Calidez no es descuido. Lo que está registrado acá como sistema es lo que ya e
 Una paleta de tierra, madera y papel: cálida, de saturación baja, con un solo color fuerte para la acción.
 
 ### Primary
-- **Terracota** (`terracota`): el botón principal ("Guardar mi día"), la pestaña activa de la barra inferior, los links, la fecha de cada tarjeta del diario y el borde de una tarjeta recién guardada. Es la voz de "esto es lo importante acá".
+- **Terracota** (`terracota`): el botón principal ("Cerrar el día"), la pestaña activa de la barra inferior, los links, la fecha de cada tarjeta del diario y el borde de una tarjeta recién guardada. Es la voz de "esto es lo importante acá".
 - **Terracota tostada** (`terracota-deep`): solo el hover del botón principal.
 
 ### Secondary

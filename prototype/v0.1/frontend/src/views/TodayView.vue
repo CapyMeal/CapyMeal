@@ -107,6 +107,9 @@
           :retryable="saveDayFailed"
           @retry="saveDay"
         />
+        <!-- "Cerrar el día" es el ritual que lleva al "Listo 🍂", no un
+             botón de formulario: lo escrito ya está guardado y se dice. -->
+        <p v-else class="today-autosave-hint">{{ t('today.autosaveHint') }}</p>
         <CapyButton :disabled="loading || savingDay" @click="saveDay">
           {{ t('today.saveDay') }}
         </CapyButton>
@@ -400,6 +403,12 @@ onMounted(() => {
   flex-direction: column;
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
+}
+
+.today-autosave-hint {
+  font-size: var(--font-size-caption);
+  color: var(--color-muted);
+  text-align: center;
 }
 
 
