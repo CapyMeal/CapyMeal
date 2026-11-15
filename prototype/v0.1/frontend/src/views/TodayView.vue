@@ -77,9 +77,6 @@
       <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="today-status">
         {{ errorMessage }}
       </v-alert>
-      <v-alert v-if="successMessage" type="success" variant="tonal" density="compact" class="today-status">
-        {{ successMessage }}
-      </v-alert>
 
       <!-- Tarjetas de comida -->
       <div class="today-meals today-meals--with-bar">
@@ -90,14 +87,14 @@
           :meal="meal.key"
           :title="meal.title"
           :placeholder="meal.placeholder"
-          :saving="loadingFieldKey === meal.key"
-          :just-saved="savedFields.has(meal.key)"
-          @save-field="saveSingleField(meal.key)"
+          :saving="savingKey === meal.key"
+          :just-saved="recentlySaved.has(meal.key)"
+          @save-field="saveField(meal.key)"
         />
       </div>
 
       <StickyActionBar>
-        <CapyButton :disabled="loading" @click="saveDay">
+        <CapyButton :disabled="loading || savingDay" @click="saveDay">
           {{ t('today.saveDay') }}
         </CapyButton>
       </StickyActionBar>
@@ -108,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import MainLayout      from '../layouts/MainLayout.vue'
@@ -117,10 +114,11 @@ import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
 import UserAvatar      from '../components/base/UserAvatar.vue'
-import { getMealEntries, getMealEntry, upsertMealEntry, isNetworkError } from '../services/mealEntriesApi'
+import { getMealEntries, upsertMealEntry, isNetworkError } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
 import { formatDate, formatDateISO, addDays } from '../utils/date'
 import { MEAL_KEYS } from '../utils/meals'
+import { useDayEntry } from '../utils/useDayEntry'
 import { mdiCalendarMonthOutline } from '@mdi/js'
 
 const router = useRouter()
@@ -132,20 +130,28 @@ const todayISO = formatDateISO(today)
 const selectedDate  = ref(todayISO)
 const showDatePicker = ref(false)
 
-const form = reactive({
-  breakfast: '',
-  lunch:     '',
-  snack:     '',
-  dinner:    '',
-  notes:     '',
+const {
+  form,
+  loading,
+  errorMessage,
+  savingKey,
+  recentlySaved,
+  load,
+  reset,
+  saveField,
+  hasAnyContent,
+  markAllSaved,
+} = useDayEntry({
+  date: () => selectedDate.value,
+  messages: {
+    load:      () => t('today.loadError'),
+    save:      (offline) => (offline ? t('today.saveFieldOfflineError') : t('today.saveFieldError')),
+    lastField: () => t('common.lastFieldError'),
+  },
 })
 
-const saved          = ref(false)
-const loading        = ref(false)
-const loadingFieldKey = ref('')
-const errorMessage   = ref('')
-const successMessage = ref('')
-const savedFields    = ref(new Set())
+const saved            = ref(false)
+const savingDay        = ref(false)
 const lastRecordedDate = ref(null)
 
 const mealFields = computed(() => [...MEAL_KEYS, 'notes'].map((key) => ({
@@ -179,40 +185,13 @@ const gapDateFormatted = computed(() => {
   })
 })
 
-async function loadEntryByDate(date) {
-  // Se limpia el formulario de entrada, antes de esperar la respuesta:
-  // si no, mientras carga el dia nuevo se siguen viendo las comidas del
-  // dia anterior debajo del "Cargando...", como si no hubiera cambiado
-  // de dia todavia.
-  resetFormFields()
-
-  if (!date) { return }
-
-  loading.value      = true
-  errorMessage.value = ''
-  successMessage.value = ''
-  saved.value        = false
-  savedFields.value  = new Set()
-
-  try {
-    // `entry` es null cuando todavia no hay nada guardado para ese dia --
-    // el formulario ya vacio (reseteado arriba) es la UI correcta para eso.
-    const entry = await getMealEntry(date)
-
-    if (entry) {
-      Object.assign(form, {
-        breakfast: entry.breakfast || '',
-        lunch:     entry.lunch     || '',
-        snack:     entry.snack     || '',
-        dinner:    entry.dinner    || '',
-        notes:     entry.notes     || '',
-      })
-    }
-  } catch {
-    errorMessage.value = t('today.loadError')
-  } finally {
-    loading.value = false
+function loadSelectedDay() {
+  saved.value = false
+  if (!selectedDate.value) {
+    reset()
+    return
   }
+  load()
 }
 
 async function loadLastRecordedDate() {
@@ -231,71 +210,40 @@ async function saveDay() {
     return
   }
 
-  loading.value      = true
+  savingDay.value    = true
   errorMessage.value = ''
-  successMessage.value = ''
 
   try {
     await upsertMealEntry({ date: selectedDate.value, ...form })
+    markAllSaved()
     saved.value = true
   } catch (error) {
     errorMessage.value = isNetworkError(error)
       ? t('today.saveOfflineError')
       : t('today.saveError')
   } finally {
-    loading.value = false
+    savingDay.value = false
   }
-}
-
-async function saveSingleField(fieldKey) {
-  const value = form[fieldKey]
-  if (!value || !value.trim()) return
-
-  loadingFieldKey.value = fieldKey
-  errorMessage.value    = ''
-
-  try {
-    await upsertMealEntry({ date: selectedDate.value, [fieldKey]: form[fieldKey] })
-    savedFields.value = new Set([...savedFields.value, fieldKey])
-    setTimeout(() => {
-      const next = new Set(savedFields.value)
-      next.delete(fieldKey)
-      savedFields.value = next
-    }, 2500)
-  } catch (error) {
-    errorMessage.value = isNetworkError(error)
-      ? t('today.saveFieldOfflineError')
-      : t('today.saveFieldError')
-  } finally {
-    loadingFieldKey.value = ''
-  }
-}
-
-function resetFormFields() {
-  Object.assign(form, { breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
 }
 
 function resetForm() {
   // "Registrar otro día" avanza al día siguiente al que se acaba de
   // guardar (util para ponerse al dia con varias fechas atrasadas),
-  // sin pasarse de hoy.
+  // sin pasarse de hoy. Si el día no cambia (ya se estaba en hoy), el
+  // watch no se dispara y hay que recargar a mano.
   const nextDate = addDays(selectedDate.value, 1)
+  const target   = nextDate > todayISO ? todayISO : nextDate
 
-  resetFormFields()
-  saved.value        = false
-  savedFields.value  = new Set()
-  selectedDate.value = nextDate > todayISO ? todayISO : nextDate
+  saved.value = false
+  if (target === selectedDate.value) {
+    loadSelectedDay()
+  } else {
+    selectedDate.value = target
+  }
 }
 
 function goToDiary() {
   router.push('/recuerdos')
-}
-
-function hasAnyContent() {
-  return mealFields.value.some((meal) => {
-    const v = form[meal.key]
-    return typeof v === 'string' && v.trim().length > 0
-  })
 }
 
 function setQuickDate(daysAgo) {
@@ -309,9 +257,9 @@ function goToGap() {
   showDatePicker.value = false
 }
 
-watch(selectedDate, (newDate) => loadEntryByDate(newDate))
+watch(selectedDate, loadSelectedDay)
 onMounted(() => {
-  loadEntryByDate(selectedDate.value)
+  loadSelectedDay()
   loadLastRecordedDate()
 })
 </script>

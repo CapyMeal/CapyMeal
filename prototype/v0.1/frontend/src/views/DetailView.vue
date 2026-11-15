@@ -1,91 +1,97 @@
 <template>
   <MainLayout>
 
-    <!-- Antes que cualquier otra rama: un error de red/servidor puede pasar
-         mientras se está confirmando el borrado o cuando todavía no hay
-         `entry` (falla el load inicial) -- si este mensaje viviera adentro
-         de la rama de lectura/edición, quedaría invisible en esos casos y
-         el usuario vería el EmptyState de "no encontré ese recuerdo" (o el
-         diálogo de confirmar borrado, sin más) en vez del error real. -->
-    <p v-if="errorMessage" class="detail-error">{{ errorMessage }}</p>
-
-    <!-- Confirmar eliminar -->
+    <!-- Confirmar eliminar: dice qué día se borra y que no hay vuelta
+         atrás. Su propio error vive acá adentro, al lado de la acción. -->
     <div v-if="confirmingDelete" class="detail-confirm">
-      <img src="../assets/icons/eliminar.webp" alt="Capi" class="detail-confirm__capi">
-      <p class="detail-confirm__message">{{ t('detail.deleteConfirmMessage') }}</p>
+      <img src="../assets/icons/eliminar.webp" alt="" class="detail-confirm__capi">
+      <p class="detail-confirm__message">{{ t('detail.deleteConfirmMessage', { date: formattedDate }) }}</p>
+      <StatusAlert
+        v-if="deleteError"
+        :message="deleteError"
+        retryable
+        class="detail-confirm__status"
+        @retry="deleteEntry"
+      />
       <div class="detail-confirm__actions">
-        <CapyButton variant="danger" @click="deleteEntry">{{ t('detail.deleteConfirmYes') }}</CapyButton>
-        <CapyButton variant="ghost" @click="confirmingDelete = false">{{ t('detail.cancel') }}</CapyButton>
+        <CapyButton variant="danger" :disabled="deleting" @click="deleteEntry">
+          {{ deleting ? t('detail.deleting') : t('detail.deleteConfirmYes') }}
+        </CapyButton>
+        <CapyButton variant="ghost" :disabled="deleting" @click="cancelDelete">{{ t('detail.cancel') }}</CapyButton>
       </div>
     </div>
 
-    <CapyLoader v-else-if="loading" :message="t('detail.loading')" />
-
-    <!-- Sin entry: puede ser porque de verdad no hay registro, o porque el
-         load falló (ver el mensaje de arriba). El resto del template asume
-         `entry` no-null, así que este branch tiene que interceptar los dos
-         casos -- si no, un load fallido con entry todavía null caería en el
-         template de lectura/edición de más abajo e intentaría leer
-         entry[meal.key] de null. -->
-    <template v-else-if="!entry">
-      <EmptyState
-        v-if="!errorMessage"
-        :message="t('detail.emptyMessage')"
-        :action-label="t('detail.emptyAction')"
-        @action="$router.push('/recuerdos')"
-      />
-    </template>
-
-    <!-- Detalle / Edición -->
     <template v-else>
       <div class="detail-header">
-        <button class="detail-back" @click="$router.push('/recuerdos')">
+        <button type="button" class="detail-back" @click="goToDiary">
+          <v-icon :icon="`svg:${mdiArrowLeft}`" size="18" />
           {{ t('detail.back') }}
         </button>
-        <p class="detail-date">{{ formattedDate }}</p>
+        <h1 class="detail-date">{{ formattedDate }}</h1>
       </div>
 
-      <!-- Modo lectura -->
-      <template v-if="!editing">
-        <div class="detail-meals detail-meals--with-bar">
-          <MealDetailCard
-            v-for="meal in allMealsWithNotes"
-            :key="meal.key"
-            :meal="meal"
-            :value="entry[meal.key]"
-            :editing="editingMealKey === meal.key"
-            :saving="savingMealKey === meal.key"
-            :draft="mealDraftValue"
-            @update:draft="mealDraftValue = $event"
-            @start-edit="startMealEdit(meal.key)"
-            @save="saveSingleMeal(meal.key, meal.label)"
-            @cancel="cancelMealEdit"
+      <CapyLoader v-if="loading" :message="t('detail.loading')" />
+
+      <!-- Falló la carga: el error con "Reintentar", nunca el estado vacío
+           de "no encontré ese recuerdo", que diría algo falso. -->
+      <StatusAlert
+        v-else-if="loadFailed"
+        :message="errorMessage"
+        retryable
+        class="detail-status"
+        @retry="loadDay"
+      />
+
+      <EmptyState
+        v-else-if="!hasEntry"
+        :message="t('detail.emptyMessage')"
+        :action-label="t('detail.emptyAction')"
+        @action="goToDiary"
+      />
+
+      <!-- Mismo modelo que "Hoy": cada tarjeta se edita en el lugar y se
+           guarda sola al salir del campo, también al vaciarla. -->
+      <template v-else>
+        <StatusAlert v-if="errorMessage" :message="errorMessage" class="detail-status" />
+
+        <div class="detail-meals">
+          <MealCard
+            v-for="field in fields"
+            :key="field.key"
+            v-model="form[field.key]"
+            :meal="field.key"
+            :title="field.title"
+            :placeholder="field.placeholder"
+            :saving="savingKey === field.key"
+            :just-saved="recentlySaved.has(field.key)"
+            @save-field="saveField(field.key)"
           />
         </div>
 
-        <StickyActionBar>
-          <CapyButton @click="startEdit">{{ t('detail.editButton') }}</CapyButton>
-          <CapyButton :disabled="exportingPdf" variant="ghost" @click="exportDayPdf">
+        <!-- Acciones del día al final del contenido: no tapan tarjetas, no
+             quedan en la zona del pulgar y "Eliminar" no pesa lo mismo que
+             "Exportar". -->
+        <StatusAlert
+          v-if="exportError"
+          :message="exportError"
+          retryable
+          class="detail-status"
+          @retry="exportDayPdf"
+        />
+        <div class="detail-actions">
+          <CapyButton
+            variant="ghost"
+            :disabled="exportingPdf"
+            :prepend-icon="`svg:${mdiFilePdfBox}`"
+            @click="exportDayPdf"
+          >
             {{ exportingPdf ? t('common.preparingPdf') : t('detail.exportDayButton') }}
           </CapyButton>
-          <CapyButton variant="ghost" @click="confirmingDelete = true">{{ t('detail.deleteButton') }}</CapyButton>
-        </StickyActionBar>
-      </template>
-
-      <!-- Modo edición -->
-      <template v-else>
-        <div class="detail-edit-meals detail-edit-meals--with-bar">
-          <MealCard v-model="form.breakfast" meal="breakfast" :title="t('meals.breakfast')" :placeholder="t('detail.editBreakfastPlaceholder')" />
-          <MealCard v-model="form.lunch" meal="lunch" :title="t('meals.lunch')" :placeholder="t('detail.editLunchPlaceholder')" />
-          <MealCard v-model="form.snack" meal="snack" :title="t('meals.snack')" :placeholder="t('detail.editSnackPlaceholder')" />
-          <MealCard v-model="form.dinner" meal="dinner" :title="t('meals.dinner')" :placeholder="t('detail.editDinnerPlaceholder')" />
-          <MealCard v-model="form.notes" meal="notes" :title="t('meals.notes')" :placeholder="t('detail.editNotesPlaceholder')" />
+          <button type="button" class="detail-delete" @click="confirmingDelete = true">
+            <v-icon :icon="`svg:${mdiDeleteOutline}`" size="20" />
+            {{ t('detail.deleteButton') }}
+          </button>
         </div>
-
-        <StickyActionBar>
-          <CapyButton @click="saveEdit">{{ t('detail.saveChangesButton') }}</CapyButton>
-          <CapyButton variant="ghost" @click="cancelEdit">{{ t('detail.cancel') }}</CapyButton>
-        </StickyActionBar>
       </template>
     </template>
 
@@ -93,25 +99,20 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import MainLayout      from '../layouts/MainLayout.vue'
-import MealCard        from '../components/meal/MealCard.vue'
-import MealDetailCard  from '../components/meal/MealDetailCard.vue'
-import EmptyState      from '../components/diary/EmptyState.vue'
-import StickyActionBar from '../components/base/StickyActionBar.vue'
-import CapyButton from '../components/base/CapyButton.vue'
-import CapyLoader from '../components/base/CapyLoader.vue'
-import {
-  deleteMealEntry,
-  exportMealEntriesPdf,
-  getMealEntry,
-  upsertMealEntry,
-  isNetworkError,
-} from '../services/mealEntriesApi'
+import { mdiArrowLeft, mdiDeleteOutline, mdiFilePdfBox } from '@mdi/js'
+import MainLayout  from '../layouts/MainLayout.vue'
+import MealCard    from '../components/meal/MealCard.vue'
+import EmptyState  from '../components/diary/EmptyState.vue'
+import CapyButton  from '../components/base/CapyButton.vue'
+import CapyLoader  from '../components/base/CapyLoader.vue'
+import StatusAlert from '../components/base/StatusAlert.vue'
+import { deleteMealEntry, exportMealEntriesPdf, isNetworkError } from '../services/mealEntriesApi'
 import { formatDate } from '../utils/date'
 import { MEAL_KEYS } from '../utils/meals'
+import { useDayEntry } from '../utils/useDayEntry'
 
 const route  = useRoute()
 const router = useRouter()
@@ -119,114 +120,98 @@ const { t }  = useI18n()
 
 const dateKey = route.params.date
 
-const entry           = ref(null)
-const loading = ref(true)
-const editing         = ref(false)
+// Nombre del campo dentro de una frase ("No pude guardar desayuno"):
+// el recuerdo usa su etiqueta corta, no "Recuerdo del día".
+function fieldLabel(key) {
+  return key === 'notes' ? t('meals.notesShortLabel') : t(`meals.${key}`).toLowerCase()
+}
+
+const {
+  form,
+  loading,
+  errorMessage,
+  savingKey,
+  recentlySaved,
+  load,
+  saveField,
+} = useDayEntry({
+  date: () => dateKey,
+  messages: {
+    load: (offline) => (offline ? t('detail.loadOfflineError') : t('detail.loadGenericError')),
+    save: (offline, key) => (offline
+      ? t('detail.saveOfflineError')
+      : t('detail.saveFieldGenericError', { field: fieldLabel(key) })),
+    lastField: () => t('common.lastFieldError'),
+  },
+})
+
+const hasEntry   = ref(false)
+const loadFailed = ref(false)
+
 const confirmingDelete = ref(false)
-const errorMessage = ref('')
+const deleting         = ref(false)
+const deleteError      = ref('')
+
 const exportingPdf = ref(false)
-const editingMealKey = ref('')
-const mealDraftValue = ref('')
-const savingMealKey = ref('')
+const exportError  = ref('')
 
-const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
+const placeholderKeys = {
+  breakfast: 'detail.editBreakfastPlaceholder',
+  lunch:     'detail.editLunchPlaceholder',
+  snack:     'detail.editSnackPlaceholder',
+  dinner:    'detail.editDinnerPlaceholder',
+  notes:     'detail.editNotesPlaceholder',
+}
 
-const allMeals = computed(() => MEAL_KEYS.map((key) => ({
+const fields = computed(() => [...MEAL_KEYS, 'notes'].map((key) => ({
   key,
-  title: t(`meals.${key}`),
-  label: t(`meals.${key}`).toLowerCase(),
+  title:       t(`meals.${key}`),
+  placeholder: t(placeholderKeys[key]),
 })))
-
-// label es lo que va en el botón/mensajes ("Editar recuerdo", "Completá
-// recuerdo antes de guardar") -- deliberadamente más corto que el title que
-// se muestra como encabezado de la tarjeta ("Recuerdo del día").
-const notesMeal = computed(() => ({ key: 'notes', title: t('meals.notes'), label: t('meals.notesShortLabel') }))
-const allMealsWithNotes = computed(() => [...allMeals.value, notesMeal.value])
 
 const formattedDate = computed(() => formatDate(dateKey, {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 }))
 
-onMounted(() => {
-  loadEntry()
-})
-
-function startEdit() {
-  Object.assign(form, { ...entry.value })
-  editing.value = true
-  cancelMealEdit()
+async function loadDay() {
+  const entry = await load()
+  // load() devuelve undefined si falló y null si no hay registro.
+  loadFailed.value = entry === undefined
+  hasEntry.value   = !!entry
 }
 
-function cancelEdit() {
-  editing.value = false
+function goToDiary() {
+  router.push('/recuerdos')
 }
 
-function startMealEdit(fieldKey) {
-  editingMealKey.value = fieldKey
-  mealDraftValue.value = entry.value?.[fieldKey] || ''
-  errorMessage.value = ''
-}
-
-function cancelMealEdit() {
-  editingMealKey.value = ''
-  mealDraftValue.value = ''
-}
-
-async function saveEdit() {
-  errorMessage.value = ''
-
-  try {
-    await upsertMealEntry({
-      date: dateKey,
-      ...form,
-    })
-
-    entry.value = { ...form }
-    editing.value = false
-  } catch (error) {
-    errorMessage.value = isNetworkError(error)
-      ? t('detail.saveOfflineError')
-      : t('detail.saveGenericError')
-  }
+function cancelDelete() {
+  confirmingDelete.value = false
+  deleteError.value = ''
 }
 
 async function deleteEntry() {
-  errorMessage.value = ''
+  deleting.value    = true
+  deleteError.value = ''
 
   try {
     await deleteMealEntry(dateKey)
-    router.push('/recuerdos')
+    // El Diario muestra un aviso con la fecha: borrar no termina en silencio.
+    router.push({ path: '/recuerdos', query: { eliminado: dateKey } })
   } catch (error) {
-    errorMessage.value = isNetworkError(error)
+    deleteError.value = isNetworkError(error)
       ? t('detail.deleteOfflineError')
       : t('detail.deleteGenericError')
-  }
-}
-
-async function loadEntry() {
-  loading.value = true
-  try {
-    // `entry.value` queda null cuando no hay registro para ese dia -- no es
-    // un error, la vista ya sabe mostrar el estado "sin registro" para eso.
-    entry.value = await getMealEntry(dateKey)
-  } catch (error) {
-    errorMessage.value = isNetworkError(error)
-      ? t('detail.loadOfflineError')
-      : t('detail.loadGenericError')
   } finally {
-    loading.value = false
+    deleting.value = false
   }
 }
 
 async function exportDayPdf() {
   exportingPdf.value = true
-  errorMessage.value = ''
+  exportError.value  = ''
 
   try {
-    const blob = await exportMealEntriesPdf({
-      from: dateKey,
-      to: dateKey,
-    })
+    const blob = await exportMealEntriesPdf({ from: dateKey, to: dateKey })
 
     const fileURL = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -235,66 +220,48 @@ async function exportDayPdf() {
     link.click()
     window.URL.revokeObjectURL(fileURL)
   } catch {
-    errorMessage.value = t('detail.exportError')
+    exportError.value = t('detail.exportError')
   } finally {
     exportingPdf.value = false
   }
 }
 
-async function saveSingleMeal(fieldKey, fieldLabel) {
-  const value = mealDraftValue.value.trim()
-  if (!value) {
-    errorMessage.value = t('detail.fieldRequired', { field: fieldLabel.toLowerCase() })
-    return
-  }
-
-  savingMealKey.value = fieldKey
-  errorMessage.value = ''
-
-  try {
-    await upsertMealEntry({
-      date: dateKey,
-      [fieldKey]: value,
-    })
-
-    entry.value = {
-      ...entry.value,
-      [fieldKey]: value,
-    }
-    cancelMealEdit()
-  } catch (error) {
-    errorMessage.value = isNetworkError(error)
-      ? t('detail.saveOfflineError')
-      : t('detail.saveFieldGenericError', { field: fieldLabel.toLowerCase() })
-  } finally {
-    savingMealKey.value = ''
-  }
-}
+onMounted(loadDay)
 </script>
 
 <style scoped>
 .detail-header {
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
   margin-bottom: var(--space-xl);
 }
 
 .detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  min-height: 40px;
+  padding: 0;
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: 700;
-  font-size: .9rem;
-  padding: 0;
-  flex-shrink: 0;
+  font-size: var(--font-size-label);
 }
 
+/* Misma voz que el resto de los títulos de pantalla (Fredoka). Antes era
+   Inter 800 al lado del botón de volver y en el celular se cortaba en
+   "de / 2026". */
 .detail-date {
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-family: var(--font-title);
+  font-size: var(--font-size-title-md);
+  font-weight: 700;
+  line-height: 1.25;
   color: var(--color-title);
+  text-wrap: balance;
 }
 
 /* Solo la primera letra: capitalize ponía "Jueves, 12 De Noviembre De
@@ -303,10 +270,8 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   text-transform: uppercase;
 }
 
-.detail-error {
-  font-size: .9rem;
+.detail-status {
   margin-bottom: var(--space-md);
-  color: var(--color-danger-text);
 }
 
 .detail-meals {
@@ -316,16 +281,31 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   margin-bottom: var(--space-xl);
 }
 
-.detail-edit-meals {
+.detail-actions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  align-items: center;
+  gap: var(--space-sm);
 }
 
-.detail-meals--with-bar,
-.detail-edit-meals--with-bar {
-  margin-bottom: 90px;
+.detail-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  min-height: 44px;
+  padding: 0 var(--space-md);
+  background: none;
+  border: none;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  color: var(--color-danger-text);
+  font-weight: 600;
+  font-size: var(--font-size-label);
+  transition: background-color .2s ease;
+}
+
+.detail-delete:hover {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
 }
 
 /* Confirmar eliminar */
@@ -338,7 +318,27 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   padding: var(--space-xl) 0;
 }
 
-.detail-confirm__capi     { width: 150px; object-fit: contain; filter: var(--illustration-shadow-md); }
-.detail-confirm__message  { font-size: 1.1rem; color: var(--color-title); font-weight: 600; }
-.detail-confirm__actions  { display: flex; flex-direction: column; gap: var(--space-sm); width: 100%; }
+.detail-confirm__capi {
+  width: 150px;
+  object-fit: contain;
+  filter: var(--illustration-shadow-md);
+}
+
+.detail-confirm__message {
+  font-size: var(--font-size-title-sm);
+  font-weight: 600;
+  color: var(--color-title);
+  text-wrap: balance;
+}
+
+.detail-confirm__status {
+  width: 100%;
+}
+
+.detail-confirm__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
 </style>

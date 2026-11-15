@@ -8,6 +8,12 @@ vi.mock('../../../src/services/mealEntriesApi', () => ({
   isNetworkError: () => false,
 }))
 
+const routeQuery = {}
+
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ query: routeQuery }),
+}))
+
 // Stub liviano y sin dependencia de Vuetify -- el punto de estos tests es
 // la lógica de DiaryView (qué estado vacío muestra y cuándo), no el
 // selector de fechas en sí, que ya tiene su propio contrato simple de
@@ -31,6 +37,7 @@ function mountDiaryView() {
         DateRangeFilter: DateRangeFilterStub,
         DiaryCard: true,
         CapyButton: true,
+        VAlert: { template: '<div><slot /></div>' },
       },
     },
   })
@@ -39,6 +46,27 @@ function mountDiaryView() {
 describe('DiaryView', () => {
   beforeEach(() => {
     getMealEntries.mockReset()
+    delete routeQuery.eliminado
+  })
+
+  it('confirma el borrado cuando vuelve del Detalle con ?eliminado=<fecha>', async () => {
+    getMealEntries.mockResolvedValue([])
+    routeQuery.eliminado = '2026-08-20'
+
+    const wrapper = mountDiaryView()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Listo, eliminamos el recuerdo del')
+  })
+
+  it('ignora un ?eliminado= que no es una fecha', async () => {
+    getMealEntries.mockResolvedValue([])
+    routeQuery.eliminado = '<script>'
+
+    const wrapper = mountDiaryView()
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('eliminamos el recuerdo')
   })
 
   it('muestra el estado vacío general cuando el diario no tiene ningún recuerdo', async () => {

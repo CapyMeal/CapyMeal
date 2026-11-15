@@ -5,6 +5,13 @@
     <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
 
     <StatusAlert
+      v-if="deletedNotice"
+      type="success"
+      :message="deletedNotice"
+      class="diary-status"
+    />
+
+    <StatusAlert
       v-if="errorMessage"
       :message="errorMessage"
       retryable
@@ -38,7 +45,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { formatDate } from '../utils/date'
 import MainLayout       from '../layouts/MainLayout.vue'
 import DiaryCard        from '../components/diary/DiaryCard.vue'
 import EmptyState       from '../components/diary/EmptyState.vue'
@@ -50,6 +59,17 @@ import diaryIllustration from '../assets/icons/diario.png'
 import { useMealEntriesByRange } from '../utils/useMealEntriesByRange'
 
 const { t } = useI18n()
+const route = useRoute()
+
+// El Detalle vuelve acá con ?eliminado=<fecha> después de borrar un día,
+// para que la acción no termine en silencio.
+const deletedNotice = computed(() => {
+  const date = route.query.eliminado
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return ''
+  return t('diary.deletedNotice', {
+    date: formatDate(date, { weekday: 'long', day: 'numeric', month: 'long' }),
+  })
+})
 
 // Nota sobre el catch de useMealEntriesByRange: si el service worker ya
 // tenía este pedido cacheado (visita previa con conexión), la respuesta se

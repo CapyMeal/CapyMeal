@@ -24,21 +24,32 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
 }))
 
+// Stub liviano de MealCard: el punto de estos tests es la lógica de guardado
+// del Detalle (useDayEntry), no la tarjeta en sí.
+const MealCardStub = {
+  props: ['modelValue', 'meal', 'title', 'placeholder', 'saving', 'justSaved'],
+  emits: ['update:modelValue', 'save-field'],
+  template: `
+    <textarea
+      :data-meal="meal"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
+      @blur="$emit('save-field')"
+    />
+  `,
+}
+
 function mountDetailView() {
   return mount(DetailView, {
     global: {
       stubs: {
         MainLayout: { template: '<div><slot /></div>' },
+        MealCard: MealCardStub,
         CapyLoader: true,
         EmptyState: true,
         CapyButton: { template: '<button type="button"><slot /></button>' },
-        VCard: { template: '<div><slot /></div>' },
-        VCardText: { template: '<div><slot /></div>' },
-        VTextarea: {
-          props: ['modelValue'],
-          emits: ['update:modelValue'],
-          template: '<textarea :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
-        },
+        VAlert: { template: '<div><slot /></div>' },
+        VIcon: true,
       },
     },
   })
@@ -47,6 +58,15 @@ function mountDetailView() {
 function findButtonByText(wrapper, text) {
   return wrapper.findAll('button').find((b) => b.text().includes(text))
 }
+
+async function editField(wrapper, meal, value) {
+  const field = wrapper.find(`[data-meal="${meal}"]`)
+  await field.setValue(value)
+  await field.trigger('blur')
+  await flushPromises()
+}
+
+const DAY = { breakfast: 'Café', lunch: '', snack: '', dinner: '', notes: '' }
 
 describe('DetailView', () => {
   beforeEach(() => {
@@ -58,15 +78,15 @@ describe('DetailView', () => {
     isNetworkError.mockReset().mockReturnValue(false)
   })
 
-  describe('loadEntry', () => {
-    it('muestra el detalle cuando el día tiene un registro', async () => {
-      getMealEntry.mockResolvedValue({ breakfast: 'Café', lunch: '', snack: '', dinner: '', notes: '' })
+  describe('carga', () => {
+    it('muestra las tarjetas con el contenido cuando el día tiene un registro', async () => {
+      getMealEntry.mockResolvedValue(DAY)
 
       const wrapper = mountDetailView()
       await flushPromises()
 
       expect(wrapper.findComponent({ name: 'EmptyState' }).exists()).toBe(false)
-      expect(wrapper.text()).toContain('Café')
+      expect(wrapper.find('[data-meal="breakfast"]').element.value).toBe('Café')
     })
 
     it('muestra el estado vacío cuando no hay registro para ese día', async () => {
@@ -91,7 +111,6 @@ describe('DetailView', () => {
 
     it('muestra un mensaje genérico cuando falla por otra razón, sin el EmptyState engañoso', async () => {
       getMealEntry.mockRejectedValue(new Error('server error'))
-      isNetworkError.mockReturnValue(false)
 
       const wrapper = mountDetailView()
       await flushPromises()
@@ -101,98 +120,106 @@ describe('DetailView', () => {
     })
   })
 
-  describe('saveSingleMeal', () => {
-    it('no llama a la API si el borrador está vacío', async () => {
-      getMealEntry.mockResolvedValue({ breakfast: 'Café', lunch: '', snack: '', dinner: '', notes: '' })
-      const wrapper = mountDetailView()
-      await flushPromises()
-
-      await findButtonByText(wrapper, 'Editar desayuno').trigger('click')
-      await wrapper.find('textarea').setValue('   ')
-      await findButtonByText(wrapper, 'Guardar').trigger('click')
-      await flushPromises()
-
-      expect(upsertMealEntry).not.toHaveBeenCalled()
-      expect(wrapper.text()).toContain('Completá desayuno antes de guardar.')
-    })
-
-    it('guarda el campo, actualiza la vista y sale del modo edición', async () => {
-      getMealEntry.mockResolvedValue({ breakfast: 'Café', lunch: '', snack: '', dinner: '', notes: '' })
+  describe('guardado automático', () => {
+    it('guarda solo ese campo al salir, con el texto nuevo', async () => {
+      getMealEntry.mockResolvedValue(DAY)
       upsertMealEntry.mockResolvedValue({})
       const wrapper = mountDetailView()
       await flushPromises()
 
-      await findButtonByText(wrapper, 'Editar desayuno').trigger('click')
-      await wrapper.find('textarea').setValue('Café con tostadas')
-      await findButtonByText(wrapper, 'Guardar').trigger('click')
-      await flushPromises()
+      await editField(wrapper, 'breakfast', 'Café con tostadas')
 
       expect(upsertMealEntry).toHaveBeenCalledWith({ date: '2026-08-20', breakfast: 'Café con tostadas' })
-      expect(wrapper.text()).toContain('Café con tostadas')
-      // Vuelve al modo lectura: el textarea de edición ya no está.
-      expect(wrapper.find('textarea').exists()).toBe(false)
     })
 
-    it('muestra un mensaje de sin conexión cuando falla por red y no sale de edición', async () => {
-      getMealEntry.mockResolvedValue({ breakfast: 'Café', lunch: '', snack: '', dinner: '', notes: '' })
+    it('no llama a la API si el campo no cambió', async () => {
+      getMealEntry.mockResolvedValue(DAY)
+      const wrapper = mountDetailView()
+      await flushPromises()
+
+      await editField(wrapper, 'breakfast', 'Café')
+      await editField(wrapper, 'lunch', '   ')
+
+      expect(upsertMealEntry).not.toHaveBeenCalled()
+    })
+
+    it('guarda un campo vaciado cuando el día tiene otro contenido', async () => {
+      getMealEntry.mockResolvedValue({ ...DAY, lunch: 'Fideos' })
+      upsertMealEntry.mockResolvedValue({})
+      const wrapper = mountDetailView()
+      await flushPromises()
+
+      await editField(wrapper, 'breakfast', '')
+
+      expect(upsertMealEntry).toHaveBeenCalledWith({ date: '2026-08-20', breakfast: '' })
+    })
+
+    it('no deja vaciar el último campo con contenido y lo restaura', async () => {
+      getMealEntry.mockResolvedValue(DAY)
+      const wrapper = mountDetailView()
+      await flushPromises()
+
+      await editField(wrapper, 'breakfast', '')
+
+      expect(upsertMealEntry).not.toHaveBeenCalled()
+      expect(wrapper.text()).toContain('Un día guardado necesita al menos una comida o un recuerdo.')
+      expect(wrapper.find('[data-meal="breakfast"]').element.value).toBe('Café')
+    })
+
+    it('muestra un mensaje de sin conexión cuando falla por red', async () => {
+      getMealEntry.mockResolvedValue(DAY)
       upsertMealEntry.mockRejectedValue(new Error('network'))
       isNetworkError.mockReturnValue(true)
       const wrapper = mountDetailView()
       await flushPromises()
 
-      await findButtonByText(wrapper, 'Editar desayuno').trigger('click')
-      await wrapper.find('textarea').setValue('Otra cosa')
-      await findButtonByText(wrapper, 'Guardar').trigger('click')
-      await flushPromises()
+      await editField(wrapper, 'breakfast', 'Otra cosa')
 
       expect(wrapper.text()).toContain('No se pudo guardar: estás sin conexión.')
-      expect(wrapper.find('textarea').exists()).toBe(true)
     })
 
-    it('muestra un mensaje genérico cuando falla por otra razón', async () => {
-      getMealEntry.mockResolvedValue({ breakfast: 'Café', lunch: '', snack: '', dinner: '', notes: '' })
+    it('muestra un mensaje genérico con el nombre del campo cuando falla por otra razón', async () => {
+      getMealEntry.mockResolvedValue(DAY)
       upsertMealEntry.mockRejectedValue(new Error('server error'))
-      isNetworkError.mockReturnValue(false)
       const wrapper = mountDetailView()
       await flushPromises()
 
-      await findButtonByText(wrapper, 'Editar desayuno').trigger('click')
-      await wrapper.find('textarea').setValue('Otra cosa')
-      await findButtonByText(wrapper, 'Guardar').trigger('click')
-      await flushPromises()
+      await editField(wrapper, 'breakfast', 'Otra cosa')
 
       expect(wrapper.text()).toContain('No pude guardar desayuno. Intentá nuevamente.')
     })
   })
 
-  describe('deleteEntry', () => {
-    it('navega al diario cuando el borrado tiene éxito', async () => {
-      getMealEntry.mockResolvedValue({ breakfast: 'Café', lunch: '', snack: '', dinner: '', notes: '' })
+  describe('eliminar', () => {
+    it('pide confirmación nombrando el día y vuelve al diario con el aviso', async () => {
+      getMealEntry.mockResolvedValue(DAY)
       deleteMealEntry.mockResolvedValue(undefined)
       const wrapper = mountDetailView()
       await flushPromises()
 
-      await findButtonByText(wrapper, 'Eliminar').trigger('click')
+      await findButtonByText(wrapper, 'Eliminar este día').trigger('click')
+      expect(wrapper.text()).toContain('No se puede deshacer.')
+
       await findButtonByText(wrapper, 'Sí, eliminar').trigger('click')
       await flushPromises()
 
       expect(deleteMealEntry).toHaveBeenCalledWith('2026-08-20')
-      expect(push).toHaveBeenCalledWith('/recuerdos')
+      expect(push).toHaveBeenCalledWith({ path: '/recuerdos', query: { eliminado: '2026-08-20' } })
     })
 
-    it('muestra un error y no navega cuando el borrado falla', async () => {
-      getMealEntry.mockResolvedValue({ breakfast: 'Café', lunch: '', snack: '', dinner: '', notes: '' })
+    it('muestra el error dentro de la confirmación y no navega cuando el borrado falla', async () => {
+      getMealEntry.mockResolvedValue(DAY)
       deleteMealEntry.mockRejectedValue(new Error('server error'))
-      isNetworkError.mockReturnValue(false)
       const wrapper = mountDetailView()
       await flushPromises()
 
-      await findButtonByText(wrapper, 'Eliminar').trigger('click')
+      await findButtonByText(wrapper, 'Eliminar este día').trigger('click')
       await findButtonByText(wrapper, 'Sí, eliminar').trigger('click')
       await flushPromises()
 
       expect(push).not.toHaveBeenCalled()
       expect(wrapper.text()).toContain('No pude eliminar este día. Intentá nuevamente.')
+      expect(findButtonByText(wrapper, 'Sí, eliminar').exists()).toBe(true)
     })
   })
 })

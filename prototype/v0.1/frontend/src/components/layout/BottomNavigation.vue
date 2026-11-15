@@ -1,12 +1,17 @@
 <template>
   <nav class="bottom-nav" :aria-label="t('nav.label')">
     <div class="bottom-nav__inner">
+      <!-- Activa también en las subrutas: en el detalle de un día
+           (/recuerdos/<fecha>) "Diario" tiene que seguir marcado. El
+           active-class de RouterLink solo mira rutas anidadas, y estas
+           son rutas hermanas. -->
       <RouterLink
         v-for="item in items"
         :key="item.to"
         :to="item.to"
         class="bottom-nav__item"
-        active-class="bottom-nav__item--active"
+        :class="{ 'bottom-nav__item--active': isActive(item.to) }"
+        :aria-current="isActive(item.to) ? 'page' : undefined"
       >
         <span class="bottom-nav__indicator">
           <v-icon :icon="`svg:${item.icon}`" size="24" />
@@ -18,10 +23,16 @@
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { mdiCalendarToday, mdiCog, mdiFilePdfBox, mdiNotebook } from '@mdi/js'
 
 const { t } = useI18n()
+const route = useRoute()
+
+function isActive(path) {
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
 
 const items = [
   { to: '/hoy',       icon: mdiCalendarToday, label: 'nav.today' },

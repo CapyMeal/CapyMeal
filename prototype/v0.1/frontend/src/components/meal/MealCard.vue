@@ -16,7 +16,7 @@
       rows="3"
       maxlength="2000"
       @input="$emit('update:modelValue', $event.target.value)"
-      @blur="onBlur"
+      @blur="$emit('save-field')"
     />
   </v-card>
 </template>
@@ -25,7 +25,7 @@
 import { mdiCheck } from '@mdi/js'
 import MealIcon from './MealIcon.vue'
 
-const props = defineProps({
+defineProps({
   // Clave del campo (breakfast, lunch, snack, dinner, notes): la
   // ilustración sale de utils/meals.js, no la elige cada vista.
   meal:        { type: String, required: true },
@@ -38,13 +38,9 @@ const props = defineProps({
   justSaved:   { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['update:modelValue', 'save-field'])
-
-function onBlur() {
-  if (props.modelValue && props.modelValue.trim().length > 0) {
-    emit('save-field')
-  }
-}
+// save-field se emite siempre al salir del campo: si hay algo que guardar
+// (cambió, o se vació un campo que tenía texto) lo decide useDayEntry.
+defineEmits(['update:modelValue', 'save-field'])
 </script>
 
 <style scoped>
