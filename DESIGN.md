@@ -14,6 +14,7 @@ colors:
   salvia: "#A3C79A"
   durazno: "#F0C888"
   rosa-arcilla: "#E3968C"
+  ladrillo: "#B5453C"
   noche-fondo: "#22190F"
   noche-mantel: "#2C2116"
   noche-tinta: "#F1E4D3"
@@ -53,8 +54,13 @@ typography:
     fontSize: "0.85rem"
     fontWeight: 600
     lineHeight: 1.4
+  caption:
+    fontFamily: "Inter, Segoe UI, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 600
+    lineHeight: 1.3
 rounded:
-  vuetify-lg: "8px"
+  control: "8px"
   sm: "12px"
   md: "20px"
   lg: "32px"
@@ -71,7 +77,7 @@ components:
     backgroundColor: "{colors.terracota}"
     textColor: "{colors.mantel}"
     typography: "{typography.label}"
-    rounded: "{rounded.vuetify-lg}"
+    rounded: "{rounded.control}"
     height: "52px"
   button-primary-hover:
     backgroundColor: "{colors.terracota-deep}"
@@ -80,18 +86,18 @@ components:
     backgroundColor: "transparent"
     textColor: "{colors.tinta}"
     typography: "{typography.label}"
-    rounded: "{rounded.vuetify-lg}"
+    rounded: "{rounded.control}"
     height: "52px"
   card-meal:
     backgroundColor: "{colors.mantel}"
     textColor: "{colors.tinta}"
-    rounded: "{rounded.vuetify-lg}"
+    rounded: "{rounded.control}"
     padding: "1.5rem"
   input-meal:
     backgroundColor: "{colors.arena}"
     textColor: "{colors.tinta}"
     typography: "{typography.body}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.control}"
     padding: "0.75rem 1rem"
   input-meal-focus:
     backgroundColor: "{colors.mantel}"
@@ -105,7 +111,7 @@ components:
     textColor: "{colors.tinta}"
     height: "70px"
   nav-bottom-active:
-    textColor: "{colors.terracota}"
+    textColor: "{colors.terracota-deep}"
 ---
 
 # Design System: CapyMeal
@@ -149,7 +155,9 @@ Una paleta de tierra, madera y papel: cálida, de saturación baja, con un solo 
 - **Borde de lino** (`borde-lino`): bordes de tarjetas, divisores y chips.
 
 ### Estados
-- **Salvia** (`salvia`), **Durazno** (`durazno`) y **Rosa arcilla** (`rosa-arcilla`): éxito, aviso y error. Siempre en variante tonal (fondo suave con texto oscuro), nunca como relleno sólido gritón.
+- **Salvia** (`salvia`), **Durazno** (`durazno`) y **Rosa arcilla** (`rosa-arcilla`): éxito, aviso y error. Son colores de **fondo**: en los avisos tonales tiñen el fondo y el ícono, y el texto va en tinta. Nunca como color de texto.
+- **Ladrillo** (`ladrillo`, token `--color-danger-text`): el rojo para **texto** de errores y acciones destructivas (cerrar sesión, eliminar cuenta). En tema oscuro pasa a rosa arcilla.
+- **Terracota de texto** (`--color-primary-text`, alias de terracota tostada; en oscuro, miel clara): links, fechas y etiquetas chicas en terracota. La terracota base solo da 4.03:1 sobre arena.
 
 ### Tema oscuro
 El tema oscuro reemplaza la terracota por **Miel** (`noche-miel`, hover `noche-miel-clara`) para mantener contraste, y usa **Marrón noche** (`noche-fondo`), **Mantel de noche** (`noche-mantel`), **Tinta clara** (`noche-tinta`, títulos `noche-titulo`), **Tinta clara suave** (`noche-tinta-suave`) y **Borde de noche** (`noche-borde`). Mostaza, madera y los estados no cambian.
@@ -174,7 +182,8 @@ El tema oscuro reemplaza la terracota por **Miel** (`noche-miel`, hover `noche-m
 - **Title** (700, 1.4rem, 1.2): el saludo de "Hoy" y la confirmación de día guardado.
 - **Title chico** (600, 1.1rem, 1.3): nombre de cada comida en su tarjeta.
 - **Body** (400, 0.95rem, 1.5): texto de las comidas, párrafos, campos. Los textos largos (políticas, guía de instalación) no pasan de 65ch por línea.
-- **Label** (600, 0.85rem): botones, fechas, chips, etiquetas de la barra inferior (estas a 0.72rem).
+- **Label** (600, 0.85rem): botones, fechas, chips.
+- **Caption** (600, 0.75rem): etiquetas de la barra inferior e insignias.
 
 ### Named Rules
 **La regla de los dos cubiertos.** Fredoka solo para títulos, saludos y la marca. Botones, etiquetas, campos y párrafos van siempre en Inter.
@@ -208,12 +217,12 @@ Superficies suaves y apoyadas: las tarjetas son hojas de papel sobre la mesa. La
 
 ## Shapes
 
-Esquinas redondeadas en todo, sin ángulos rectos. Tres escalas propias (`sm` 12px, `md` 20px, `lg` 32px) más la píldora (999px) para chips e insignias. Los botones, tarjetas, campos de Vuetify y avisos usan el `rounded="lg"` de Vuetify, que son 8px.
+Esquinas redondeadas en todo, sin ángulos rectos. Radio de control (`control` 8px, token `--radius-control`, igual al `rounded="lg"` de Vuetify) para botones, tarjetas, campos y avisos; tres escalas mayores (`sm` 12px, `md` 20px, `lg` 32px) para paneles y contenedores grandes; y la píldora (999px) para chips, insignias y el indicador de la navegación.
 
 Los bordes son finos y del color lino: 1px en tarjetas del diario y barras, 1.5px en tarjetas de comida, chips y paneles.
 
 ### Named Rules
-**La regla del anidado.** Un elemento adentro de otro nunca tiene un radio mayor que su contenedor. Hoy la tarjeta de comida tiene 8px y su campo de texto 12px: está al revés, y se corrige subiendo la tarjeta a `md` (20px) o bajando el campo.
+**La regla del anidado.** Un elemento adentro de otro nunca tiene un radio mayor que su contenedor. Un campo dentro de una tarjeta usa `--radius-control`, nunca `--radius-sm`.
 
 ## Components
 
@@ -237,17 +246,18 @@ Grandes, cómodos y tranquilos: nunca agresivos.
 - **Internal Padding:** `lg` (1.5rem); las de autenticación, `2xl` por `xl`.
 
 ### Inputs / Fields
-- **Campo de comida:** área de texto de 3 líneas sin borde visible, fondo arena, esquinas de 12px, sin redimensionar. Con foco, el fondo pasa a mantel y aparece un borde terracota de 1.5px. Se guarda sola al salir del campo.
+- **Campo de comida:** área de texto de 3 líneas sin borde visible, fondo arena, esquinas de 8px, placeholder en tinta suave sin opacidad extra, sin redimensionar. Con foco, el fondo pasa a mantel y aparece un borde terracota de 1.5px. Se guarda sola al salir del campo.
 - **Campos de formulario (Vuetify):** variante rellena, 8px, con 20px de margen interno a los lados; el foco se marca con la línea inferior terracota, sin anillo extra.
 - **Error / Disabled:** los errores se muestran en un aviso tonal rosa arcilla arriba del contenido, no en rojo sobre el campo.
 
 ### Navigation
-- **Barra inferior:** fija, 70px, cuatro destinos (Hoy, Diario, PDF, Ajustes) con ícono de línea de 26px y etiqueta Inter 600 a 0.72rem. Inactivos al 50% de opacidad en tinta; el activo en terracota al 100%. Fondo mantel semitransparente con desenfoque.
+- **Barra inferior:** fija, 70px, fondo mantel semitransparente con desenfoque a todo el ancho; los cuatro destinos (Hoy, Diario, PDF, Ajustes) quedan alineados con la columna de 600px. Ícono de línea de 24px y etiqueta `caption`. Inactivos en tinta suave; el activo en terracota de texto con una píldora de 56×30px detrás del ícono (terracota al 16%), para que no dependa solo del color.
 - **Encabezado:** pegajoso, 68px, mantel con borde y sombra de apoyo, Capi chef de 40px y "CapyMeal" en Fredoka 700.
 
 ### Iconografía e ilustraciones
 Capi y las comidas son la firma visual del producto, y la única voz decorativa.
-- **Comidas:** cada comida tiene una sola ilustración (desayuno, almuerzo, merienda, cena) y se usa en todos lados donde aparezca esa comida: "Hoy", el detalle, el diario y el PDF.
+- **Comidas:** cada campo del día tiene una sola ilustración (desayuno, almuerzo, merienda, cena y el diario para "Recuerdo del día"), definida una sola vez en `utils/meals.js` y dibujada con el componente `MealIcon`. Se usa en "Hoy", el detalle, el diario y la vista previa del PDF.
+- **Deuda de assets:** las cuatro ilustraciones de comida no comparten tratamiento de fondo (desayuno trae un cuadrado amarillo, almuerzo un círculo con sol, merienda y cena van sin fondo). Hace falta reexportarlas con el mismo criterio.
 - **Capi:** aparece en momentos con significado (bienvenida, carga, estado vacío, día guardado, autenticación), siempre con la sombra cálida suave. Acompaña, no decora.
 - **Controles:** íconos de línea de Material Design (`@mdi/js`) para navegación y acciones.
 - **Emoji:** solo dentro de frases de tono de Capi ("Listo 🍂", "Despertando a Capi… 🦫"), nunca como ícono de una comida, de un botón o de un control.
@@ -266,7 +276,9 @@ Capi y las comidas son la firma visual del producto, y la única voz decorativa.
 - **Do** mostrar errores y avisos como avisos tonales de Vuetify, con texto alineado al inicio.
 
 ### Don't:
-- **Don't** usar emoji como ícono: ni ☀️🍝🧁🌙 en el diario, ni 📝 para el recuerdo, ni 📅 en "Cambiar día", ni 🤎 dentro del botón "Guardar mi día".
+- **Don't** usar emoji como ícono: ni en botones ("🤎 Guardar"), ni como ícono de una comida o de una fila de Ajustes, ni en títulos que nombran una función ("Nueva contraseña 🔒").
+- **Don't** usar salvia, durazno o rosa arcilla como color de texto.
+- **Don't** usar `text-transform: capitalize` en fechas: en español deja "15 De Noviembre". Mayúscula solo en la primera letra (`::first-letter`).
 - **Don't** escribir hex, `rgba()` ni tamaños de letra a mano en un componente.
 - **Don't** usar sombras grises o negras, ni las elevaciones por defecto de Material.
 - **Don't** poner un radio interno mayor que el del contenedor.
