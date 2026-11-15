@@ -48,7 +48,8 @@ const items = [
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70px;
+  height: calc(var(--nav-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
 
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   backdrop-filter: blur(8px);

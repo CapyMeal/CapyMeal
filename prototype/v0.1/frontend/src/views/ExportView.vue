@@ -33,14 +33,14 @@
          diario: mismo mensaje y misma salida que el Diario, en vez de
          "No encontré registros para esas fechas" sin haber elegido fechas. -->
     <EmptyState
-      v-if="!loading && entries.length === 0 && !hasDateFilter"
+      v-if="!loading && !errorMessage && entries.length === 0 && !hasDateFilter"
       :message="t('diary.emptyMessage')"
       :action-label="t('diary.emptyAction')"
       @action="$router.push('/hoy')"
     />
 
     <EmptyState
-      v-else-if="!loading && entries.length === 0"
+      v-else-if="!loading && !errorMessage && entries.length === 0"
       :message="t('export.emptyMessage')"
     />
 

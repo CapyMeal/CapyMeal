@@ -77,7 +77,7 @@ const { isOnline } = useOnlineStatus()
   max-width: 600px;
   margin: 0 auto;
   padding: var(--space-lg) var(--space-md);
-  padding-bottom: calc(70px + var(--space-xl));
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + var(--space-xl));
 }
 
 .layout__header-icon {
@@ -98,7 +98,7 @@ const { isOnline } = useOnlineStatus()
 @media (min-width: 768px) {
   .layout__content {
     padding: var(--space-xl) var(--space-lg);
-    padding-bottom: calc(70px + var(--space-xl));
+    padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + var(--space-xl));
   }
 }
 </style>

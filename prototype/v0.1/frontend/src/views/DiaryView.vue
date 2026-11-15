@@ -20,6 +20,10 @@
     />
     <CapyLoader v-if="loading" :message="t('diary.loading')" />
 
+    <!-- Con error de carga no se muestra ningún estado vacío: le diría
+         "no tenés recuerdos" a alguien que sí tiene, solo que no cargaron. -->
+    <template v-else-if="errorMessage" />
+
     <EmptyState
       v-else-if="entries.length === 0 && !hasDateFilter"
       :message="t('diary.emptyMessage')"

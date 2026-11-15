@@ -95,6 +95,16 @@ describe('DiaryView', () => {
     expect(emptyState.props('actionLabel')).toBeFalsy()
   })
 
+  it('si la carga falla muestra el error, no "todavía no guardamos ningún recuerdo"', async () => {
+    getMealEntries.mockRejectedValue(new Error('server error'))
+
+    const wrapper = mountDiaryView()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('No pude cargar el diario. Intentá nuevamente.')
+    expect(wrapper.findComponent({ name: 'EmptyState' }).exists()).toBe(false)
+  })
+
   it('muestra las tarjetas del diario cuando hay recuerdos', async () => {
     getMealEntries.mockResolvedValue([
       { date: '2026-01-10', breakfast: 'Café' },

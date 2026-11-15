@@ -74,12 +74,19 @@
 
       <!-- Feedback inline -->
       <CapyLoader v-if="loading" :message="t('today.loading')" />
-      <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="today-status">
-        {{ errorMessage }}
-      </v-alert>
+      <!-- Si no se pudo cargar el día, el aviso va arriba, con la causa y la
+           salida. Los errores de guardado van en la barra de abajo, donde
+           está la mirada cuando se aprieta el botón. -->
+      <StatusAlert
+        v-if="loadFailed && errorMessage"
+        :message="errorMessage"
+        retryable
+        class="today-status"
+        @retry="loadSelectedDay"
+      />
 
       <!-- Tarjetas de comida -->
-      <div class="today-meals today-meals--with-bar">
+      <div class="today-meals">
         <MealCard
           v-for="meal in mealFields"
           :key="meal.key"
@@ -94,6 +101,12 @@
       </div>
 
       <StickyActionBar>
+        <StatusAlert
+          v-if="!loadFailed && errorMessage"
+          :message="errorMessage"
+          :retryable="saveDayFailed"
+          @retry="saveDay"
+        />
         <CapyButton :disabled="loading || savingDay" @click="saveDay">
           {{ t('today.saveDay') }}
         </CapyButton>
@@ -114,6 +127,7 @@ import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
 import UserAvatar      from '../components/base/UserAvatar.vue'
+import StatusAlert     from '../components/base/StatusAlert.vue'
 import { getMealEntries, upsertMealEntry, isNetworkError } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
 import { formatDate, formatDateISO, addDays } from '../utils/date'
@@ -152,6 +166,10 @@ const {
 
 const saved            = ref(false)
 const savingDay        = ref(false)
+const loadFailed       = ref(false)
+// Solo el guardado del día entero ofrece "Reintentar": los errores de un
+// campo se reintentan solos al volver a salir de él.
+const saveDayFailed    = ref(false)
 const lastRecordedDate = ref(null)
 
 const mealFields = computed(() => [...MEAL_KEYS, 'notes'].map((key) => ({
@@ -185,13 +203,16 @@ const gapDateFormatted = computed(() => {
   })
 })
 
-function loadSelectedDay() {
-  saved.value = false
+async function loadSelectedDay() {
+  saved.value         = false
+  saveDayFailed.value = false
+  loadFailed.value    = false
   if (!selectedDate.value) {
     reset()
     return
   }
-  load()
+  // load() devuelve undefined solo si falló.
+  loadFailed.value = (await load()) === undefined
 }
 
 async function loadLastRecordedDate() {
@@ -210,14 +231,17 @@ async function saveDay() {
     return
   }
 
-  savingDay.value    = true
-  errorMessage.value = ''
+  savingDay.value     = true
+  saveDayFailed.value = false
+  loadFailed.value    = false
+  errorMessage.value  = ''
 
   try {
     await upsertMealEntry({ date: selectedDate.value, ...form })
     markAllSaved()
     saved.value = true
   } catch (error) {
+    saveDayFailed.value = true
     errorMessage.value = isNetworkError(error)
       ? t('today.saveOfflineError')
       : t('today.saveError')
@@ -378,9 +402,6 @@ onMounted(() => {
   margin-bottom: var(--space-xl);
 }
 
-.today-meals--with-bar {
-  margin-bottom: 90px;
-}
 
 /* ── Botón principal ────────────────────────── */
 .today-save {
