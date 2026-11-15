@@ -2,7 +2,29 @@
   <MainLayout>
     <PageHeading :icon="pdfIllustration" :title="t('export.title')" />
 
+    <!-- Atajos para el caso real: llevar "el último mes" a la consulta sin
+         tener que escribir dos fechas a mano. -->
+    <div class="export-ranges" role="group" :aria-label="t('export.rangesLabel')">
+      <button
+        v-for="range in quickRanges"
+        :key="range.key"
+        type="button"
+        class="export-ranges__chip"
+        :aria-pressed="activeRange === range.key"
+        @click="applyRange(range)"
+      >
+        {{ range.label }}
+      </button>
+    </div>
+
     <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
+
+    <StatusAlert
+      v-if="exportedNotice"
+      type="success"
+      :message="exportedNotice"
+      class="export-status"
+    />
 
     <StatusAlert
       v-if="errorMessage"
@@ -20,14 +42,18 @@
     />
     <CapyLoader v-if="loading" :message="t('export.loading')" />
 
-    <CapyButton
-      v-if="!loading && entries.length > 0"
-      class="export-button"
-      :disabled="exporting"
-      @click="printPdf"
-    >
-      {{ exporting ? t('common.preparingPdf') : t('export.downloadButton') }}
-    </CapyButton>
+    <!-- Qué se va a exportar, dicho antes de apretar: con las fechas vacías
+         baja todo el diario y nada lo decía. -->
+    <template v-if="!loading && entries.length > 0">
+      <p class="export-summary">{{ rangeSummary }}</p>
+      <CapyButton
+        class="export-button"
+        :disabled="exporting"
+        @click="printPdf"
+      >
+        {{ exporting ? t('common.preparingPdf') : t('export.downloadButton', entries.length) }}
+      </CapyButton>
+    </template>
 
     <!-- Sin fechas elegidas, vacío significa que todavía no hay nada en el
          diario: mismo mensaje y misma salida que el Diario, en vez de
@@ -68,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MainLayout      from '../layouts/MainLayout.vue'
 import EmptyState      from '../components/diary/EmptyState.vue'
@@ -80,7 +106,7 @@ import PageHeading     from '../components/base/PageHeading.vue'
 import StatusAlert     from '../components/base/StatusAlert.vue'
 import pdfIllustration from '../assets/icons/pdf.png'
 import { exportMealEntriesPdf } from '../services/mealEntriesApi'
-import { formatDate as formatDateUtil } from '../utils/date'
+import { formatDate as formatDateUtil, formatDateISO, addDays } from '../utils/date'
 import { useMealEntriesByRange } from '../utils/useMealEntriesByRange'
 import { MEAL_KEYS } from '../utils/meals'
 
@@ -95,6 +121,54 @@ const exporting = ref(false)
 // Separado del error de carga: cada uno reintenta una cosa distinta
 // (volver a pedir los días o volver a generar el PDF).
 const exportError = ref('')
+// En el .apk de Android la descarga puede no verse: sin este aviso, el
+// recorrido que termina en la consulta médica terminaba en silencio.
+const exportedNotice = ref('')
+
+const todayISO = formatDateISO(new Date())
+
+const quickRanges = computed(() => [
+  { key: 'month',  label: t('export.rangeLastMonth'),       from: addDays(todayISO, -30) },
+  { key: 'months', label: t('export.rangeLastThreeMonths'), from: addDays(todayISO, -90) },
+  { key: 'all',    label: t('export.rangeAll'),             from: '' },
+])
+
+const activeRange = computed(() => {
+  if (!fromDate.value && !toDate.value) return 'all'
+  const match = quickRanges.value.find((r) => r.from && r.from === fromDate.value && toDate.value === todayISO)
+  return match?.key ?? ''
+})
+
+function applyRange(range) {
+  fromDate.value = range.from
+  toDate.value   = range.from ? todayISO : ''
+}
+
+function shortDate(date, withYear) {
+  return formatDateUtil(date, { day: 'numeric', month: 'long', ...(withYear && { year: 'numeric' }) })
+}
+
+const rangeSummary = computed(() => {
+  const dates = entries.value.map((e) => e.date).sort()
+  if (dates.length === 0) return ''
+
+  const first = dates[0]
+  const last  = dates.at(-1)
+  // El año solo cuando el rango cruza años; si no, es ruido.
+  const withYear = first.slice(0, 4) !== last.slice(0, 4)
+
+  if (dates.length === 1) return t('export.summaryOne', { from: shortDate(first, true) })
+
+  const params = {
+    days: t('export.daysCount', dates.length),
+    from: shortDate(first, withYear),
+    to:   shortDate(last, withYear),
+  }
+  return hasDateFilter.value ? t('export.summaryRange', params) : t('export.summaryAll', params)
+})
+
+// Cambiar el rango invalida el aviso del PDF anterior.
+watch([fromDate, toDate], () => { exportedNotice.value = '' })
 
 function formatDate(date) {
   return formatDateUtil(date, {
@@ -108,6 +182,7 @@ function formatDate(date) {
 async function printPdf() {
   exporting.value = true
   exportError.value = ''
+  exportedNotice.value = ''
 
   try {
     const blob = await exportMealEntriesPdf({
@@ -121,6 +196,7 @@ async function printPdf() {
     link.download = t('export.downloadFilename')
     link.click()
     window.URL.revokeObjectURL(fileURL)
+    exportedNotice.value = t('export.downloaded')
   } catch {
     exportError.value = t('export.genericExportError')
   } finally {
@@ -143,6 +219,7 @@ async function printPdf() {
 .export-card h2 {
   margin-bottom: var(--space-sm);
   color: var(--color-title);
+  text-wrap: balance;
 }
 
 /* Solo la primera letra: capitalize ponía "12 De Noviembre". */
@@ -162,6 +239,45 @@ async function printPdf() {
    de un párrafo que puede ocupar varias. */
 .export-card__row .meal-icon {
   margin-top: .2em;
+}
+
+.export-ranges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+/* Mismo chip que las fechas rápidas de "Cambiar día"; el elegido se
+   marca con fondo y borde, no solo con color. */
+.export-ranges__chip {
+  min-height: 40px;
+  padding: 0 var(--space-md);
+  border: 1.5px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-label);
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+.export-ranges__chip:hover {
+  border-color: var(--color-primary);
+}
+
+.export-ranges__chip[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  color: var(--color-primary-text);
+  font-weight: 600;
+}
+
+.export-summary {
+  font-size: var(--font-size-label);
+  color: var(--color-muted);
+  margin-bottom: var(--space-sm);
+  text-wrap: pretty;
 }
 
 .export-button {
