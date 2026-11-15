@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T06:09:51.871Z",
+  "title": "Design System: CapyMeal",
+  "extensions": {
+    "colorMeta": {
+      "terracota": {
+        "role": "primary",
+        "displayName": "Terracota",
+        "canonical": "#96684A",
+        "oklch": "oklch(55.8% 0.073 53.8)",
+        "tonalRamp": [
+          "#130803",
+          "#361E0E",
+          "#5E371D",
+          "#825538",
+          "#A57658",
+          "#C79A7D",
+          "#E2C2AD",
+          "#FDEADF"
+        ]
+      },
+      "terracota-deep": {
+        "role": "primary",
+        "displayName": "Terracota tostada",
+        "canonical": "#7D5339",
+        "oklch": "oklch(48.2% 0.068 52.2)",
+        "tonalRamp": [
+          "#130803",
+          "#361F10",
+          "#5C3821",
+          "#80563C",
+          "#A4775C",
+          "#C69B81",
+          "#E1C2B0",
+          "#FCEBE0"
+        ]
+      },
+      "mostaza": {
+        "role": "secondary",
+        "displayName": "Mostaza",
+        "canonical": "#C9A66B",
+        "oklch": "oklch(74.3% 0.087 79.9)",
+        "tonalRamp": [
+          "#120900",
+          "#332100",
+          "#583C00",
+          "#7B5B1E",
+          "#9E7C42",
+          "#C0A06A",
+          "#DCC6A1",
+          "#FAEDD8"
+        ]
+      },
+      "capy-brown": {
+        "role": "tertiary",
+        "displayName": "Madera de Capi",
+        "canonical": "#A9805F",
+        "oklch": "oklch(63.2% 0.069 59.9)",
+        "tonalRamp": [
+          "#130903",
+          "#35200E",
+          "#5B391D",
+          "#7E5838",
+          "#A17958",
+          "#C39C7D",
+          "#DFC3AD",
+          "#FBEBDF"
+        ]
+      },
+      "arena": {
+        "role": "neutral",
+        "displayName": "Arena",
+        "canonical": "#F2EAE0",
+        "oklch": "oklch(94.1% 0.016 73.7)",
+        "tonalRamp": [
+          "#0D0B09",
+          "#282420",
+          "#47413A",
+          "#676057",
+          "#888178",
+          "#ABA49B",
+          "#CDC8C2",
+          "#F1EEEA"
+        ]
+      },
+      "mantel": {
+        "role": "neutral",
+        "displayName": "Mantel",
+        "canonical": "#FBF7F1",
+        "oklch": "oklch(97.8% 0.009 78.3)",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#272522",
+          "#44413D",
+          "#64615C",
+          "#85827C",
+          "#A8A49F",
+          "#CBC9C5",
+          "#F0EEEC"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#362B22",
+        "oklch": "oklch(29.9% 0.023 61.1)",
+        "tonalRamp": [
+          "#0E0A08",
+          "#2A241E",
+          "#4A4037",
+          "#6B5F54",
+          "#8D8075",
+          "#AFA298",
+          "#D0C7C0",
+          "#F3EDE9"
+        ]
+      },
+      "tinta-suave": {
+        "role": "neutral",
+        "displayName": "Tinta suave",
+        "canonical": "#6E6156",
+        "oklch": "oklch(50.2% 0.024 62.5)",
+        "tonalRamp": [
+          "#0E0A08",
+          "#2B241E",
+          "#4B4036",
+          "#6B5F54",
+          "#8D8074",
+          "#AFA297",
+          "#D1C7BF",
+          "#F3EDE9"
+        ]
+      },
+      "borde-lino": {
+        "role": "neutral",
+        "displayName": "Borde de lino",
+        "canonical": "#DED2C0",
+        "oklch": "oklch(86.9% 0.028 78.2)",
+        "tonalRamp": [
+          "#0D0B07",
+          "#2A241B",
+          "#4A4133",
+          "#6A6050",
+          "#8C8170",
+          "#AEA394",
+          "#D0C8BD",
+          "#F2EEE7"
+        ]
+      },
+      "salvia": {
+        "role": "success",
+        "displayName": "Salvia",
+        "canonical": "#A3C79A",
+        "oklch": "oklch(79.1% 0.073 139.4)",
+        "tonalRamp": [
+          "#060E04",
+          "#192A14",
+          "#2E4B27",
+          "#4B6B43",
+          "#6B8D63",
+          "#8FB087",
+          "#BAD1B4",
+          "#E6F3E3"
+        ]
+      },
+      "durazno": {
+        "role": "warning",
+        "displayName": "Durazno",
+        "canonical": "#F0C888",
+        "oklch": "oklch(85.3% 0.093 78.8)",
+        "tonalRamp": [
+          "#120900",
+          "#342100",
+          "#5A3B00",
+          "#7D5A16",
+          "#A07B3C",
+          "#C29F66",
+          "#DEC59E",
+          "#FBECD7"
+        ]
+      },
+      "rosa-arcilla": {
+        "role": "error",
+        "displayName": "Rosa arcilla",
+        "canonical": "#E3968C",
+        "oklch": "oklch(74.8% 0.095 27.7)",
+        "tonalRamp": [
+          "#170604",
+          "#3E1814",
+          "#692D27",
+          "#8F4A43",
+          "#B46B62",
+          "#D69087",
+          "#EEBBB4",
+          "#FFE7E2"
+        ]
+      },
+      "noche-fondo": {
+        "role": "neutral-dark",
+        "displayName": "Marrón noche",
+        "canonical": "#22190F",
+        "oklch": "oklch(22.1% 0.023 69.1)",
+        "tonalRamp": [
+          "#0D0B08",
+          "#2A241D",
+          "#4A4036",
+          "#6A5F53",
+          "#8C8074",
+          "#AEA397",
+          "#D0C8BF",
+          "#F2EEE9"
+        ]
+      },
+      "noche-mantel": {
+        "role": "neutral-dark",
+        "displayName": "Mantel de noche",
+        "canonical": "#2C2116",
+        "oklch": "oklch(25.7% 0.026 66.3)",
+        "tonalRamp": [
+          "#0E0A07",
+          "#2B241D",
+          "#4B4035",
+          "#6C5F52",
+          "#8D8072",
+          "#B0A296",
+          "#D1C7BE",
+          "#F3EDE8"
+        ]
+      },
+      "noche-tinta": {
+        "role": "neutral-dark",
+        "displayName": "Tinta clara",
+        "canonical": "#F1E4D3",
+        "oklch": "oklch(92.5% 0.027 74.8)",
+        "tonalRamp": [
+          "#0E0B07",
+          "#2A241C",
+          "#4A4034",
+          "#6A5F51",
+          "#8C8071",
+          "#AEA394",
+          "#D0C8BD",
+          "#F2EEE8"
+        ]
+      },
+      "noche-titulo": {
+        "role": "neutral-dark",
+        "displayName": "Título de noche",
+        "canonical": "#F8EFE2",
+        "oklch": "oklch(95.6% 0.020 77.3)",
+        "tonalRamp": [
+          "#0D0B08",
+          "#29241E",
+          "#484137",
+          "#686055",
+          "#898175",
+          "#ACA499",
+          "#CEC8C0",
+          "#F1EEE9"
+        ]
+      },
+      "noche-tinta-suave": {
+        "role": "neutral-dark",
+        "displayName": "Tinta clara suave",
+        "canonical": "#B7A68D",
+        "oklch": "oklch(73.3% 0.040 77.5)",
+        "tonalRamp": [
+          "#0E0A05",
+          "#2C2417",
+          "#4D402B",
+          "#6E5F48",
+          "#908068",
+          "#B2A38C",
+          "#D3C7B7",
+          "#F4EDE4"
+        ]
+      },
+      "noche-miel": {
+        "role": "primary-dark",
+        "displayName": "Miel",
+        "canonical": "#D9A45C",
+        "oklch": "oklch(75.4% 0.109 73.3)",
+        "tonalRamp": [
+          "#150800",
+          "#391E00",
+          "#613700",
+          "#865500",
+          "#AA772C",
+          "#CB9B5A",
+          "#E5C397",
+          "#FFEBD3"
+        ]
+      },
+      "noche-miel-clara": {
+        "role": "primary-dark",
+        "displayName": "Miel clara",
+        "canonical": "#E6BC80",
+        "oklch": "oklch(81.9% 0.091 75.8)",
+        "tonalRamp": [
+          "#130900",
+          "#352000",
+          "#5B3A00",
+          "#7F591B",
+          "#A27A3F",
+          "#C49E68",
+          "#DFC5A0",
+          "#FBECD7"
+        ]
+      },
+      "noche-borde": {
+        "role": "neutral-dark",
+        "displayName": "Borde de noche",
+        "canonical": "#3F3121",
+        "oklch": "oklch(32.4% 0.033 70.0)",
+        "tonalRamp": [
+          "#0E0A06",
+          "#2C231A",
+          "#4D3F30",
+          "#6E5E4D",
+          "#907F6D",
+          "#B2A291",
+          "#D2C7BB",
+          "#F4EDE6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Momentos de bienvenida, como la pantalla de inicio."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título de las tarjetas de autenticación y de cada sección principal."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "El saludo de \"Hoy\" y la confirmación de día guardado."
+      },
+      "title-sm": {
+        "displayName": "Title chico",
+        "purpose": "Nombre de cada comida en su tarjeta."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto de las comidas, párrafos y campos; textos largos hasta 65ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Botones, fechas, chips y etiquetas de la barra inferior."
+      }
+    },
+    "shadows": [
+      {
+        "name": "apoyo",
+        "value": "0 2px 12px rgba(105,73,49,.12)",
+        "purpose": "Tarjetas en reposo, encabezado, barra inferior, botón principal."
+      },
+      {
+        "name": "elevado",
+        "value": "0 6px 24px rgba(105,73,49,.17)",
+        "purpose": "Hover de tarjetas del diario y del botón principal; tarjetas de autenticación."
+      },
+      {
+        "name": "recien-guardado",
+        "value": "0 0 0 3px rgba(150,104,74,.22)",
+        "purpose": "Anillo terracota en una tarjeta de comida durante 2.5s tras guardarse."
+      },
+      {
+        "name": "foco",
+        "value": "0 0 0 3px rgba(150,104,74,.4)",
+        "purpose": "Anillo de foco por teclado en botones, links y campos."
+      }
+    ],
+    "motion": [
+      {
+        "name": "levante",
+        "value": "transform .18s ease",
+        "purpose": "Elementos tocables suben 2px en hover y vuelven al apretar."
+      },
+      {
+        "name": "estado",
+        "value": ".2s ease",
+        "purpose": "Cambios de borde, fondo y opacidad en campos, chips y navegación."
+      },
+      {
+        "name": "capi-flota",
+        "value": "1.4s ease-in-out infinite",
+        "purpose": "Capi del loader sube y baja 10px; se apaga con movimiento reducido."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "768px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "La acción más importante de la pantalla, por ejemplo \"Guardar mi día\". Una por pantalla.",
+      "html": "<button class=\"ds-btn-primary\">Guardar mi día</button>",
+      "css": ".ds-btn-primary { width: 100%; height: 52px; padding: 0 24px; background: var(--color-primary, #96684A); color: var(--color-surface, #FBF7F1); font: 600 1rem/1 var(--font-main, Inter, sans-serif); letter-spacing: .01em; border: none; border-radius: 8px; box-shadow: 0 2px 12px rgba(105,73,49,.12); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; } .ds-btn-primary:hover { background: var(--color-primary-hover, #7D5339); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(105,73,49,.17); } .ds-btn-primary:active { transform: translateY(0); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(150,104,74,.4); }"
+    },
+    {
+      "name": "Botón fantasma",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción secundaria al lado o debajo de la principal, por ejemplo \"Registrar otro día\".",
+      "html": "<button class=\"ds-btn-ghost\">Registrar otro día</button>",
+      "css": ".ds-btn-ghost { width: 100%; height: 52px; padding: 0 24px; background: transparent; color: var(--color-text, #362B22); font: 600 1rem/1 var(--font-main, Inter, sans-serif); letter-spacing: .01em; border: 1px solid var(--color-border, #DED2C0); border-radius: 8px; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background-color .18s ease; } .ds-btn-ghost:hover { border-color: var(--color-primary, #96684A); background: color-mix(in srgb, var(--color-primary, #96684A) 8%, transparent); transform: translateY(-2px); } .ds-btn-ghost:active { transform: translateY(0); } .ds-btn-ghost:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(150,104,74,.4); }"
+    },
+    {
+      "name": "Tarjeta de comida",
+      "kind": "card",
+      "refersTo": "card-meal",
+      "description": "Una comida del día en \"Hoy\": ilustración, nombre en Fredoka y campo de texto que se guarda solo.",
+      "html": "<div class=\"ds-meal-card\"><div class=\"ds-meal-card__head\"><span class=\"ds-meal-card__art\" aria-hidden=\"true\"></span><h3 class=\"ds-meal-card__title\">Desayuno</h3><span class=\"ds-meal-card__badge\">✓</span></div><textarea class=\"ds-meal-card__input\" rows=\"3\" placeholder=\"Ej: café con leche y tostadas\"></textarea></div>",
+      "css": ".ds-meal-card { background: var(--color-surface, #FBF7F1); border: 1.5px solid var(--color-border, #DED2C0); border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(105,73,49,.12); transition: border-color .25s ease, box-shadow .25s ease; } .ds-meal-card:focus-within { border-color: var(--color-primary, #96684A); box-shadow: 0 0 0 3px rgba(150,104,74,.22); } .ds-meal-card__head { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; } .ds-meal-card__art { width: 52px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, #F0C888, #C9A66B); } .ds-meal-card__title { flex: 1; margin: 0; font: 600 1.1rem/1.3 var(--font-title, Fredoka, sans-serif); color: var(--color-title, #362B22); } .ds-meal-card__badge { font: 700 .8rem/1 var(--font-main, Inter, sans-serif); color: var(--color-primary, #96684A); background: rgba(150,104,74,.18); border-radius: 999px; padding: .15rem .5rem; } .ds-meal-card__input { width: 100%; box-sizing: border-box; background: var(--color-background, #F2EAE0); border: 1.5px solid transparent; border-radius: 12px; padding: .75rem 1rem; color: var(--color-text, #362B22); font: 400 .95rem/1.6 var(--font-main, Inter, sans-serif); resize: none; outline: none; transition: border-color .2s ease, background .2s ease; } .ds-meal-card__input:focus { border-color: var(--color-primary, #96684A); background: var(--color-surface, #FBF7F1); } .ds-meal-card__input::placeholder { color: var(--color-muted, #6E6156); opacity: .7; }"
+    },
+    {
+      "name": "Tarjeta del diario",
+      "kind": "card",
+      "refersTo": "card-meal",
+      "description": "Un día guardado en \"Mi Diario\"; toda la tarjeta es un link al detalle.",
+      "html": "<a class=\"ds-diary-card\" href=\"#\"><p class=\"ds-diary-card__date\">martes 10 de noviembre</p><ul class=\"ds-diary-card__meals\"><li>café con leche y tostadas</li><li>fideos con tuco y ensalada</li><li>mate con facturas</li></ul></a>",
+      "css": ".ds-diary-card { display: block; text-decoration: none; background: var(--color-surface, #FBF7F1); border: 1px solid var(--color-border, #DED2C0); border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(105,73,49,.12); transition: box-shadow .2s ease, transform .15s ease; } .ds-diary-card:hover { box-shadow: 0 6px 24px rgba(105,73,49,.17); transform: translateY(-2px); } .ds-diary-card:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(150,104,74,.4); } .ds-diary-card__date { margin: 0 0 1rem; font: 700 .85rem/1.4 var(--font-main, Inter, sans-serif); color: var(--color-primary, #96684A); text-transform: capitalize; } .ds-diary-card__meals { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .75rem; } .ds-diary-card__meals li { font: 400 .9rem/1.5 var(--font-main, Inter, sans-serif); color: var(--color-text, #362B22); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }"
+    },
+    {
+      "name": "Chip de fecha rápida",
+      "kind": "chip",
+      "refersTo": "chip-quick-date",
+      "description": "Atajos de fecha en el selector de día: Hoy, Ayer, Hace 7 días.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\">Hoy</button><button class=\"ds-chip\">Ayer</button><button class=\"ds-chip\">Hace 7 días</button></div>",
+      "css": ".ds-chips { display: flex; gap: .5rem; } .ds-chip { border: 1.5px solid var(--color-border, #DED2C0); background: var(--color-background, #F2EAE0); color: var(--color-text, #362B22); border-radius: 999px; padding: .3rem .8rem; font: 400 .8rem/1.4 var(--font-main, Inter, sans-serif); cursor: pointer; transition: background .2s, border-color .2s; } .ds-chip:hover { border-color: var(--color-primary, #96684A); background: rgba(150,104,74,.12); } .ds-chip:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(150,104,74,.4); }"
+    },
+    {
+      "name": "Campo de formulario",
+      "kind": "input",
+      "refersTo": "input-meal",
+      "description": "Campo relleno de Vuetify en login, registro y ajustes; el foco se marca con la línea inferior.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field__label\">Email</span><input class=\"ds-field__input\" type=\"email\" placeholder=\"tu@email.com\"></label>",
+      "css": ".ds-field { display: block; position: relative; background: color-mix(in srgb, var(--color-text, #362B22) 6%, var(--color-surface, #FBF7F1)); border-radius: 8px 8px 0 0; border-bottom: 1px solid var(--color-muted, #6E6156); padding: 8px 20px 6px; transition: border-color .2s ease; } .ds-field:focus-within { border-bottom: 2px solid var(--color-primary, #96684A); } .ds-field__label { display: block; font: 400 .75rem/1.4 var(--font-main, Inter, sans-serif); color: var(--color-muted, #6E6156); } .ds-field:focus-within .ds-field__label { color: var(--color-primary, #96684A); } .ds-field__input { width: 100%; border: none; background: transparent; outline: none; padding: 2px 0; font: 400 1rem/1.5 var(--font-main, Inter, sans-serif); color: var(--color-text, #362B22); }"
+    },
+    {
+      "name": "Barra de navegación inferior",
+      "kind": "nav",
+      "refersTo": "nav-bottom",
+      "description": "Navegación fija de la app con sesión: Hoy, Diario, PDF y Ajustes.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav__item ds-nav__item--active\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M7,10H12V15H7M19,19H5V8H19M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z\"/></svg><span>Hoy</span></a><a class=\"ds-nav__item\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M3,7V5H5V4C5,2.89 5.9,2 7,2H13V9L15.5,7.5L18,9V2H19C20.05,2 21,2.95 21,4V20C21,21.05 20.05,22 19,22H7C5.95,22 5,21.05 5,20V19H3V17H5V13H3V11H5V7H3M7,11H5V13H7V11M7,7V5H5V7H7M7,19V17H5V19H7Z\"/></svg><span>Diario</span></a><a class=\"ds-nav__item\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M9.5 11.5C9.5 12.3 8.8 13 8 13H7V15H5.5V9H8C8.8 9 9.5 9.7 9.5 10.5V11.5M14.5 13.5C14.5 14.3 13.8 15 13 15H10.5V9H13C13.8 9 14.5 9.7 14.5 10.5V13.5M18.5 10.5H17V11.5H18.5V13H17V15H15.5V9H18.5V10.5M12 10.5H13V13.5H12V10.5M7 10.5H8V11.5H7V10.5Z\"/></svg><span>PDF</span></a><a class=\"ds-nav__item\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z\"/></svg><span>Ajustes</span></a></nav>",
+      "css": ".ds-nav { display: flex; height: 70px; background: color-mix(in srgb, var(--color-surface, #FBF7F1) 92%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--color-border, #DED2C0); box-shadow: 0 2px 12px rgba(105,73,49,.12); } .ds-nav__item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--color-text, #362B22); opacity: .5; text-decoration: none; transition: opacity .2s ease; } .ds-nav__item:hover { opacity: .8; } .ds-nav__item:focus-visible { outline: none; box-shadow: inset 0 0 0 3px rgba(150,104,74,.4); } .ds-nav__item span { font: 600 .72rem/1 var(--font-main, Inter, sans-serif); letter-spacing: .03em; } .ds-nav__item--active { opacity: 1; color: var(--color-primary, #96684A); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La sobremesa",
+    "overview": "CapyMeal se siente como el rato tranquilo después de comer: la mesa todavía puesta, el mate dando vueltas, nadie apurado. Es un lugar cercano y relajado, y Capi está ahí como compañía, no como adorno. Todo lo visual busca esa temperatura: colores de tierra y madera, papel cálido en vez de blanco, sombras de luz de tarde en vez de grises.\n\nLa densidad es baja a propósito. Una pantalla muestra pocas cosas, con aire alrededor, en una sola columna angosta (600px como máximo) que se lee igual en el celular y en la computadora. La personalidad vive en las ilustraciones de Capi y de las comidas, en la tipografía redondeada de los títulos y en la voz de los mensajes; la estructura, en cambio, es sobria y predecible.\n\nCalidez no es descuido. Lo que está registrado acá como sistema es lo que ya existe en el código; donde el código se desvió (tamaños sueltos, colores escritos a mano, tres estilos de íconos mezclados), la regla manda y el código se corrige.",
+    "keyCharacteristics": [
+      "Paleta \"Tierra\": terracota, mostaza y madera sobre fondo arena, con tema oscuro de miel sobre marrón noche.",
+      "Dos tipografías con roles fijos: Fredoka redondeada para títulos, Inter para todo lo demás.",
+      "Superficies suaves y apoyadas, con sombras cálidas y difusas.",
+      "Ilustraciones de Capi y de comidas como única voz decorativa.",
+      "Una columna de 600px, barra de navegación inferior fija, mucho aire."
+    ],
+    "rules": [
+      {
+        "name": "La regla de la mesa servida",
+        "section": "colors",
+        "body": "La terracota marca una sola cosa por pantalla como la más importante: la acción principal o la ubicación actual. Si dos elementos compiten en terracota, uno de los dos sobra."
+      },
+      {
+        "name": "La regla de la doble fuente",
+        "section": "colors",
+        "body": "Cada color de marca existe en dos lugares que deben coincidir: `styles/main.css` y `plugins/vuetify.js`. Un color nuevo o cambiado se toca en los dos, o no se toca."
+      },
+      {
+        "name": "La regla de la paleta cerrada",
+        "section": "colors",
+        "body": "Ningún componente escribe un hex o un `rgba()` propio. Si hace falta un tono nuevo, se agrega como token o se deriva con `color-mix()` desde un token existente."
+      },
+      {
+        "name": "La regla de los dos cubiertos",
+        "section": "typography",
+        "body": "Fredoka solo para títulos, saludos y la marca. Botones, etiquetas, campos y párrafos van siempre en Inter."
+      },
+      {
+        "name": "La regla de la escala",
+        "section": "typography",
+        "body": "Todo tamaño de letra sale de los tokens `--font-size-*`. Hoy hay más de sesenta tamaños escritos a mano en los componentes (0.72, 0.8, 0.88, 0.9rem…): cada vez que se toca un componente, sus tamaños sueltos se llevan al token más cercano."
+      },
+      {
+        "name": "La regla de la luz de tarde",
+        "section": "elevation",
+        "body": "Toda sombra es marrón cálido (base `105,73,49`), nunca gris ni negra. Las elevaciones de Material de Vuetify se reemplazan por estas dos en `vuetify-overrides.css`."
+      },
+      {
+        "name": "La regla del levante",
+        "section": "elevation",
+        "body": "Lo que se puede tocar sube 2px al pasar el mouse y vuelve a su lugar al apretar. Con movimiento reducido, no sube."
+      },
+      {
+        "name": "La regla del anidado",
+        "section": "shapes",
+        "body": "Un elemento adentro de otro nunca tiene un radio mayor que su contenedor. Hoy la tarjeta de comida tiene 8px y su campo de texto 12px: está al revés, y se corrige subiendo la tarjeta a `md` (20px) o bajando el campo."
+      },
+      {
+        "name": "La regla de una sola voz",
+        "section": "components",
+        "body": "Cada cosa se dibuja de una sola manera en toda la app. Una comida es siempre su ilustración; un control es siempre un ícono de línea; un emoji es siempre parte de una frase."
+      }
+    ],
+    "dos": [
+      "Do usar las ilustraciones de comida también en las tarjetas del diario y en el detalle, en miniatura (24 a 32px).",
+      "Do usar `var(--color-*)`, `var(--space-*)`, `var(--radius-*)` y `var(--font-size-*)` en todo componente nuevo o tocado.",
+      "Do mantener las sombras en la base marrón `105,73,49` con los dos niveles definidos (apoyo y elevado).",
+      "Do dejar que la terracota marque una sola cosa por pantalla.",
+      "Do respetar `prefers-reduced-motion` en todo movimiento, como ya hacen el botón y el loader.",
+      "Do mostrar errores y avisos como avisos tonales de Vuetify, con texto alineado al inicio."
+    ],
+    "donts": [
+      "Don't usar emoji como ícono: ni ☀️🍝🧁🌙 en el diario, ni 📝 para el recuerdo, ni 📅 en \"Cambiar día\", ni 🤎 dentro del botón \"Guardar mi día\".",
+      "Don't escribir hex, `rgba()` ni tamaños de letra a mano en un componente.",
+      "Don't usar sombras grises o negras, ni las elevaciones por defecto de Material.",
+      "Don't poner un radio interno mayor que el del contenedor.",
+      "Don't usar Fredoka en botones, etiquetas o párrafos.",
+      "Don't agregar un color de marca en `main.css` sin replicarlo en `plugins/vuetify.js`.",
+      "Don't usar guion largo ni doble guion en los textos de la interfaz."
+    ]
+  }
+}
