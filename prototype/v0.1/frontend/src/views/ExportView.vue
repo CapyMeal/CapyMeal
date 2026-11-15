@@ -1,13 +1,23 @@
 <template>
   <MainLayout>
-    <div class="export-heading">
-      <img src="../assets/icons/pdf.png" alt="" class="export-heading__icon">
-      <h1 class="export-heading__title">{{ t('export.title') }}</h1>
-    </div>
+    <PageHeading :icon="pdfIllustration" :title="t('export.title')" />
 
     <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
 
-    <p v-if="errorMessage" class="export-error">{{ errorMessage }}</p>
+    <StatusAlert
+      v-if="errorMessage"
+      :message="errorMessage"
+      retryable
+      class="export-status"
+      @retry="loadEntries"
+    />
+    <StatusAlert
+      v-if="exportError"
+      :message="exportError"
+      retryable
+      class="export-status"
+      @retry="printPdf"
+    />
     <CapyLoader v-if="loading" :message="t('export.loading')" />
 
     <CapyButton
@@ -66,6 +76,9 @@ import CapyButton      from '../components/base/CapyButton.vue'
 import DateRangeFilter from '../components/base/DateRangeFilter.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
 import MealIcon        from '../components/meal/MealIcon.vue'
+import PageHeading     from '../components/base/PageHeading.vue'
+import StatusAlert     from '../components/base/StatusAlert.vue'
+import pdfIllustration from '../assets/icons/pdf.png'
 import { exportMealEntriesPdf } from '../services/mealEntriesApi'
 import { formatDate as formatDateUtil } from '../utils/date'
 import { useMealEntriesByRange } from '../utils/useMealEntriesByRange'
@@ -73,12 +86,15 @@ import { MEAL_KEYS } from '../utils/meals'
 
 const { t } = useI18n()
 
-const { entries, loading, errorMessage, fromDate, toDate, hasDateFilter } = useMealEntriesByRange({
+const { entries, loading, errorMessage, fromDate, toDate, hasDateFilter, loadEntries } = useMealEntriesByRange({
   networkErrorMessage: computed(() => t('export.networkError')),
   genericErrorMessage: computed(() => t('export.genericError')),
 })
 
 const exporting = ref(false)
+// Separado del error de carga: cada uno reintenta una cosa distinta
+// (volver a pedir los días o volver a generar el PDF).
+const exportError = ref('')
 
 function formatDate(date) {
   return formatDateUtil(date, {
@@ -91,7 +107,7 @@ function formatDate(date) {
 
 async function printPdf() {
   exporting.value = true
-  errorMessage.value = ''
+  exportError.value = ''
 
   try {
     const blob = await exportMealEntriesPdf({
@@ -106,7 +122,7 @@ async function printPdf() {
     link.click()
     window.URL.revokeObjectURL(fileURL)
   } catch {
-    errorMessage.value = t('export.genericExportError')
+    exportError.value = t('export.genericExportError')
   } finally {
     exporting.value = false
   }
@@ -114,27 +130,6 @@ async function printPdf() {
 </script>
 
 <style scoped>
-.export-heading {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-}
-
-.export-heading__icon {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  filter: var(--illustration-shadow-sm);
-}
-
-.export-heading__title {
-  font-family: var(--font-title);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--color-title);
-}
-
 .export-preview {
   display: flex;
   flex-direction: column;
@@ -173,10 +168,8 @@ async function printPdf() {
   margin-bottom: var(--space-lg);
 }
 
-.export-error {
-  font-size: .9rem;
+.export-status {
   margin-bottom: var(--space-md);
-  color: var(--color-danger-text);
 }
 
 </style>

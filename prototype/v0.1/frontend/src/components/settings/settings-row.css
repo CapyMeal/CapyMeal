@@ -1,0 +1,87 @@
+/* Filas y paneles de Ajustes. Lo cargan SettingsView, TwoFactorSettings y
+   DeleteAccountSettings con <style scoped src>: cada componente sigue
+   teniendo sus estilos encapsulados, pero las reglas viven en un solo
+   lugar. Antes estaban copiadas en los tres archivos y ya habían
+   empezado a divergir. */
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+}
+
+/* Filas de solo ícono + texto, sin control a la derecha: se agrupan a la
+   izquierda en vez de separarse a los extremos (con texto corto, como
+   "Versión", quedaba un hueco en el medio). */
+.settings-item--static {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.settings-item__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.settings-item__icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  color: var(--color-muted);
+}
+
+.settings-item--static .settings-item__icon {
+  margin-top: 2px;
+}
+
+.settings-item__label {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--color-title);
+  margin-bottom: 2px;
+}
+
+.settings-item__desc {
+  font-size: .82rem;
+  color: var(--color-muted);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Acción destructiva (cerrar sesión, eliminar cuenta). Es un <button>
+   real: se resetea el estilo nativo para que se vea como fila. Ícono y
+   texto juntos al centro, sin control a la derecha. */
+.settings-item--danger {
+  justify-content: center;
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-danger-text);
+}
+
+.settings-item--danger .settings-item__icon,
+.settings-item--danger .settings-item__label {
+  color: inherit;
+}
+
+.settings-item--danger:hover {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+}
+
+/* Panel que se despliega debajo de una fila (confirmar con contraseña,
+   configurar 2FA). */
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+}
+
+.settings-panel__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}

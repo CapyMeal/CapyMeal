@@ -5,6 +5,7 @@
     "email": "Email",
     "emailPlaceholder": "tu{'@'}email.com",
     "or": "o",
+    "retry": "Reintentar",
     "slowBackendMessage": "Despertando a Capi… 🦫",
     "passwordMismatch": "Las contraseñas no coinciden.",
     "forgotPasswordLink": "¿Olvidaste tu contraseña?"

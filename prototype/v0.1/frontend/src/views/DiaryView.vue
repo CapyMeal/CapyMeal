@@ -1,13 +1,16 @@
 <template>
   <MainLayout>
-    <div class="diary-heading">
-      <img src="../assets/icons/diario.png" alt="" class="diary-heading__icon">
-      <h1 class="diary-heading__title">{{ t('diary.title') }}</h1>
-    </div>
+    <PageHeading :icon="diaryIllustration" :title="t('diary.title')" />
 
     <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
 
-    <p v-if="errorMessage" class="diary-error">{{ errorMessage }}</p>
+    <StatusAlert
+      v-if="errorMessage"
+      :message="errorMessage"
+      retryable
+      class="diary-status"
+      @retry="loadEntries"
+    />
     <CapyLoader v-if="loading" :message="t('diary.loading')" />
 
     <EmptyState
@@ -41,6 +44,9 @@ import DiaryCard        from '../components/diary/DiaryCard.vue'
 import EmptyState       from '../components/diary/EmptyState.vue'
 import DateRangeFilter  from '../components/base/DateRangeFilter.vue'
 import CapyLoader       from '../components/base/CapyLoader.vue'
+import PageHeading      from '../components/base/PageHeading.vue'
+import StatusAlert      from '../components/base/StatusAlert.vue'
+import diaryIllustration from '../assets/icons/diario.png'
 import { useMealEntriesByRange } from '../utils/useMealEntriesByRange'
 
 const { t } = useI18n()
@@ -49,44 +55,21 @@ const { t } = useI18n()
 // tenía este pedido cacheado (visita previa con conexión), la respuesta se
 // sirve desde el caché y ese catch ni se dispara. Solo se ejecuta si nunca
 // se había cargado nada en este dispositivo.
-const { entries, loading, errorMessage, fromDate, toDate, hasDateFilter } = useMealEntriesByRange({
+const { entries, loading, errorMessage, fromDate, toDate, hasDateFilter, loadEntries } = useMealEntriesByRange({
   networkErrorMessage: computed(() => t('diary.networkError')),
   genericErrorMessage: computed(() => t('diary.genericError')),
 })
 </script>
 
 <style scoped>
-.diary-heading {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-xl);
-}
-
-.diary-heading__icon {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  filter: var(--illustration-shadow-sm);
-}
-
-.diary-heading__title {
-  font-family: var(--font-title);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--color-title);
-}
-
 .diary-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-.diary-error {
-  font-size: .9rem;
+.diary-status {
   margin-bottom: var(--space-md);
-  color: var(--color-danger-text);
 }
 
 </style>

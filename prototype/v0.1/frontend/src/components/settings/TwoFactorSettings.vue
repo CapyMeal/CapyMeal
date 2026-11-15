@@ -27,7 +27,13 @@
         {{ t('twoFactor.disableButton') }}
       </CapyButton>
     </div>
-    <p v-if="settingUpError" class="settings-two-factor-inline-error">{{ settingUpError }}</p>
+    <StatusAlert
+      v-if="settingUpError"
+      :message="settingUpError"
+      retryable
+      class="settings-two-factor-inline-error"
+      @retry="startTwoFactorSetup"
+    />
 
     <div v-if="confirmingDisableTwoFactor" class="settings-panel">
       <PasswordField
@@ -35,7 +41,7 @@
         :label="t('settings.confirmPassword')"
         autocomplete="current-password"
       />
-      <p v-if="disableTwoFactorError" class="settings-panel__error">{{ disableTwoFactorError }}</p>
+      <StatusAlert v-if="disableTwoFactorError" :message="disableTwoFactorError" />
       <div class="settings-panel__actions">
         <CapyButton variant="danger" :disabled="disablingTwoFactor" @click="handleDisableTwoFactor">
           {{ disablingTwoFactor ? t('twoFactor.disabling') : t('twoFactor.disableConfirmButton') }}
@@ -57,7 +63,7 @@
       placeholder="123456"
       autocomplete="one-time-code"
     />
-    <p v-if="confirmError" class="settings-panel__error">{{ confirmError }}</p>
+    <StatusAlert v-if="confirmError" :message="confirmError" />
     <div class="settings-panel__actions">
       <CapyButton :disabled="confirmingCode" @click="confirmTwoFactorSetup">
         {{ confirmingCode ? t('twoFactor.verifying') : t('twoFactor.confirmButton') }}
@@ -84,6 +90,7 @@ import { useI18n } from 'vue-i18n'
 import { mdiShieldLockOutline } from '@mdi/js'
 import PasswordField from '../base/PasswordField.vue'
 import CapyButton from '../base/CapyButton.vue'
+import StatusAlert from '../base/StatusAlert.vue'
 import { currentUser, setupTwoFactor, confirmTwoFactor, disableTwoFactor } from '../../stores/authStore'
 
 // v-model:recoveryCodesPending -- SettingsView necesita saber cuándo los
@@ -188,52 +195,11 @@ async function handleDisableTwoFactor() {
 }
 </script>
 
+<style scoped src="./settings-row.css"></style>
+
 <style scoped>
-.settings-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding: var(--space-lg);
-}
-
-.settings-item__info {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.settings-item__icon {
-  font-size: 22px;
-  flex-shrink: 0;
-  color: var(--color-muted);
-}
-
-.settings-item__label {
-  font-size: .95rem;
-  font-weight: 700;
-  color: var(--color-title);
-  margin-bottom: 2px;
-}
-
-.settings-item__desc {
-  font-size: .82rem;
-  color: var(--color-muted);
-  line-height: 1.5;
-}
-
-.settings-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  padding: var(--space-lg);
-}
-
 .settings-two-factor-inline-error {
-  font-size: .8rem;
-  color: var(--color-danger-text);
-  margin-top: 2px;
-  padding: 0 var(--space-lg) var(--space-md);
+  margin: 0 var(--space-lg) var(--space-md);
 }
 
 .settings-two-factor-qr {
@@ -267,16 +233,5 @@ async function handleDisableTwoFactor() {
   font-size: .85rem;
   color: var(--color-danger-text);
   line-height: 1.5;
-}
-
-.settings-panel__error {
-  font-size: .82rem;
-  color: var(--color-danger-text);
-}
-
-.settings-panel__actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
 }
 </style>

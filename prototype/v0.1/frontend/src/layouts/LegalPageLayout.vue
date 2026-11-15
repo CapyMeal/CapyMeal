@@ -3,10 +3,7 @@
     <div class="privacy-card">
       <RouterLink :to="backTo" class="privacy-back">{{ backLabel }}</RouterLink>
 
-      <div class="privacy-heading">
-        <img src="../assets/icons/capy2.png" alt="Capi" class="privacy-heading__icon">
-        <h1 class="privacy-heading__title">{{ title }}</h1>
-      </div>
+      <PageHeading :icon="capiIllustration" :title="title" class="privacy-heading" />
       <p class="privacy-updated">{{ updatedLabel }}</p>
 
       <slot />
@@ -15,6 +12,9 @@
 </template>
 
 <script setup>
+import PageHeading from '../components/base/PageHeading.vue'
+import capiIllustration from '../assets/icons/capy2.png'
+
 defineProps({
   backTo: { type: String, required: true },
   backLabel: { type: String, required: true },
@@ -40,29 +40,14 @@ defineProps({
 .privacy-back {
   display: inline-block;
   margin-bottom: var(--space-lg);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: 700;
   font-size: .9rem;
 }
 
+/* Acá el título va pegado a la fecha de actualización de abajo. */
 .privacy-heading {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
   margin-bottom: var(--space-xs);
-}
-
-.privacy-heading__icon {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
-
-.privacy-heading__title {
-  font-family: var(--font-title);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-title);
 }
 
 .privacy-updated {
@@ -103,7 +88,7 @@ defineProps({
 }
 
 :slotted(.privacy-section a) {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: 700;
 }
 </style>

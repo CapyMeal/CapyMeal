@@ -1,9 +1,6 @@
 <template>
   <MainLayout :hide-nav="recoveryCodesPending">
-    <div class="settings-heading">
-      <img src="../assets/icons/ajustes.png" alt="" class="settings-heading__icon">
-      <h1 class="settings-heading__title">{{ t('settings.title') }}</h1>
-    </div>
+    <PageHeading :icon="settingsIllustration" :title="t('settings.title')" />
 
     <div class="settings-list">
 
@@ -51,7 +48,7 @@
       <div class="settings-item settings-item--static">
         <div class="settings-avatar-picker">
           <p class="settings-item__label">{{ t('settings.avatar') }}</p>
-          <p v-if="avatarError" class="settings-avatar-picker__error">{{ avatarError }}</p>
+          <StatusAlert v-if="avatarError" :message="avatarError" class="settings-avatar-picker__error" />
           <div class="settings-avatar-picker__options">
             <button
               type="button"
@@ -142,6 +139,9 @@ import { useTheme } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { mdiInformationOutline, mdiLogout, mdiPaletteOutline } from '@mdi/js'
 import MainLayout from '../layouts/MainLayout.vue'
+import PageHeading from '../components/base/PageHeading.vue'
+import StatusAlert from '../components/base/StatusAlert.vue'
+import settingsIllustration from '../assets/icons/ajustes.png'
 import UserAvatar  from '../components/base/UserAvatar.vue'
 import ArgentinaFlagIcon from '../components/base/ArgentinaFlagIcon.vue'
 import UKFlagIcon from '../components/base/UKFlagIcon.vue'
@@ -215,28 +215,9 @@ async function handleLogout() {
 }
 </script>
 
+<style scoped src="../components/settings/settings-row.css"></style>
+
 <style scoped>
-.settings-heading {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-xl);
-}
-
-.settings-heading__icon {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  filter: var(--illustration-shadow-sm);
-}
-
-.settings-heading__title {
-  font-family: var(--font-title);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--color-title);
-}
-
 .settings-list {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -245,88 +226,12 @@ async function handleLogout() {
   box-shadow: var(--shadow-sm);
 }
 
-.settings-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding: var(--space-lg);
-}
-
-.settings-item--static {
-  /* Estas filas son icono + texto nomas, sin control a la derecha
-     (a diferencia de "Tema"), pero heredaban el mismo
-     justify-content: space-between de .settings-item -- con texto
-     corto (ej. "Versión") quedaba un hueco grande en el medio en vez
-     de agrupar todo a la izquierda. */
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-.settings-item__info {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.settings-item__icon {
-  font-size: 22px;
-  flex-shrink: 0;
-  color: var(--color-muted);
-}
-
-/* En la fila de cerrar sesión el ícono toma el rojo de la fila. */
-.settings-item--danger .settings-item__icon {
-  color: inherit;
-}
-
-.settings-item--static .settings-item__icon {
-  margin-top: 2px;
-}
-
 .settings-item__capi {
   width: 28px;
   height: 28px;
   object-fit: contain;
   flex-shrink: 0;
   margin-top: 2px;
-}
-
-.settings-item--danger {
-  /* Solo tiene icono + texto (sin control a la derecha, a diferencia
-     de las otras filas), así que se centran juntos en vez de heredar
-     el justify-content: space-between que los separa a los extremos. */
-  justify-content: center;
-  cursor: pointer;
-  color: var(--color-danger-text);
-  /* Es un <button> real (antes un <div> con @click -- sin foco de
-     teclado ni rol semántico). Se resetea el estilo nativo del botón
-     para que siga viendo igual que antes; font:inherit ya lo cubre el
-     reset global de main.css. */
-  width: 100%;
-  border: none;
-  background: none;
-}
-
-.settings-item--danger .settings-item__label {
-  color: var(--color-danger-text);
-}
-
-.settings-item--danger:hover {
-  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
-}
-
-.settings-item__label {
-  font-size: .95rem;
-  font-weight: 700;
-  color: var(--color-title);
-  margin-bottom: 2px;
-}
-
-.settings-item__desc {
-  font-size: .82rem;
-  color: var(--color-muted);
-  line-height: 1.5;
 }
 
 /* Cada link entero en su renglón si no entra: antes se partían en tres
@@ -340,13 +245,10 @@ async function handleLogout() {
 }
 
 .settings-item__link {
-  white-space: nowrap;
-}
-
-.settings-item__link {
   font-size: .82rem;
   font-weight: 700;
   color: var(--color-primary-text);
+  white-space: nowrap;
 }
 
 .settings-divider {
@@ -360,10 +262,7 @@ async function handleLogout() {
 }
 
 .settings-avatar-picker__error {
-  font-size: .8rem;
-  color: var(--color-danger-text);
-  margin-top: 2px;
-  margin-bottom: var(--space-xs);
+  margin: var(--space-xs) 0;
 }
 
 .settings-avatar-picker__options {

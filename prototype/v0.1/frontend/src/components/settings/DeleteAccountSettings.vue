@@ -9,7 +9,7 @@
     <p class="settings-item__label">{{ t('settings.deleteAccount') }}</p>
   </button>
 
-  <div v-else class="settings-delete-account">
+  <div v-else class="settings-panel">
     <p class="settings-delete-account__warning">
       {{ t('settings.deleteAccountWarning') }}
     </p>
@@ -18,8 +18,8 @@
       :label="t('settings.confirmPassword')"
       autocomplete="current-password"
     />
-    <p v-if="deleteError" class="settings-delete-account__error">{{ deleteError }}</p>
-    <div class="settings-delete-account__actions">
+    <StatusAlert v-if="deleteError" :message="deleteError" />
+    <div class="settings-panel__actions">
       <CapyButton variant="danger" :disabled="deletingAccount" @click="handleDeleteAccount">
         {{ deletingAccount ? t('settings.deleting') : t('settings.confirmDelete') }}
       </CapyButton>
@@ -35,6 +35,7 @@ import { useI18n } from 'vue-i18n'
 import { mdiDeleteOutline } from '@mdi/js'
 import PasswordField from '../base/PasswordField.vue'
 import CapyButton from '../base/CapyButton.vue'
+import StatusAlert from '../base/StatusAlert.vue'
 import { deleteAccount } from '../../stores/authStore'
 import { isNetworkError } from '../../services/mealEntriesApi'
 
@@ -74,71 +75,12 @@ async function handleDeleteAccount() {
 }
 </script>
 
+<style scoped src="./settings-row.css"></style>
+
 <style scoped>
-.settings-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding: var(--space-lg);
-}
-
-.settings-item__icon {
-  font-size: 22px;
-  flex-shrink: 0;
-}
-
-.settings-item__label {
-  font-size: .95rem;
-  font-weight: 700;
-  color: var(--color-title);
-  margin-bottom: 2px;
-}
-
-.settings-item--danger {
-  /* Solo tiene icono + texto (sin control a la derecha, a diferencia
-     de las otras filas), así que se centran juntos en vez de heredar
-     el justify-content: space-between que los separa a los extremos. */
-  justify-content: center;
-  cursor: pointer;
-  color: var(--color-danger-text);
-  /* Es un <button> real -- se resetea el estilo nativo del botón para
-     que siga viendo igual que antes; font:inherit ya lo cubre el reset
-     global de main.css. */
-  width: 100%;
-  border: none;
-  background: none;
-}
-
-.settings-item--danger .settings-item__label {
-  color: var(--color-danger-text);
-}
-
-.settings-item--danger:hover {
-  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
-}
-
-.settings-delete-account {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  padding: var(--space-lg);
-}
-
 .settings-delete-account__warning {
   font-size: .85rem;
   color: var(--color-danger-text);
   line-height: 1.5;
-}
-
-.settings-delete-account__error {
-  font-size: .82rem;
-  color: var(--color-danger-text);
-}
-
-.settings-delete-account__actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
 }
 </style>

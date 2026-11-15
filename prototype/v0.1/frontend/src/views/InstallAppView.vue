@@ -3,10 +3,7 @@
     <div class="privacy-card">
       <RouterLink :to="backTo" class="privacy-back">{{ t('installApp.backLink') }}</RouterLink>
 
-      <div class="privacy-heading">
-        <img src="../assets/icons/capy2.png" alt="Capi" class="privacy-heading__icon">
-        <h1 class="privacy-heading__title">{{ t('installApp.title') }}</h1>
-      </div>
+      <PageHeading :icon="capiIllustration" :title="t('installApp.title')" class="privacy-heading" />
       <p class="privacy-updated">{{ t('installApp.intro') }}</p>
 
       <div class="install-download">
@@ -73,6 +70,8 @@ import { useI18n } from 'vue-i18n'
 import { mdiDownload } from '@mdi/js'
 import { isAuthenticated } from '../stores/authStore'
 import CapyButton from '../components/base/CapyButton.vue'
+import PageHeading from '../components/base/PageHeading.vue'
+import capiIllustration from '../assets/icons/capy2.png'
 
 const { t } = useI18n()
 
@@ -133,29 +132,14 @@ async function downloadApk() {
 .privacy-back {
   display: inline-block;
   margin-bottom: var(--space-lg);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: 700;
   font-size: .9rem;
 }
 
+/* Acá el título va pegado a la introducción de abajo. */
 .privacy-heading {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
   margin-bottom: var(--space-xs);
-}
-
-.privacy-heading__icon {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
-
-.privacy-heading__title {
-  font-family: var(--font-title);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-title);
 }
 
 .privacy-updated {
