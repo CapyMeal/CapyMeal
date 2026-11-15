@@ -1,21 +1,19 @@
 <template>
-  <nav class="bottom-nav">
-    <RouterLink to="/hoy" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <v-icon :icon="`svg:${mdiCalendarToday}`" size="26" />
-      <span class="bottom-nav__label">{{ t('nav.today') }}</span>
-    </RouterLink>
-    <RouterLink to="/recuerdos" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <v-icon :icon="`svg:${mdiNotebook}`" size="26" />
-      <span class="bottom-nav__label">{{ t('nav.diary') }}</span>
-    </RouterLink>
-    <RouterLink to="/exportar" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <v-icon :icon="`svg:${mdiFilePdfBox}`" size="26" />
-      <span class="bottom-nav__label">{{ t('nav.pdf') }}</span>
-    </RouterLink>
-    <RouterLink to="/ajustes" class="bottom-nav__item" active-class="bottom-nav__item--active">
-      <v-icon :icon="`svg:${mdiCog}`" size="26" />
-      <span class="bottom-nav__label">{{ t('nav.settings') }}</span>
-    </RouterLink>
+  <nav class="bottom-nav" :aria-label="t('nav.label')">
+    <div class="bottom-nav__inner">
+      <RouterLink
+        v-for="item in items"
+        :key="item.to"
+        :to="item.to"
+        class="bottom-nav__item"
+        active-class="bottom-nav__item--active"
+      >
+        <span class="bottom-nav__indicator">
+          <v-icon :icon="`svg:${item.icon}`" size="24" />
+        </span>
+        <span class="bottom-nav__label">{{ t(item.label) }}</span>
+      </RouterLink>
+    </div>
   </nav>
 </template>
 
@@ -24,6 +22,13 @@ import { useI18n } from 'vue-i18n'
 import { mdiCalendarToday, mdiCog, mdiFilePdfBox, mdiNotebook } from '@mdi/js'
 
 const { t } = useI18n()
+
+const items = [
+  { to: '/hoy',       icon: mdiCalendarToday, label: 'nav.today' },
+  { to: '/recuerdos', icon: mdiNotebook,      label: 'nav.diary' },
+  { to: '/exportar',  icon: mdiFilePdfBox,    label: 'nav.pdf' },
+  { to: '/ajustes',   icon: mdiCog,           label: 'nav.settings' },
+]
 </script>
 
 <style scoped>
@@ -34,13 +39,22 @@ const { t } = useI18n()
   right: 0;
   height: 70px;
 
-  display: flex;
-  align-items: stretch;
-
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
+}
+
+/* El fondo de la barra ocupa todo el ancho, pero los destinos se quedan
+   alineados con la columna de contenido (600px). En una pantalla de PC
+   quedaban a ~320px uno del otro y se leía como una app de celular
+   estirada. */
+.bottom-nav__inner {
+  max-width: 600px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
 }
 
 .bottom-nav__item {
@@ -49,21 +63,48 @@ const { t } = useI18n()
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
 
+  /* Tinta suave (5.6:1) en vez de tinta al 50% de opacidad (2.9:1). */
+  color: var(--color-muted);
+  transition: color .2s ease;
+}
+
+.bottom-nav__item:hover {
   color: var(--color-text);
-  opacity: .5;
-  transition: opacity .2s ease;
+}
+
+/* La pestaña activa no se marca solo con color: la píldora detrás del
+   ícono la distingue también para quien no percibe bien la diferencia
+   de tono. */
+.bottom-nav__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 30px;
+  border-radius: 999px;
+  transition: background-color .2s ease;
 }
 
 .bottom-nav__item--active {
-  opacity: 1;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.bottom-nav__item--active .bottom-nav__indicator {
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
 }
 
 .bottom-nav__label {
-  font-size: .72rem;
+  font-size: var(--font-size-caption);
   font-weight: 600;
-  letter-spacing: .03em;
+  letter-spacing: .02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav__item,
+  .bottom-nav__indicator {
+    transition: none;
+  }
 }
 </style>

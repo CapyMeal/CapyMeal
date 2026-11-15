@@ -33,11 +33,14 @@
       >
         <v-card-text>
           <h2>{{ formatDate(date) }}</h2>
-          <p><strong>☀️ {{ t('meals.breakfast') }}:</strong> {{ entry.breakfast || t('common.notRecorded') }}</p>
-          <p><strong>🍝 {{ t('meals.lunch') }}:</strong> {{ entry.lunch || t('common.notRecorded') }}</p>
-          <p><strong>🧁 {{ t('meals.snack') }}:</strong> {{ entry.snack || t('common.notRecorded') }}</p>
-          <p><strong>🌙 {{ t('meals.dinner') }}:</strong> {{ entry.dinner || t('common.notRecorded') }}</p>
-          <p v-if="entry.notes"><strong>📝 {{ t('export.notesLabel') }}:</strong> {{ entry.notes }}</p>
+          <p v-for="key in MEAL_KEYS" :key="key" class="export-card__row">
+            <MealIcon :meal="key" :size="20" />
+            <span><strong>{{ t(`meals.${key}`) }}:</strong> {{ entry[key] || t('common.notRecorded') }}</span>
+          </p>
+          <p v-if="entry.notes" class="export-card__row">
+            <MealIcon meal="notes" :size="20" />
+            <span><strong>{{ t('export.notesLabel') }}:</strong> {{ entry.notes }}</span>
+          </p>
         </v-card-text>
       </v-card>
     </div>
@@ -52,9 +55,11 @@ import EmptyState      from '../components/diary/EmptyState.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import DateRangeFilter from '../components/base/DateRangeFilter.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
+import MealIcon        from '../components/meal/MealIcon.vue'
 import { exportMealEntriesPdf } from '../services/mealEntriesApi'
 import { formatDate as formatDateUtil } from '../utils/date'
 import { useMealEntriesByRange } from '../utils/useMealEntriesByRange'
+import { MEAL_KEYS } from '../utils/meals'
 
 const { t } = useI18n()
 
@@ -110,7 +115,7 @@ async function printPdf() {
   width: 44px;
   height: 44px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
+  filter: var(--illustration-shadow-sm);
 }
 
 .export-heading__title {
@@ -131,14 +136,27 @@ async function printPdf() {
 }
 
 .export-card h2 {
-  text-transform: capitalize;
   margin-bottom: var(--space-sm);
   color: var(--color-title);
 }
 
-.export-card p {
+/* Solo la primera letra: capitalize ponía "12 De Noviembre". */
+.export-card h2::first-letter {
+  text-transform: uppercase;
+}
+
+.export-card__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
   line-height: 1.7;
   margin-bottom: 2px;
+}
+
+/* Alinea la ilustración con la primera línea de texto, no con el centro
+   de un párrafo que puede ocupar varias. */
+.export-card__row .meal-icon {
+  margin-top: .2em;
 }
 
 .export-button {
@@ -148,7 +166,7 @@ async function printPdf() {
 .export-error {
   font-size: .9rem;
   margin-bottom: var(--space-md);
-  color: var(--color-danger);
+  color: var(--color-danger-text);
 }
 
 </style>

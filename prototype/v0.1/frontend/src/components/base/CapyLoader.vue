@@ -23,7 +23,7 @@ defineProps({
 .capy-loader__capi {
   width: 56px;
   object-fit: contain;
-  filter: drop-shadow(0 6px 10px rgba(105,73,49,.25));
+  filter: var(--illustration-shadow-md);
   animation: capy-float 1.4s ease-in-out infinite;
 }
 

@@ -13,11 +13,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #FBF3E6 0%, var(--color-background) 100%);
+  /* --color-surface-warm ya cambia con el tema: no hace falta una regla
+     aparte para el oscuro. */
+  background: linear-gradient(180deg, var(--color-surface-warm) 0%, var(--color-background) 100%);
   padding: var(--space-xl);
-}
-
-:root[data-theme="dark"] .auth-page {
-  background: linear-gradient(180deg, #2C2116 0%, var(--color-background) 100%);
 }
 </style>

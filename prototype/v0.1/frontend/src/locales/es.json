@@ -42,7 +42,7 @@
     "gapBanner": "Tu último recuerdo fue el {date}. ¿Seguimos desde ahí?",
     "gapBannerButton": "Seguir desde ahí",
     "loading": "Cargando…",
-    "saveDay": "🤎 Guardar mi día",
+    "saveDay": "Guardar mi día",
     "loadError": "No pude cargar ese día. Intentá nuevamente.",
     "atLeastOneFieldRequired": "Completá al menos una comida o recuerdo antes de guardar.",
     "saveOfflineError": "No se pudo guardar: estás sin conexión.",
@@ -98,10 +98,10 @@
     "emptyMessage": "No encontré ese recuerdo.",
     "emptyAction": "Volver al diario",
     "back": "← Volver",
-    "editButton": "✏️ Editar",
-    "exportDayButton": "📄 Exportar este día",
-    "deleteButton": "🗑 Eliminar",
-    "saveChangesButton": "🤎 Guardar cambios",
+    "editButton": "Editar",
+    "exportDayButton": "Exportar este día",
+    "deleteButton": "Eliminar",
+    "saveChangesButton": "Guardar cambios",
     "editBreakfastPlaceholder": "¿Qué desayunaste?",
     "editLunchPlaceholder": "¿Qué almorzaste?",
     "editSnackPlaceholder": "¿Merendaste algo?",
@@ -125,7 +125,7 @@
     "title": "Exportar PDF",
     "loading": "Cargando registros para exportar...",
     "notesLabel": "Recuerdo",
-    "downloadButton": "🤎 Descargar PDF",
+    "downloadButton": "Descargar PDF",
     "emptyMessage": "No encontré registros para esas fechas.",
     "networkError": "No pude cargar los registros para exportar: estás sin conexión.",
     "genericError": "No pude cargar los registros para exportar.",
@@ -136,6 +136,7 @@
     "offlineBanner": "Estás sin conexión. Podés ver tu diario, pero los cambios no se van a guardar hasta que vuelva la señal."
   },
   "nav": {
+    "label": "Navegación principal",
     "today": "Hoy",
     "diary": "Diario",
     "pdf": "PDF",
@@ -161,12 +162,12 @@
     "noAccount": "¿No tenés cuenta?",
     "registerLink": "Registrate",
     "sessionExpired": "Tu sesión expiró. Iniciá sesión de nuevo.",
-    "submitButton": "🍂 Entrar",
+    "submitButton": "Entrar",
     "loggingIn": "Entrando…",
     "genericError": "No pude iniciar sesión. Intentá nuevamente."
   },
   "register": {
-    "title": "Crear cuenta 🌱",
+    "title": "Crear cuenta",
     "subtitle": "Tu diario de comidas te espera.",
     "nameLabel": "Nombre",
     "namePlaceholder": "¿Cómo te llamás?",
@@ -182,16 +183,16 @@
     "termsLink": "Términos de servicio",
     "legalAnd": "y nuestra",
     "privacyLink": "Política de privacidad",
-    "submitButton": "🍂 Crear mi cuenta",
+    "submitButton": "Crear mi cuenta",
     "creatingAccount": "Creando cuenta…",
     "genericError": "No pude crear la cuenta. Intentá nuevamente."
   },
   "forgotPassword": {
     "titleSent": "¡Listo! 🍂",
-    "titleNotSent": "¿Olvidaste tu contraseña? 🔑",
+    "titleNotSent": "¿Olvidaste tu contraseña?",
     "subtitleSent": "Si existe una cuenta con ese email, vas a recibir un enlace en los próximos minutos. Revisá también la carpeta de spam.",
     "subtitleNotSent": "Ingresá tu email y te mandamos un enlace para recuperarla.",
-    "submitButton": "✉️ Enviar enlace",
+    "submitButton": "Enviar enlace",
     "sending": "Enviando…",
     "backToLogin": "← Volver al inicio de sesión",
     "rateLimitError": "Ya enviamos un enlace hace poco. Esperá un minuto antes de volver a intentarlo.",
@@ -199,15 +200,15 @@
     "networkError": "No pudimos conectar. Revisá tu conexión e intentá de nuevo."
   },
   "resetPassword": {
-    "invalidLinkTitle": "Enlace inválido 🔒",
+    "invalidLinkTitle": "Enlace inválido",
     "invalidLinkMessage": "Este enlace de recuperación no es válido. Pedí uno nuevo desde",
-    "title": "Nueva contraseña 🔒",
+    "title": "Nueva contraseña",
     "subtitle": "Elegí una contraseña nueva para tu cuenta.",
     "newPasswordLabel": "Nueva contraseña",
     "newPasswordPlaceholder": "Mínimo 8 caracteres",
     "confirmPasswordLabel": "Confirmá la contraseña",
     "confirmPasswordPlaceholder": "Repetí tu contraseña",
-    "submitButton": "✨ Guardar contraseña",
+    "submitButton": "Guardar contraseña",
     "saving": "Guardando…",
     "genericError": "El enlace es inválido o expiró. Pedí uno nuevo.",
     "doneTitle": "¡Todo listo! 🍂",
@@ -232,14 +233,14 @@
   "home": {
     "taglineLine1": "Las comidas pasan.",
     "taglineLine2": "Los recuerdos quedan.",
-    "startButton": "🍂 Comenzar"
+    "startButton": "Comenzar"
   },
   "notFound": {
     "capiAlt": "Capi confundido, buscando",
     "title": "404",
     "taglineLine1": "Esta página se perdió, como un día sin anotar.",
     "taglineLine2": "No la encontramos por ningún lado.",
-    "backButton": "🏠 Volver al diario"
+    "backButton": "Volver al diario"
   },
   "installApp": {
     "backLink": "← Volver",
@@ -335,7 +336,7 @@
     "genericError": "No pude verificar el código. Intentá nuevamente.",
     "settingsTitle": "Verificación en dos pasos",
     "settingsDisabled": "Desactivada",
-    "settingsEnabled": "Activada ✅",
+    "settingsEnabled": "Activada",
     "settingsRecoveryCodesRemaining": "Te quedan {count} códigos de recuperación",
     "enableButton": "Activar",
     "disableButton": "Desactivar",

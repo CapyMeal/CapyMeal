@@ -2,13 +2,8 @@
   <v-card class="detail-meal" elevation="1">
     <v-card-text>
       <p class="detail-meal__label">
-        <img
-          v-if="meal.iconImage"
-          :src="meal.iconImage"
-          :alt="meal.title"
-          class="detail-meal__icon-image"
-        >
-        <span v-else>{{ meal.icon }}</span> {{ meal.title }}
+        <MealIcon :meal="meal.key" />
+        {{ meal.title }}
       </p>
       <p class="detail-meal__value" :class="{ 'detail-meal__value--empty': !value }">
         {{ value || t('common.notRecorded') }}
@@ -46,6 +41,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
 import CapyButton from '../base/CapyButton.vue'
+import MealIcon from './MealIcon.vue'
 
 const { t } = useI18n()
 
@@ -70,29 +66,25 @@ defineEmits(['start-edit', 'save', 'cancel', 'update:draft'])
 }
 
 .detail-meal__label {
-  font-size: .8rem;
+  font-size: var(--font-size-label);
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   margin-bottom: var(--space-xs);
   display: flex;
   align-items: center;
   gap: var(--space-xs);
 }
 
-.detail-meal__icon-image {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
 .detail-meal__value {
-  font-size: .95rem;
+  font-size: var(--font-size-body);
   color: var(--color-text);
   line-height: 1.6;
 }
 
+/* Tinta suave en vez de opacidad .4: "No registrado" tiene que leerse
+   (antes quedaba por debajo de 2:1). */
 .detail-meal__value--empty {
-  opacity: .4;
+  color: var(--color-muted);
   font-style: italic;
 }
 

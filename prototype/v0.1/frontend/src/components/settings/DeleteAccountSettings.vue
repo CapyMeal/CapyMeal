@@ -5,7 +5,7 @@
     class="settings-item settings-item--danger"
     @click="confirmingDeleteAccount = true"
   >
-    <span class="settings-item__icon">🗑</span>
+    <v-icon :icon="`svg:${mdiDeleteOutline}`" class="settings-item__icon" />
     <p class="settings-item__label">{{ t('settings.deleteAccount') }}</p>
   </button>
 
@@ -32,6 +32,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { mdiDeleteOutline } from '@mdi/js'
 import PasswordField from '../base/PasswordField.vue'
 import CapyButton from '../base/CapyButton.vue'
 import { deleteAccount } from '../../stores/authStore'
@@ -83,7 +84,7 @@ async function handleDeleteAccount() {
 }
 
 .settings-item__icon {
-  font-size: 1.3rem;
+  font-size: 22px;
   flex-shrink: 0;
 }
 
@@ -100,7 +101,7 @@ async function handleDeleteAccount() {
      el justify-content: space-between que los separa a los extremos. */
   justify-content: center;
   cursor: pointer;
-  color: #B5453C;
+  color: var(--color-danger-text);
   /* Es un <button> real -- se resetea el estilo nativo del botón para
      que siga viendo igual que antes; font:inherit ya lo cubre el reset
      global de main.css. */
@@ -110,11 +111,11 @@ async function handleDeleteAccount() {
 }
 
 .settings-item--danger .settings-item__label {
-  color: #B5453C;
+  color: var(--color-danger-text);
 }
 
 .settings-item--danger:hover {
-  background: rgba(227,150,140,.15);
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
 }
 
 .settings-delete-account {
@@ -126,13 +127,13 @@ async function handleDeleteAccount() {
 
 .settings-delete-account__warning {
   font-size: .85rem;
-  color: #B5453C;
+  color: var(--color-danger-text);
   line-height: 1.5;
 }
 
 .settings-delete-account__error {
   font-size: .82rem;
-  color: var(--color-danger);
+  color: var(--color-danger-text);
 }
 
 .settings-delete-account__actions {

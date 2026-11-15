@@ -36,7 +36,8 @@ const { t } = useI18n()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #FBF3E6 0%, var(--color-background) 100%);
+  /* Antes un crema fijo (#FBF3E6) que en tema oscuro quedaba claro. */
+  background: linear-gradient(180deg, var(--color-surface-warm) 0%, var(--color-background) 100%);
   padding: var(--space-xl);
 }
 
@@ -53,7 +54,7 @@ const { t } = useI18n()
 .splash__capi {
   width: 260px;
   object-fit: contain;
-  filter: drop-shadow(0 12px 32px rgba(169,130,116,.18));
+  filter: var(--illustration-shadow-lg);
 }
 
 .splash__brand {

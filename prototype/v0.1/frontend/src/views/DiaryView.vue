@@ -69,7 +69,7 @@ const hasDateFilter = computed(() => !!fromDate.value || !!toDate.value)
   width: 44px;
   height: 44px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
+  filter: var(--illustration-shadow-sm);
 }
 
 .diary-heading__title {
@@ -88,7 +88,7 @@ const hasDateFilter = computed(() => !!fromDate.value || !!toDate.value)
 .diary-error {
   font-size: .9rem;
   margin-bottom: var(--space-md);
-  color: var(--color-danger);
+  color: var(--color-danger-text);
 }
 
 </style>

@@ -43,7 +43,8 @@ function goHome() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #FBF3E6 0%, var(--color-background) 100%);
+  /* Antes un crema fijo (#FBF3E6) que en tema oscuro quedaba claro. */
+  background: linear-gradient(180deg, var(--color-surface-warm) 0%, var(--color-background) 100%);
   padding: var(--space-xl);
 }
 
@@ -60,7 +61,7 @@ function goHome() {
 .not-found__capi {
   width: 220px;
   object-fit: contain;
-  filter: drop-shadow(0 12px 32px rgba(169,130,116,.18));
+  filter: var(--illustration-shadow-lg);
 }
 
 .not-found__brand {

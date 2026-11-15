@@ -5,13 +5,14 @@
 
       <ul class="diary-card__meals">
         <li v-for="meal in filledMeals" :key="meal.key" class="diary-card__meal">
-          <span class="diary-card__meal-icon">{{ meal.icon }}</span>
+          <MealIcon :meal="meal.key" />
           <span class="diary-card__meal-text">{{ meal.value }}</span>
         </li>
       </ul>
 
-      <p v-if="entry.notes" class="diary-card__notes">
-        📝 {{ entry.notes }}
+      <p v-if="entry.notes" class="diary-card__meal diary-card__notes">
+        <MealIcon meal="notes" />
+        <span class="diary-card__meal-text">{{ entry.notes }}</span>
       </p>
     </v-card-text>
   </v-card>
@@ -19,24 +20,19 @@
 
 <script setup>
 import { computed } from 'vue'
+import MealIcon from '../meal/MealIcon.vue'
 import { formatDate } from '../../utils/date'
+import { MEAL_KEYS } from '../../utils/meals'
 
 const props = defineProps({
   date:  { type: String, required: true },
   entry: { type: Object, required: true },
 })
 
-const MEALS = [
-  { key: 'breakfast', icon: '☀️' },
-  { key: 'lunch',     icon: '🍝' },
-  { key: 'snack',     icon: '🧁' },
-  { key: 'dinner',    icon: '🌙' },
-]
-
 const filledMeals = computed(() =>
-  MEALS
-    .filter(m => props.entry[m.key])
-    .map(m => ({ ...m, value: props.entry[m.key] }))
+  MEAL_KEYS
+    .filter(key => props.entry[key])
+    .map(key => ({ key, value: props.entry[key] }))
 )
 
 const formattedDate = computed(() => formatDate(props.date, {
@@ -64,11 +60,15 @@ const formattedDate = computed(() => formatDate(props.date, {
 }
 
 .diary-card__date {
-  font-size: .85rem;
+  font-size: var(--font-size-label);
   font-weight: 700;
-  color: var(--color-primary);
-  text-transform: capitalize;
+  color: var(--color-primary-text);
   margin-bottom: var(--space-md);
+}
+
+/* Solo la primera letra: capitalize ponía "12 De Noviembre". */
+.diary-card__date::first-letter {
+  text-transform: uppercase;
 }
 
 .diary-card__meals {
@@ -76,36 +76,40 @@ const formattedDate = computed(() => formatDate(props.date, {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
 }
 
 .diary-card__meal {
   display: flex;
   gap: var(--space-sm);
-  align-items: baseline;
-}
-
-.diary-card__meal-icon {
-  font-size: .9rem;
-  flex-shrink: 0;
+  align-items: center;
 }
 
 .diary-card__meal-text {
-  font-size: .9rem;
+  /* min-width: 0 deja que el texto se achique dentro del flex y el
+     ellipsis funcione; sin eso empuja la tarjeta más allá del ancho. */
+  min-width: 0;
+  font-size: var(--font-size-body);
   color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
 }
 
 .diary-card__notes {
-  font-size: .85rem;
-  color: var(--color-text);
-  opacity: .7;
   margin-top: var(--space-sm);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+}
+
+.diary-card__notes .diary-card__meal-text {
+  color: var(--color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diary-card,
+  .diary-card:hover {
+    transition: none;
+    transform: none;
+  }
 }
 </style>

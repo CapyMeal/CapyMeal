@@ -35,7 +35,8 @@
           aria-controls="today-date-panel"
           @click="showDatePicker = !showDatePicker"
         >
-          📅 {{ showDatePicker ? t('today.closeDatePicker') : t('today.changeDayLabel') }}
+          <v-icon :icon="`svg:${mdiCalendarMonthOutline}`" size="18" />
+          {{ showDatePicker ? t('today.closeDatePicker') : t('today.changeDayLabel') }}
         </button>
 
         <div v-if="showDatePicker" id="today-date-panel" class="today-header__date-panel">
@@ -86,8 +87,7 @@
           v-for="meal in mealFields"
           :key="meal.key"
           v-model="form[meal.key]"
-          :icon="meal.icon"
-          :icon-image="meal.iconImage"
+          :meal="meal.key"
           :title="meal.title"
           :placeholder="meal.placeholder"
           :saving="loadingFieldKey === meal.key"
@@ -120,10 +120,8 @@ import UserAvatar      from '../components/base/UserAvatar.vue'
 import { getMealEntries, getMealEntry, upsertMealEntry, isNetworkError } from '../services/mealEntriesApi'
 import { currentUser } from '../stores/authStore'
 import { formatDate, formatDateISO, addDays } from '../utils/date'
-import breakfastIcon from '../assets/icons/desayuno.png'
-import lunchIcon     from '../assets/icons/almuerzo.png'
-import snackIcon     from '../assets/icons/merienda.png'
-import dinnerIcon    from '../assets/icons/cena.png'
+import { MEAL_KEYS } from '../utils/meals'
+import { mdiCalendarMonthOutline } from '@mdi/js'
 
 const router = useRouter()
 const { t }  = useI18n()
@@ -150,13 +148,11 @@ const successMessage = ref('')
 const savedFields    = ref(new Set())
 const lastRecordedDate = ref(null)
 
-const mealFields = computed(() => [
-  { key: 'breakfast', iconImage: breakfastIcon, title: t('meals.breakfast'), placeholder: t('meals.breakfastPlaceholder') },
-  { key: 'lunch',     iconImage: lunchIcon,     title: t('meals.lunch'),     placeholder: t('meals.lunchPlaceholder') },
-  { key: 'snack',     iconImage: snackIcon,     title: t('meals.snack'),     placeholder: t('meals.snackPlaceholder') },
-  { key: 'dinner',    iconImage: dinnerIcon,    title: t('meals.dinner'),    placeholder: t('meals.dinnerPlaceholder') },
-  { key: 'notes',     icon: '📝',              title: t('meals.notes'),    placeholder: t('meals.notesPlaceholder') },
-])
+const mealFields = computed(() => [...MEAL_KEYS, 'notes'].map((key) => ({
+  key,
+  title:       t(`meals.${key}`),
+  placeholder: t(`meals.${key}Placeholder`),
+})))
 
 const formattedDate = computed(() => formatDate(selectedDate.value, {
   weekday: 'long',
@@ -344,20 +340,28 @@ onMounted(() => {
 .today-header__date {
   font-size: .9rem;
   color: var(--color-muted);
-  text-transform: capitalize;
+}
+
+/* Solo la primera letra: capitalize ponía "15 De Noviembre". */
+.today-header__date::first-letter {
+  text-transform: uppercase;
 }
 
 .today-header__date-toggle {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: .85rem;
-  color: var(--color-primary);
+  font-size: var(--font-size-label);
+  /* Terracota base sobre arena daba 4.03:1; la variante de texto pasa
+     el 4.5:1 en los dos temas. */
+  color: var(--color-primary-text);
   font-weight: 600;
-  padding: .25rem 0;
+  /* 40px de alto: antes eran ~28px, chico para tocar con el pulgar. */
+  min-height: 40px;
+  padding: 0;
   display: inline-flex;
   align-items: center;
-  gap: .25rem;
+  gap: .375rem;
 }
 
 .today-header__date-panel {
@@ -382,15 +386,16 @@ onMounted(() => {
   background: var(--color-background);
   color: var(--color-text);
   border-radius: 999px;
-  padding: .3rem .8rem;
-  font-size: .8rem;
+  min-height: 40px;
+  padding: 0 var(--space-md);
+  font-size: var(--font-size-label);
   cursor: pointer;
   transition: background .2s, border-color .2s;
 }
 
 .today-header__quick-btn:hover {
   border-color: var(--color-primary);
-  background: rgba(150,104,74,.12);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
 /* ── Estado inline ──────────────────────────── */
@@ -447,7 +452,7 @@ onMounted(() => {
 .confirmation__capi {
   width: 160px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(105,73,49,.2));
+  filter: var(--illustration-shadow-md);
 }
 
 .confirmation__message {

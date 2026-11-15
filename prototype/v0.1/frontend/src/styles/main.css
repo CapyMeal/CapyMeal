@@ -35,8 +35,24 @@
   --color-success: #A3C79A;
   --color-warning: #F0C888;
   --color-danger:  #E3968C;
+  /* Rojo legible para texto de acciones destructivas (eliminar cuenta,
+     cerrar sesión): el rosa arcilla de arriba es para fondos, como texto
+     sobre mantel no llega al contraste mínimo. */
+  --color-danger-text: #B5453C;
 
-  /* Bordes */
+  /* Terracota legible como texto chico sobre arena (4.03:1 la terracota
+     base). En tema oscuro el hover es más claro, así que el mismo
+     alias sirve para los dos temas sin redefinirlo abajo. */
+  --color-primary-text: var(--color-primary-hover);
+
+  /* Fondo cálido de arriba de las pantallas de bienvenida (inicio, auth,
+     404). Derivado de tokens para que cambie solo con el tema. */
+  --color-surface-warm: color-mix(in srgb, var(--color-lavender) 8%, var(--color-surface));
+
+  /* Bordes. --radius-control coincide con el rounded="lg" de Vuetify
+     (botones, tarjetas, campos): los controles propios lo usan para que
+     un campo nunca quede más redondeado que la tarjeta que lo contiene. */
+  --radius-control: 8px;
   --radius-sm: 12px;
   --radius-md: 20px;
   --radius-lg: 32px;
@@ -44,6 +60,16 @@
   /* Sombras */
   --shadow-sm: 0 2px 12px rgba(105,73,49,.12);
   --shadow-md: 0 6px 24px rgba(105,73,49,.17);
+  /* Anillos: foco por teclado y tarjeta recién guardada */
+  --ring-focus: 0 0 0 3px color-mix(in srgb, var(--color-primary) 40%, transparent);
+  --ring-saved: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent);
+
+  /* Sombra de ilustraciones (filter: drop-shadow sigue el contorno del
+     PNG, box-shadow dibujaría un rectángulo). Misma base marrón que las
+     sombras de arriba: nunca gris. */
+  --illustration-shadow-sm: drop-shadow(0 2px 6px rgba(105,73,49,.18));
+  --illustration-shadow-md: drop-shadow(0 4px 12px rgba(105,73,49,.2));
+  --illustration-shadow-lg: drop-shadow(0 12px 32px rgba(105,73,49,.18));
 
   /* Espaciado */
   --space-xs:  .5rem;
@@ -65,6 +91,7 @@
   --font-size-title-sm:  1.1rem;
   --font-size-body:      .95rem;
   --font-size-label:     .85rem;
+  --font-size-caption:   .75rem;
 }
 
 :root[data-theme="dark"] {
@@ -78,6 +105,8 @@
   --color-primary-hover:  #E6BC80;
 
   --color-border: #3F3121;
+
+  --color-danger-text: #E3968C;
 }
 
 
@@ -152,7 +181,7 @@ input:focus-visible,
 textarea:focus-visible,
 a:focus-visible {
   outline:none;
-  box-shadow:0 0 0 3px rgba(150,104,74,.4);
+  box-shadow:var(--ring-focus);
 }
 
 /* Dentro de un campo de Vuetify el foco ya se marca con la línea inferior

@@ -42,7 +42,7 @@
     "gapBanner": "Your last memory was on {date}. Pick up from there?",
     "gapBannerButton": "Pick up from there",
     "loading": "Loading…",
-    "saveDay": "🤎 Save my day",
+    "saveDay": "Save my day",
     "loadError": "Couldn't load that day. Try again.",
     "atLeastOneFieldRequired": "Fill in at least one meal or memory before saving.",
     "saveOfflineError": "Couldn't save: you're offline.",
@@ -98,10 +98,10 @@
     "emptyMessage": "Couldn't find that memory.",
     "emptyAction": "Back to diary",
     "back": "← Back",
-    "editButton": "✏️ Edit",
-    "exportDayButton": "📄 Export this day",
-    "deleteButton": "🗑 Delete",
-    "saveChangesButton": "🤎 Save changes",
+    "editButton": "Edit",
+    "exportDayButton": "Export this day",
+    "deleteButton": "Delete",
+    "saveChangesButton": "Save changes",
     "editBreakfastPlaceholder": "What did you have for breakfast?",
     "editLunchPlaceholder": "What did you have for lunch?",
     "editSnackPlaceholder": "Did you have a snack?",
@@ -125,7 +125,7 @@
     "title": "Export PDF",
     "loading": "Loading entries to export...",
     "notesLabel": "Memory",
-    "downloadButton": "🤎 Download PDF",
+    "downloadButton": "Download PDF",
     "emptyMessage": "Couldn't find any entries for those dates.",
     "networkError": "Couldn't load the entries to export: you're offline.",
     "genericError": "Couldn't load the entries to export.",
@@ -136,6 +136,7 @@
     "offlineBanner": "You're offline. You can still see your diary, but changes won't be saved until you're back online."
   },
   "nav": {
+    "label": "Main navigation",
     "today": "Today",
     "diary": "Diary",
     "pdf": "PDF",
@@ -161,12 +162,12 @@
     "noAccount": "Don't have an account?",
     "registerLink": "Sign up",
     "sessionExpired": "Your session expired. Sign in again.",
-    "submitButton": "🍂 Sign in",
+    "submitButton": "Sign in",
     "loggingIn": "Signing in…",
     "genericError": "Couldn't sign you in. Try again."
   },
   "register": {
-    "title": "Create account 🌱",
+    "title": "Create account",
     "subtitle": "Your meal diary is waiting for you.",
     "nameLabel": "Name",
     "namePlaceholder": "What's your name?",
@@ -182,16 +183,16 @@
     "termsLink": "Terms of service",
     "legalAnd": "and our",
     "privacyLink": "Privacy policy",
-    "submitButton": "🍂 Create my account",
+    "submitButton": "Create my account",
     "creatingAccount": "Creating account…",
     "genericError": "Couldn't create your account. Try again."
   },
   "forgotPassword": {
     "titleSent": "All set! 🍂",
-    "titleNotSent": "Forgot your password? 🔑",
+    "titleNotSent": "Forgot your password?",
     "subtitleSent": "If there's an account with that email, you'll get a link in the next few minutes. Check your spam folder too.",
     "subtitleNotSent": "Enter your email and we'll send you a link to reset it.",
-    "submitButton": "✉️ Send link",
+    "submitButton": "Send link",
     "sending": "Sending…",
     "backToLogin": "← Back to sign in",
     "rateLimitError": "We already sent a link a moment ago. Wait a minute before trying again.",
@@ -199,15 +200,15 @@
     "networkError": "Couldn't connect. Check your connection and try again."
   },
   "resetPassword": {
-    "invalidLinkTitle": "Invalid link 🔒",
+    "invalidLinkTitle": "Invalid link",
     "invalidLinkMessage": "This password reset link isn't valid. Request a new one from",
-    "title": "New password 🔒",
+    "title": "New password",
     "subtitle": "Choose a new password for your account.",
     "newPasswordLabel": "New password",
     "newPasswordPlaceholder": "At least 8 characters",
     "confirmPasswordLabel": "Confirm your password",
     "confirmPasswordPlaceholder": "Type your password again",
-    "submitButton": "✨ Save password",
+    "submitButton": "Save password",
     "saving": "Saving…",
     "genericError": "This link is invalid or expired. Request a new one.",
     "doneTitle": "All done! 🍂",
@@ -232,14 +233,14 @@
   "home": {
     "taglineLine1": "Meals come and go.",
     "taglineLine2": "Memories stay.",
-    "startButton": "🍂 Get started"
+    "startButton": "Get started"
   },
   "notFound": {
     "capiAlt": "Confused Capi, searching",
     "title": "404",
     "taglineLine1": "This page got lost, like an unlogged day.",
     "taglineLine2": "We couldn't find it anywhere.",
-    "backButton": "🏠 Back to diary"
+    "backButton": "Back to diary"
   },
   "installApp": {
     "backLink": "← Back",
@@ -335,7 +336,7 @@
     "genericError": "Couldn't verify that code. Try again.",
     "settingsTitle": "Two-factor authentication",
     "settingsDisabled": "Off",
-    "settingsEnabled": "On ✅",
+    "settingsEnabled": "On",
     "settingsRecoveryCodesRemaining": "You have {count} recovery codes left",
     "enableButton": "Enable",
     "disableButton": "Disable",

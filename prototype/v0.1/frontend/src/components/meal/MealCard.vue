@@ -1,17 +1,11 @@
 <template>
   <v-card class="meal-card" :class="{ 'meal-card--saving': saving, 'meal-card--saved': justSaved }" elevation="1">
     <div class="meal-card__header">
-      <div class="meal-card__icon-wrap">
-        <img
-          v-if="iconImage"
-          :src="iconImage"
-          :alt="title"
-          class="meal-card__icon-image"
-        >
-        <span v-else class="meal-card__icon">{{ icon }}</span>
-      </div>
+      <MealIcon :meal="meal" :size="52" />
       <h2 class="meal-card__title">{{ title }}</h2>
-      <span v-if="justSaved" class="meal-card__saved-badge">✓</span>
+      <span v-if="justSaved" class="meal-card__saved-badge">
+        <v-icon :icon="`svg:${mdiCheck}`" size="16" />
+      </span>
       <span v-else-if="saving" class="meal-card__saved-badge meal-card__saved-badge--loading">…</span>
     </div>
     <textarea
@@ -28,16 +22,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { mdiCheck } from '@mdi/js'
+import MealIcon from './MealIcon.vue'
 
 const props = defineProps({
-  icon:        { type: String, default: '' },
-  iconImage:   { type: String, default: '' },
+  // Clave del campo (breakfast, lunch, snack, dinner, notes): la
+  // ilustración sale de utils/meals.js, no la elige cada vista.
+  meal:        { type: String, required: true },
   title:       { type: String, required: true },
   modelValue:  { type: String, default: '' },
-  // Sin default en español -- mismo motivo que "title" de arriba, todos
-  // los usos actuales ya pasan su propio placeholder traducido (ver
-  // TodayView/DetailView).
+  // Sin default en español: todos los usos actuales ya pasan su propio
+  // placeholder traducido (ver TodayView/DetailView).
   placeholder: { type: String, required: true },
   saving:      { type: Boolean, default: false },
   justSaved:   { type: Boolean, default: false },
@@ -61,7 +56,7 @@ function onBlur() {
 
 .meal-card--saved {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(150,104,74,.22) !important;
+  box-shadow: var(--ring-saved) !important;
 }
 
 .meal-card__header {
@@ -71,42 +66,23 @@ function onBlur() {
   margin-bottom: var(--space-md);
 }
 
-.meal-card__icon-wrap {
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.meal-card__icon {
-  font-size: 2.2rem;
-  line-height: 1;
-}
-
-.meal-card__icon-image {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
-}
-
 .meal-card__title {
   font-family: var(--font-title);
-  font-size: 1.1rem;
+  font-size: var(--font-size-title-sm);
   font-weight: 600;
   color: var(--color-title);
   flex: 1;
 }
 
 .meal-card__saved-badge {
-  font-size: .8rem;
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-caption);
   font-weight: 700;
-  color: var(--color-primary);
-  background: rgba(150,104,74,.18);
+  color: var(--color-primary-text);
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
   border-radius: 999px;
-  padding: .15rem .5rem;
+  padding: .2rem .5rem;
   transition: opacity .3s ease;
 }
 
@@ -119,8 +95,11 @@ function onBlur() {
   width: 100%;
   background: var(--color-background);
   border: 1.5px solid transparent;
-  border-radius: var(--radius-sm);
+  /* Mismo radio que la tarjeta (8px): con 12px el campo quedaba más
+     redondeado que su contenedor y se veía despegado. */
+  border-radius: var(--radius-control);
   padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-body);
   color: var(--color-text);
   resize: none;
   outline: none;
@@ -133,9 +112,9 @@ function onBlur() {
   background: var(--color-surface);
 }
 
+/* Sin opacidad extra: tinta suave al 70% daba 2.8:1 sobre arena. */
 .meal-card__textarea::placeholder {
   color: var(--color-muted);
-  opacity: .7;
+  opacity: 1;
 }
 </style>
-

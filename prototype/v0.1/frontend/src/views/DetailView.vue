@@ -75,11 +75,11 @@
       <!-- Modo edición -->
       <template v-else>
         <div class="detail-edit-meals detail-edit-meals--with-bar">
-          <MealCard v-model="form.breakfast" :icon-image="breakfastIcon" :title="t('meals.breakfast')" :placeholder="t('detail.editBreakfastPlaceholder')" />
-          <MealCard v-model="form.lunch" :icon-image="lunchIcon" :title="t('meals.lunch')" :placeholder="t('detail.editLunchPlaceholder')" />
-          <MealCard v-model="form.snack" :icon-image="snackIcon" :title="t('meals.snack')" :placeholder="t('detail.editSnackPlaceholder')" />
-          <MealCard v-model="form.dinner" :icon-image="dinnerIcon" :title="t('meals.dinner')" :placeholder="t('detail.editDinnerPlaceholder')" />
-          <MealCard v-model="form.notes" icon="📝" :title="t('meals.notes')" :placeholder="t('detail.editNotesPlaceholder')" />
+          <MealCard v-model="form.breakfast" meal="breakfast" :title="t('meals.breakfast')" :placeholder="t('detail.editBreakfastPlaceholder')" />
+          <MealCard v-model="form.lunch" meal="lunch" :title="t('meals.lunch')" :placeholder="t('detail.editLunchPlaceholder')" />
+          <MealCard v-model="form.snack" meal="snack" :title="t('meals.snack')" :placeholder="t('detail.editSnackPlaceholder')" />
+          <MealCard v-model="form.dinner" meal="dinner" :title="t('meals.dinner')" :placeholder="t('detail.editDinnerPlaceholder')" />
+          <MealCard v-model="form.notes" meal="notes" :title="t('meals.notes')" :placeholder="t('detail.editNotesPlaceholder')" />
         </div>
 
         <StickyActionBar>
@@ -103,10 +103,6 @@ import EmptyState      from '../components/diary/EmptyState.vue'
 import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton from '../components/base/CapyButton.vue'
 import CapyLoader from '../components/base/CapyLoader.vue'
-import breakfastIcon from '../assets/icons/desayuno.png'
-import lunchIcon from '../assets/icons/almuerzo.png'
-import snackIcon from '../assets/icons/merienda.png'
-import dinnerIcon from '../assets/icons/cena.png'
 import {
   deleteMealEntry,
   exportMealEntriesPdf,
@@ -115,6 +111,7 @@ import {
   isNetworkError,
 } from '../services/mealEntriesApi'
 import { formatDate } from '../utils/date'
+import { MEAL_KEYS } from '../utils/meals'
 
 const route  = useRoute()
 const router = useRouter()
@@ -134,17 +131,16 @@ const savingMealKey = ref('')
 
 const form = reactive({ breakfast: '', lunch: '', snack: '', dinner: '', notes: '' })
 
-const allMeals = computed(() => [
-  { key: 'breakfast', iconImage: breakfastIcon, title: t('meals.breakfast'), label: t('meals.breakfast').toLowerCase() },
-  { key: 'lunch',     iconImage: lunchIcon, title: t('meals.lunch'), label: t('meals.lunch').toLowerCase() },
-  { key: 'snack',     iconImage: snackIcon, title: t('meals.snack'), label: t('meals.snack').toLowerCase() },
-  { key: 'dinner',    iconImage: dinnerIcon, title: t('meals.dinner'), label: t('meals.dinner').toLowerCase() },
-])
+const allMeals = computed(() => MEAL_KEYS.map((key) => ({
+  key,
+  title: t(`meals.${key}`),
+  label: t(`meals.${key}`).toLowerCase(),
+})))
 
 // label es lo que va en el botón/mensajes ("Editar recuerdo", "Completá
 // recuerdo antes de guardar") -- deliberadamente más corto que el title que
 // se muestra como encabezado de la tarjeta ("Recuerdo del día").
-const notesMeal = computed(() => ({ key: 'notes', icon: '📝', title: t('meals.notes'), label: t('meals.notesShortLabel') }))
+const notesMeal = computed(() => ({ key: 'notes', title: t('meals.notes'), label: t('meals.notesShortLabel') }))
 const allMealsWithNotes = computed(() => [...allMeals.value, notesMeal.value])
 
 const formattedDate = computed(() => formatDate(dateKey, {
@@ -299,13 +295,18 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--color-title);
-  text-transform: capitalize;
+}
+
+/* Solo la primera letra: capitalize ponía "Jueves, 12 De Noviembre De
+   2026", que en español está mal. */
+.detail-date::first-letter {
+  text-transform: uppercase;
 }
 
 .detail-error {
   font-size: .9rem;
   margin-bottom: var(--space-md);
-  color: var(--color-danger);
+  color: var(--color-danger-text);
 }
 
 .detail-meals {
@@ -337,7 +338,7 @@ async function saveSingleMeal(fieldKey, fieldLabel) {
   padding: var(--space-xl) 0;
 }
 
-.detail-confirm__capi     { width: 150px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(105,73,49,.2)); }
+.detail-confirm__capi     { width: 150px; object-fit: contain; filter: var(--illustration-shadow-md); }
 .detail-confirm__message  { font-size: 1.1rem; color: var(--color-title); font-weight: 600; }
 .detail-confirm__actions  { display: flex; flex-direction: column; gap: var(--space-sm); width: 100%; }
 </style>

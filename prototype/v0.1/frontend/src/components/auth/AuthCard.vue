@@ -45,7 +45,7 @@ defineProps({
 .auth-card__capi {
   width: 100px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(169,130,116,.2));
+  filter: var(--illustration-shadow-md);
 }
 
 .auth-card__title {

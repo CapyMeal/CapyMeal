@@ -10,7 +10,7 @@
       <!-- Tema -->
       <div class="settings-item">
         <div class="settings-item__info">
-          <span class="settings-item__icon">🎨</span>
+          <v-icon :icon="`svg:${mdiPaletteOutline}`" class="settings-item__icon" />
           <div>
             <p class="settings-item__label">{{ t('settings.theme') }}</p>
             <p class="settings-item__desc">{{ isDark ? t('settings.themeDark') : t('settings.themeLight') }}</p>
@@ -96,7 +96,7 @@
       </div>
 
       <div class="settings-item settings-item--static">
-        <span class="settings-item__icon">❤️</span>
+        <v-icon :icon="`svg:${mdiInformationOutline}`" class="settings-item__icon" />
         <div>
           <p class="settings-item__label">{{ t('settings.version') }}</p>
           <p class="settings-item__desc">{{ t('settings.versionValue') }}</p>
@@ -123,7 +123,7 @@
       <hr class="settings-divider" />
 
       <button type="button" class="settings-item settings-item--danger" @click="handleLogout">
-        <span class="settings-item__icon">🚪</span>
+        <v-icon :icon="`svg:${mdiLogout}`" class="settings-item__icon" />
         <p class="settings-item__label">{{ t('settings.logout') }}</p>
       </button>
 
@@ -140,6 +140,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 import { useI18n } from 'vue-i18n'
+import { mdiInformationOutline, mdiLogout, mdiPaletteOutline } from '@mdi/js'
 import MainLayout from '../layouts/MainLayout.vue'
 import UserAvatar  from '../components/base/UserAvatar.vue'
 import ArgentinaFlagIcon from '../components/base/ArgentinaFlagIcon.vue'
@@ -226,7 +227,7 @@ async function handleLogout() {
   width: 44px;
   height: 44px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
+  filter: var(--illustration-shadow-sm);
 }
 
 .settings-heading__title {
@@ -269,8 +270,14 @@ async function handleLogout() {
 }
 
 .settings-item__icon {
-  font-size: 1.3rem;
+  font-size: 22px;
   flex-shrink: 0;
+  color: var(--color-muted);
+}
+
+/* En la fila de cerrar sesión el ícono toma el rojo de la fila. */
+.settings-item--danger .settings-item__icon {
+  color: inherit;
 }
 
 .settings-item--static .settings-item__icon {
@@ -291,7 +298,7 @@ async function handleLogout() {
      el justify-content: space-between que los separa a los extremos. */
   justify-content: center;
   cursor: pointer;
-  color: #B5453C;
+  color: var(--color-danger-text);
   /* Es un <button> real (antes un <div> con @click -- sin foco de
      teclado ni rol semántico). Se resetea el estilo nativo del botón
      para que siga viendo igual que antes; font:inherit ya lo cubre el
@@ -302,11 +309,11 @@ async function handleLogout() {
 }
 
 .settings-item--danger .settings-item__label {
-  color: #B5453C;
+  color: var(--color-danger-text);
 }
 
 .settings-item--danger:hover {
-  background: rgba(227,150,140,.15);
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
 }
 
 .settings-item__label {
@@ -318,21 +325,28 @@ async function handleLogout() {
 
 .settings-item__desc {
   font-size: .82rem;
-  color: var(--color-text);
-  opacity: .7;
+  color: var(--color-muted);
   line-height: 1.5;
 }
 
+/* Cada link entero en su renglón si no entra: antes se partían en tres
+   columnas angostas de dos o tres renglones cada una. */
 .settings-item__links {
   display: flex;
-  gap: var(--space-md);
+  flex-wrap: wrap;
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
   margin-top: var(--space-xs);
+}
+
+.settings-item__link {
+  white-space: nowrap;
 }
 
 .settings-item__link {
   font-size: .82rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .settings-divider {
@@ -347,7 +361,7 @@ async function handleLogout() {
 
 .settings-avatar-picker__error {
   font-size: .8rem;
-  color: var(--color-danger);
+  color: var(--color-danger-text);
   margin-top: 2px;
   margin-bottom: var(--space-xs);
 }

@@ -89,3 +89,26 @@
 .v-alert {
   text-align: start;
 }
+
+/* ── Contraste de avisos tonales ──
+   Vuetify pinta el aviso tonal entero (texto incluido) con el color del
+   estado, y el fondo con ese mismo color a baja opacidad. Con los
+   pasteles de la paleta Tierra el texto quedaba entre 1.4:1 y 2:1 en
+   tema claro (WCAG pide 4.5:1): justo "No pude guardar este día" era lo
+   menos legible. El pastel se queda en la raíz del aviso, que es de
+   donde el fondo toma su color (currentColor), y el texto pasa a tinta.
+   El ícono conserva el tono del estado oscurecido hacia la tinta, para
+   seguir distinguiendo error de aviso de éxito con contraste de ícono. */
+.v-alert--variant-tonal .v-alert__content {
+  color: var(--color-text);
+}
+
+.v-alert--variant-tonal .v-alert__prepend {
+  color: color-mix(in srgb, currentColor 55%, var(--color-text));
+}
+
+/* Con el texto en tinta, el fondo al 12% de un pastel casi no se veía:
+   un poco más de presencia para que el aviso se lea como aviso. */
+.v-alert--variant-tonal .v-alert__underlay {
+  opacity: .2;
+}

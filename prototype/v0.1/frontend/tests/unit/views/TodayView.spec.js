@@ -18,7 +18,7 @@ vi.mock('vue-router', () => ({
 // saveSingleField (la lógica de guardado de TodayView), no MealCard en sí,
 // que ya tiene su propio contrato simple de v-model + save-field.
 const MealCardStub = {
-  props: ['modelValue', 'title', 'placeholder', 'saving', 'justSaved', 'icon', 'iconImage'],
+  props: ['modelValue', 'meal', 'title', 'placeholder', 'saving', 'justSaved'],
   emits: ['update:modelValue', 'save-field'],
   template: `
     <div>
@@ -38,6 +38,7 @@ function mountTodayView() {
         CapyLoader: true,
         CapyButton: { template: '<button type="button"><slot /></button>' },
         VAlert: { template: '<div><slot /></div>' },
+        VIcon: true,
       },
     },
   })

@@ -84,7 +84,7 @@ const { isOnline } = useOnlineStatus()
   width: 40px;
   height: 40px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(169,130,116,.2));
+  filter: var(--illustration-shadow-sm);
 }
 
 .layout__brand {

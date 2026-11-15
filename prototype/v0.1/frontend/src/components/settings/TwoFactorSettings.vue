@@ -3,7 +3,7 @@
   <template v-if="!settingUp && !recoveryCodes">
     <div class="settings-item">
       <div class="settings-item__info">
-        <span class="settings-item__icon">🔐</span>
+        <v-icon :icon="`svg:${mdiShieldLockOutline}`" class="settings-item__icon" />
         <div>
           <p class="settings-item__label">{{ t('twoFactor.settingsTitle') }}</p>
           <p class="settings-item__desc">
@@ -81,6 +81,7 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { mdiShieldLockOutline } from '@mdi/js'
 import PasswordField from '../base/PasswordField.vue'
 import CapyButton from '../base/CapyButton.vue'
 import { currentUser, setupTwoFactor, confirmTwoFactor, disableTwoFactor } from '../../stores/authStore'
@@ -203,8 +204,9 @@ async function handleDisableTwoFactor() {
 }
 
 .settings-item__icon {
-  font-size: 1.3rem;
+  font-size: 22px;
   flex-shrink: 0;
+  color: var(--color-muted);
 }
 
 .settings-item__label {
@@ -230,7 +232,7 @@ async function handleDisableTwoFactor() {
 
 .settings-two-factor-inline-error {
   font-size: .8rem;
-  color: var(--color-danger);
+  color: var(--color-danger-text);
   margin-top: 2px;
   padding: 0 var(--space-lg) var(--space-md);
 }
@@ -264,13 +266,13 @@ async function handleDisableTwoFactor() {
 
 .settings-panel__warning {
   font-size: .85rem;
-  color: #B5453C;
+  color: var(--color-danger-text);
   line-height: 1.5;
 }
 
 .settings-panel__error {
   font-size: .82rem;
-  color: var(--color-danger);
+  color: var(--color-danger-text);
 }
 
 .settings-panel__actions {
