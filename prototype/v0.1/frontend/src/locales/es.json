@@ -92,7 +92,10 @@
     "emptyFilteredMessage": "No encontré registros para esas fechas.",
     "networkError": "No pude cargar el diario: estás sin conexión.",
     "genericError": "No pude cargar el diario. Intentá nuevamente.",
-    "deletedNotice": "Listo, eliminamos el recuerdo del {date}."
+    "deletedNotice": "Listo, eliminamos el recuerdo del {date}.",
+    "filterToggle": "Filtrar por fechas",
+    "filterHide": "Ocultar filtro",
+    "filterClear": "Ver todo el diario"
   },
   "detail": {
     "deleteConfirmMessage": "¿Querés eliminar el recuerdo del {date}? No se puede deshacer.",

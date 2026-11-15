@@ -2,7 +2,32 @@
   <MainLayout>
     <PageHeading :icon="diaryIllustration" :title="t('diary.title')" />
 
-    <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
+    <!-- El filtro se despliega a pedido: como primer elemento de la
+         pantalla, dos selectores de fecha le robaban protagonismo a los
+         recuerdos. Abre solo si ya hay fechas elegidas. -->
+    <div class="diary-filter">
+      <button
+        type="button"
+        class="diary-filter__toggle"
+        :aria-expanded="showFilter"
+        aria-controls="diary-filter-panel"
+        @click="showFilter = !showFilter"
+      >
+        <v-icon :icon="`svg:${mdiFilterVariant}`" size="18" />
+        {{ showFilter ? t('diary.filterHide') : t('diary.filterToggle') }}
+      </button>
+      <button
+        v-if="hasDateFilter"
+        type="button"
+        class="diary-filter__toggle"
+        @click="clearFilter"
+      >
+        {{ t('diary.filterClear') }}
+      </button>
+    </div>
+    <div v-if="showFilter" id="diary-filter-panel">
+      <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
+    </div>
 
     <StatusAlert
       v-if="deletedNotice"
@@ -36,21 +61,29 @@
       :message="t('diary.emptyFilteredMessage')"
     />
 
+    <!-- Agrupado por mes: se lee como un diario y no como una tabla, y el
+         encabezado resuelve el año (las tarjetas no lo repiten). -->
     <div v-else-if="!loading" class="diary-list">
-      <DiaryCard
-        v-for="{ date, entry } in entries"
-        :key="date"
-        :date="date"
-        :entry="entry"
-      />
+      <section v-for="group in monthGroups" :key="group.key" class="diary-month">
+        <h2 class="diary-month__title">{{ group.label }}</h2>
+        <div class="diary-month__cards">
+          <DiaryCard
+            v-for="{ date, entry } in group.entries"
+            :key="date"
+            :date="date"
+            :entry="entry"
+          />
+        </div>
+      </section>
     </div>
   </MainLayout>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { mdiFilterVariant } from '@mdi/js'
 import { formatDate } from '../utils/date'
 import MainLayout       from '../layouts/MainLayout.vue'
 import DiaryCard        from '../components/diary/DiaryCard.vue'
@@ -83,10 +116,77 @@ const { entries, loading, errorMessage, fromDate, toDate, hasDateFilter, loadEnt
   networkErrorMessage: computed(() => t('diary.networkError')),
   genericErrorMessage: computed(() => t('diary.genericError')),
 })
+
+const showFilter = ref(hasDateFilter.value)
+
+function clearFilter() {
+  fromDate.value = ''
+  toDate.value = ''
+}
+
+// Las entradas llegan de la más nueva a la más vieja; se agrupan por mes
+// conservando ese orden.
+const monthGroups = computed(() => {
+  const groups = []
+  for (const item of entries.value) {
+    const key = item.date.slice(0, 7)
+    let group = groups.at(-1)
+    if (!group || group.key !== key) {
+      group = {
+        key,
+        label: formatDate(`${key}-01`, { month: 'long', year: 'numeric' }),
+        entries: [],
+      }
+      groups.push(group)
+    }
+    group.entries.push(item)
+  }
+  return groups
+})
 </script>
 
 <style scoped>
+.diary-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.diary-filter__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  min-height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-primary-text);
+  font-weight: 600;
+  font-size: var(--font-size-label);
+}
+
 .diary-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.diary-month__title {
+  font-family: var(--font-title);
+  font-size: var(--font-size-title-sm);
+  font-weight: 600;
+  color: var(--color-title);
+  margin-bottom: var(--space-sm);
+}
+
+/* "noviembre de 2026" → "Noviembre de 2026" (solo la primera letra). */
+.diary-month__title::first-letter {
+  text-transform: uppercase;
+}
+
+.diary-month__cards {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
@@ -95,5 +195,4 @@ const { entries, loading, errorMessage, fromDate, toDate, hasDateFilter, loadEnt
 .diary-status {
   margin-bottom: var(--space-md);
 }
-
 </style>

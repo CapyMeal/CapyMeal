@@ -1,10 +1,11 @@
 <template>
-  <!-- Decorativa: siempre va al lado del nombre o del texto de la comida,
-       así que un alt descriptivo haría que el lector de pantalla lo diga
-       dos veces. -->
+  <!-- Sin label es decorativa (alt vacío): va al lado del nombre de la
+       comida y un alt descriptivo haría que el lector de pantalla lo diga
+       dos veces. Con label es la única pista de qué comida es (por
+       ejemplo, en las tarjetas del Diario, donde solo se ve el texto). -->
   <img
     :src="MEAL_ILLUSTRATIONS[meal]"
-    alt=""
+    :alt="label"
     :width="size"
     :height="size"
     class="meal-icon"
@@ -20,7 +21,8 @@ defineProps({
     required: true,
     validator: (value) => value in MEAL_ILLUSTRATIONS,
   },
-  size: { type: Number, default: 24 },
+  size:  { type: Number, default: 24 },
+  label: { type: String, default: '' },
 })
 </script>
 

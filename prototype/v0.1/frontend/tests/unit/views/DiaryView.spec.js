@@ -38,6 +38,7 @@ function mountDiaryView() {
         DiaryCard: true,
         CapyButton: true,
         VAlert: { template: '<div><slot /></div>' },
+        VIcon: true,
       },
     },
   })
@@ -87,6 +88,8 @@ describe('DiaryView', () => {
     const wrapper = mountDiaryView()
     await flushPromises()
 
+    const toggle = wrapper.findAll('button').find((b) => b.text().includes('Filtrar por fechas'))
+    await toggle.trigger('click')
     await wrapper.find('[data-test="from"]').setValue('2026-01-01')
     await flushPromises()
 
@@ -103,6 +106,21 @@ describe('DiaryView', () => {
 
     expect(wrapper.text()).toContain('No pude cargar el diario. Intentá nuevamente.')
     expect(wrapper.findComponent({ name: 'EmptyState' }).exists()).toBe(false)
+  })
+
+  it('agrupa los días por mes, con el año en el encabezado', async () => {
+    getMealEntries.mockResolvedValue([
+      { date: '2026-02-03', breakfast: 'Café' },
+      { date: '2026-02-01', lunch: 'Fideos' },
+      { date: '2026-01-28', dinner: 'Sopa' },
+    ])
+
+    const wrapper = mountDiaryView()
+    await flushPromises()
+
+    const titles = wrapper.findAll('.diary-month__title').map((h) => h.text())
+    expect(titles).toEqual(['febrero de 2026', 'enero de 2026'])
+    expect(wrapper.findAll('.diary-month')[0].findAllComponents({ name: 'DiaryCard' })).toHaveLength(2)
   })
 
   it('muestra las tarjetas del diario cuando hay recuerdos', async () => {

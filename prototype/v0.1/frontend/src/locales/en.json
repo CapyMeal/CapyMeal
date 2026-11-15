@@ -92,7 +92,10 @@
     "emptyFilteredMessage": "Couldn't find any entries for those dates.",
     "networkError": "Couldn't load your diary: you're offline.",
     "genericError": "Couldn't load your diary. Try again.",
-    "deletedNotice": "Done, we deleted your memory from {date}."
+    "deletedNotice": "Done, we deleted your memory from {date}.",
+    "filterToggle": "Filter by date",
+    "filterHide": "Hide filter",
+    "filterClear": "Show the whole diary"
   },
   "detail": {
     "deleteConfirmMessage": "Delete your memory from {date}? This can't be undone.",
