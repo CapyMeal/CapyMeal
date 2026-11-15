@@ -19,8 +19,18 @@
       {{ exporting ? t('common.preparingPdf') : t('export.downloadButton') }}
     </CapyButton>
 
+    <!-- Sin fechas elegidas, vacío significa que todavía no hay nada en el
+         diario: mismo mensaje y misma salida que el Diario, en vez de
+         "No encontré registros para esas fechas" sin haber elegido fechas. -->
     <EmptyState
-      v-if="!loading && entries.length === 0"
+      v-if="!loading && entries.length === 0 && !hasDateFilter"
+      :message="t('diary.emptyMessage')"
+      :action-label="t('diary.emptyAction')"
+      @action="$router.push('/hoy')"
+    />
+
+    <EmptyState
+      v-else-if="!loading && entries.length === 0"
       :message="t('export.emptyMessage')"
     />
 
@@ -63,7 +73,7 @@ import { MEAL_KEYS } from '../utils/meals'
 
 const { t } = useI18n()
 
-const { entries, loading, errorMessage, fromDate, toDate } = useMealEntriesByRange({
+const { entries, loading, errorMessage, fromDate, toDate, hasDateFilter } = useMealEntriesByRange({
   networkErrorMessage: computed(() => t('export.networkError')),
   genericErrorMessage: computed(() => t('export.genericError')),
 })

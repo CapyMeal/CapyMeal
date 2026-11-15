@@ -39,7 +39,13 @@ defineProps({
   align-items: center;
   text-align: center;
   gap: var(--space-md);
-  padding: var(--space-2xl) var(--space-xl) !important;
+  padding: var(--space-xl) var(--space-lg) !important;
+}
+
+@media (min-width: 768px) {
+  .auth-card__content {
+    padding: var(--space-2xl) var(--space-xl) !important;
+  }
 }
 
 .auth-card__capi {

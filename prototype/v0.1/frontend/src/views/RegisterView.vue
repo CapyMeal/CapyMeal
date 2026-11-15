@@ -43,7 +43,7 @@
         </CapyButton>
       </form>
 
-      <p class="auth-divider">{{ t('common.or') }}</p>
+      <AuthDivider />
 
       <!-- href real, no @click con router: ver la misma nota en LoginView.vue. -->
       <CapyButton variant="ghost" :href="googleRedirectUrl" class="social-button">
@@ -78,6 +78,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
+import AuthDivider   from '../components/auth/AuthDivider.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
 import GoogleIcon    from '../components/base/GoogleIcon.vue'
 import MicrosoftIcon from '../components/base/MicrosoftIcon.vue'
@@ -144,17 +145,9 @@ async function submit() {
   margin-top: var(--space-xs);
 }
 
+/* Sin opacidad extra: sobre la tinta suave del pie bajaba a ~4:1. */
 .auth-card__legal {
-  font-size: .78rem;
-  opacity: .8;
-}
-
-.auth-divider {
-  width: 100%;
-  text-align: center;
-  color: var(--color-muted);
-  font-size: var(--font-size-label);
-  margin: var(--space-xs) 0;
+  font-size: var(--font-size-caption);
 }
 
 .social-button :deep(.v-btn__content) {

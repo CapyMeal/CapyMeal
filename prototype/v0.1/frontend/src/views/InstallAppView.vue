@@ -13,6 +13,7 @@
         <CapyButton
           :loading="downloading"
           :disabled="downloading"
+          :prepend-icon="`svg:${mdiDownload}`"
           @click="downloadApk"
         >
           {{ downloading ? t('installApp.downloading') : t('installApp.downloadButton') }}
@@ -69,6 +70,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { mdiDownload } from '@mdi/js'
 import { isAuthenticated } from '../stores/authStore'
 import CapyButton from '../components/base/CapyButton.vue'
 

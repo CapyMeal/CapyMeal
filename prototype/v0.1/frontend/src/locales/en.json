@@ -246,7 +246,7 @@
     "backLink": "← Back",
     "title": "Download CapyMeal for Android",
     "intro": "CapyMeal wants to be an app for everyone, so besides using it from the browser you can install it directly on your Android, without going through the Play Store. We're distributing it this way, instead of publishing it there, so it stays 100% free: we don't charge anyone, we don't show ads, we don't sell your data, and there's nothing hidden inside. The only purpose of this app is to help you keep your meal diary.",
-    "downloadButton": "⬇️ Download the .apk",
+    "downloadButton": "Download the .apk",
     "downloading": "Downloading…",
     "downloadError": "We couldn't download the file. Check your connection and try again.",
     "warningsHeading": "Before installing: two normal warnings",

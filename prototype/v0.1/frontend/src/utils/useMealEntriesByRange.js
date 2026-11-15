@@ -1,4 +1,4 @@
-import { ref, unref, watch, onMounted } from 'vue'
+import { ref, unref, computed, watch, onMounted } from 'vue'
 import { getMealEntries, isNetworkError } from '../services/mealEntriesApi'
 
 // Compartido entre DiaryView y ExportView, que repetían casi verbatim el
@@ -17,6 +17,10 @@ export function useMealEntriesByRange({ networkErrorMessage, genericErrorMessage
   const errorMessage = ref('')
   const fromDate = ref('')
   const toDate = ref('')
+
+  // Distingue "el diario está vacío" (invitar a registrar el primer día)
+  // de "no hay nada en el rango elegido" (probar otras fechas).
+  const hasDateFilter = computed(() => !!fromDate.value || !!toDate.value)
 
   async function loadEntries() {
     // Mientras se edita el rango con los selectores de fecha, puede haber un
@@ -43,5 +47,5 @@ export function useMealEntriesByRange({ networkErrorMessage, genericErrorMessage
   onMounted(loadEntries)
   watch([fromDate, toDate], loadEntries)
 
-  return { entries, loading, errorMessage, fromDate, toDate, loadEntries }
+  return { entries, loading, errorMessage, fromDate, toDate, hasDateFilter, loadEntries }
 }

@@ -49,12 +49,10 @@ const { t } = useI18n()
 // tenía este pedido cacheado (visita previa con conexión), la respuesta se
 // sirve desde el caché y ese catch ni se dispara. Solo se ejecuta si nunca
 // se había cargado nada en este dispositivo.
-const { entries, loading, errorMessage, fromDate, toDate } = useMealEntriesByRange({
+const { entries, loading, errorMessage, fromDate, toDate, hasDateFilter } = useMealEntriesByRange({
   networkErrorMessage: computed(() => t('diary.networkError')),
   genericErrorMessage: computed(() => t('diary.genericError')),
 })
-
-const hasDateFilter = computed(() => !!fromDate.value || !!toDate.value)
 </script>
 
 <style scoped>

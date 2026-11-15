@@ -218,8 +218,7 @@ async function handleDisableTwoFactor() {
 
 .settings-item__desc {
   font-size: .82rem;
-  color: var(--color-text);
-  opacity: .7;
+  color: var(--color-muted);
   line-height: 1.5;
 }
 

@@ -27,7 +27,7 @@
         </CapyButton>
       </form>
 
-      <p class="auth-divider">{{ t('common.or') }}</p>
+      <AuthDivider />
 
       <!-- href real, no @click con router: el login con Google necesita una
            navegación real de nivel superior del navegador para completarse
@@ -62,6 +62,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AuthLayout    from '../layouts/AuthLayout.vue'
 import AuthCard      from '../components/auth/AuthCard.vue'
+import AuthDivider   from '../components/auth/AuthDivider.vue'
 import CapyButton    from '../components/base/CapyButton.vue'
 import GoogleIcon    from '../components/base/GoogleIcon.vue'
 import MicrosoftIcon from '../components/base/MicrosoftIcon.vue'
@@ -122,14 +123,6 @@ async function submit() {
 .auth-submit {
   width: 100%;
   margin-top: var(--space-xs);
-}
-
-.auth-divider {
-  width: 100%;
-  text-align: center;
-  color: var(--color-muted);
-  font-size: var(--font-size-label);
-  margin: var(--space-xs) 0;
 }
 
 .social-button :deep(.v-btn__content) {
