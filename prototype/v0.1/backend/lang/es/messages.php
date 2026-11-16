@@ -43,8 +43,10 @@ return [
     'pdf_lunch' => 'Almuerzo',
     'pdf_snack' => 'Merienda',
     'pdf_dinner' => 'Cena',
-    'pdf_not_recorded' => 'No registrado',
+    'pdf_not_recorded' => 'Sin anotar',
     'pdf_notes_label' => '📝 Recuerdo del día',
+    'pdf_gap_one' => 'Sin registro el :date',
+    'pdf_gap_range' => 'Sin registro del :from al :to',
     'pdf_no_records' => 'No hay registros para ese rango.',
     'pdf_footer' => 'CapyMeal · Generado el :date',
 

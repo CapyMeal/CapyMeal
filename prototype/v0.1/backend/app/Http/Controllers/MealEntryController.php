@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMealEntryRequest;
 use App\Http\Requests\UpdateMealEntryRequest;
+use App\Support\DiaryTimeline;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -121,7 +122,13 @@ class MealEntryController extends Controller
         // por su cuenta. Dejarlo deshabilitado evita que texto del usuario
         // (comidas/notas) pueda hacer que el servidor pida una URL remota.
         $pdf = Pdf::loadView('pdf.meal-entries', [
-            'entries' => $entries,
+            // Días registrados y, entre ellos, los tramos sin registro: para
+            // quien lee el PDF en una consulta, un día sin anotar es un dato.
+            'timeline' => DiaryTimeline::build(
+                $entries,
+                $validated['from'] ?? null,
+                $validated['to'] ?? null,
+            ),
             'from' => $validated['from'] ?? null,
             'to' => $validated['to'] ?? null,
         ]);

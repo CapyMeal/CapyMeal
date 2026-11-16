@@ -43,8 +43,10 @@ return [
     'pdf_lunch' => 'Lunch',
     'pdf_snack' => 'Snack',
     'pdf_dinner' => 'Dinner',
-    'pdf_not_recorded' => 'Not recorded',
+    'pdf_not_recorded' => 'Not logged',
     'pdf_notes_label' => "📝 Today's memory",
+    'pdf_gap_one' => 'Nothing logged on :date',
+    'pdf_gap_range' => 'Nothing logged from :from to :to',
     'pdf_no_records' => 'There are no entries for that range.',
     'pdf_footer' => 'CapyMeal · Generated on :date',
 

@@ -12,6 +12,10 @@ use App\Support\MealDiaryPdfRenderer;
 $isEnglish = app()->getLocale() === 'en';
 $dayDateFormat = $isEnglish ? 'l, F j, Y' : 'l, j \d\e F \d\e Y';
 $footerDateFormat = $isEnglish ? 'F j, Y' : 'j \d\e F \d\e Y';
+$gapDateFormat = $isEnglish ? 'l, F j' : 'l j \d\e F';
+// El rango de la portada en fechas legibles: antes iba en ISO
+// (2026-11-08 → 2026-11-15), que no se lee como una fecha.
+$rangeDateFormat = $isEnglish ? 'M j, Y' : 'j M Y';
 @endphp
 
 <!DOCTYPE html>
@@ -108,7 +112,6 @@ $footerDateFormat = $isEnglish ? 'F j, Y' : 'j \d\e F \d\e Y';
             font-size: 12px;
             font-weight: 700;
             color: #FBF7F1;
-            text-transform: capitalize;
         }
 
         .day-card__body {
@@ -189,6 +192,18 @@ $footerDateFormat = $isEnglish ? 'F j, Y' : 'j \d\e F \d\e Y';
         }
 
         /* ── Sin resultados ── */
+        /* Tramo sin registro: renglón tenue entre tarjetas, sin color de
+           alerta. */
+        .gap-row {
+            margin: 2px 0 7px;
+            padding: 4px 10px;
+            border: 1px dashed #DED2C0;
+            border-radius: 10px;
+            color: #6E6156;
+            font-size: 9.5px;
+            font-style: italic;
+        }
+
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -226,7 +241,8 @@ $footerDateFormat = $isEnglish ? 'F j, Y' : 'j \d\e F \d\e Y';
         <div class="cover__badge-cell">
             <span class="cover__badge">
                 @if ($from || $to)
-                    {{ $from ?? '...' }} → {{ $to ?? __('messages.pdf_today') }}
+                    {{ $from ? \Carbon\Carbon::parse($from)->translatedFormat($rangeDateFormat) : '…' }}
+                    → {{ $to ? \Carbon\Carbon::parse($to)->translatedFormat($rangeDateFormat) : __('messages.pdf_today') }}
                 @else
                     {{ __('messages.pdf_all_records') }}
                 @endif
@@ -234,13 +250,30 @@ $footerDateFormat = $isEnglish ? 'F j, Y' : 'j \d\e F \d\e Y';
         </div>
     </div>
 
-    {{-- Entradas --}}
-    @forelse ($entries as $entry)
+    {{-- Días registrados y tramos sin registro --}}
+    @forelse ($timeline as $item)
+        @if ($item['type'] === 'gap')
+            {{-- Dicho sin juicio: un dato para quien lee, no un reproche. --}}
+            <div class="gap-row">
+                @if ($item['from']->equalTo($item['to']))
+                    {{ __('messages.pdf_gap_one', ['date' => $item['from']->translatedFormat($gapDateFormat)]) }}
+                @else
+                    {{ __('messages.pdf_gap_range', [
+                        'from' => $item['from']->translatedFormat($gapDateFormat),
+                        'to' => $item['to']->translatedFormat($gapDateFormat),
+                    ]) }}
+                @endif
+            </div>
+            @continue
+        @endif
+        @php($entry = $item['entry'])
         <div class="day-card">
 
             <div class="day-card__header">
                 <div class="day-card__date">
-                    {{ \Carbon\Carbon::parse($entry->date)->translatedFormat($dayDateFormat) }}
+                    {{-- Solo la primera letra en mayúscula: capitalize ponía
+                         "10 De Noviembre De 2026", que en español está mal. --}}
+                    {{ ucfirst(\Carbon\Carbon::parse($entry->date)->translatedFormat($dayDateFormat)) }}
                 </div>
             </div>
 
