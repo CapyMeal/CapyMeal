@@ -71,7 +71,12 @@ export function httpErrorMessage(status, data) {
   const { t } = i18n.global
 
   if (status === HTTP_CSRF_MISMATCH) return t('errors.csrfMismatch')
-  if (status === HTTP_TOO_MANY_REQUESTS) return t('errors.tooManyRequests')
+  // Un 429 con "errors" es el límite por cuenta del backend (ver
+  // AccountAttemptLimiter): ya viene traducido y dice cuántos minutos
+  // faltan. El del throttle de ruta solo trae "Too Many Attempts.".
+  if (status === HTTP_TOO_MANY_REQUESTS) {
+    return Object.values(data?.errors || {})[0]?.[0] || t('errors.tooManyRequests')
+  }
   if (status >= HTTP_SERVER_ERROR) return t('errors.unexpected')
 
   return data?.message

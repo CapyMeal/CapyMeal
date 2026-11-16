@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Notifications\VerifyEmailNotification;
+use App\Support\AccountAttemptLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -86,15 +87,29 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        // Límite por cuenta además del de la ruta (por IP): ver
+        // AccountAttemptLimiter. Un email inexistente también suma, para que
+        // la respuesta no revele qué cuentas existen.
+        $attemptsKey = AccountAttemptLimiter::loginKey($data['email']);
+        AccountAttemptLimiter::ensureNotLocked($attemptsKey, 'email');
+
         $user = User::where('email', $data['email'])->first();
 
-        if (! $user) {
-            throw ValidationException::withMessages([
-                'email' => [__('messages.login_failed')],
-            ]);
+        try {
+            if (! $user) {
+                throw ValidationException::withMessages([
+                    'email' => [__('messages.login_failed')],
+                ]);
+            }
+
+            $this->assertPasswordMatches($user, $data['password'], 'email', __('messages.login_failed'));
+        } catch (ValidationException $e) {
+            AccountAttemptLimiter::recordFailure($attemptsKey);
+
+            throw $e;
         }
 
-        $this->assertPasswordMatches($user, $data['password'], 'email', __('messages.login_failed'));
+        AccountAttemptLimiter::clear($attemptsKey);
 
         // Con 2FA activo, la contraseña sola no alcanza -- todavía no se
         // abre sesión. Se guarda un desafío de un solo uso en cache (mismo

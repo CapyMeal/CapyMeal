@@ -95,6 +95,17 @@ describe('apiRequest', () => {
       .rejects.toThrow('Demasiados intentos seguidos.')
   })
 
+  it('en un 429 por cuenta bloqueada muestra el mensaje del backend, que dice cuánto esperar', async () => {
+    setCsrfToken('ya-cacheado')
+    const locked = 'Hubo demasiados intentos fallidos para esta cuenta. Esperá 15 minutos y probá de nuevo.'
+    global.fetch.mockResolvedValue(
+      new Response(JSON.stringify({ message: locked, errors: { email: [locked] } }), { status: 429 })
+    )
+
+    await expect(apiRequest(BASE_URL, '/api/login', { method: 'POST' }))
+      .rejects.toThrow('Esperá 15 minutos')
+  })
+
   it('en un 419 pide un token CSRF nuevo y reintenta una sola vez', async () => {
     setCsrfToken('token-viejo')
     global.fetch

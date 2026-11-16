@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Support\AccountAttemptLimiter;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
@@ -114,7 +115,16 @@ class TwoFactorController extends Controller
             ]);
         }
 
+        // Cada código equivocado gasta el desafío, pero quien ya sabe la
+        // contraseña puede pedir otro con un login nuevo y seguir probando:
+        // sin un límite por cuenta, los 6 dígitos se podían adivinar
+        // saltando el throttle por IP (ver AccountAttemptLimiter).
+        $attemptsKey = AccountAttemptLimiter::twoFactorKey($user->id);
+        AccountAttemptLimiter::ensureNotLocked($attemptsKey, 'code');
+
         if ((new Google2FA)->verifyKey($user->two_factor_secret, $data['code'])) {
+            AccountAttemptLimiter::clear($attemptsKey);
+
             return $this->completeLogin($request, $user);
         }
 
@@ -153,8 +163,12 @@ class TwoFactorController extends Controller
         });
 
         if ($consumed) {
+            AccountAttemptLimiter::clear($attemptsKey);
+
             return $this->completeLogin($request, $user);
         }
+
+        AccountAttemptLimiter::recordFailure($attemptsKey);
 
         throw ValidationException::withMessages([
             'code' => [__('messages.two_factor_invalid_code')],

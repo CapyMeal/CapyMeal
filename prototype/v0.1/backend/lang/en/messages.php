@@ -5,6 +5,7 @@ return [
     // Auth
     'login_failed' => 'The email or password is incorrect.',
     'csrf_requires_session' => 'There\'s no session for this request. Open CapyMeal in your browser and try again.',
+    'account_attempts_locked' => '{1} Too many failed attempts for this account. Wait 1 minute and try again.|[2,*] Too many failed attempts for this account. Wait :minutes minutes and try again.',
     'password_incorrect' => 'The password is incorrect.',
     'session_expired' => 'Your session expired. Please log in again.',
     'social_login_expired' => 'This link is no longer valid. Please log in again.',

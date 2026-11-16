@@ -115,26 +115,28 @@ class AuthTest extends TestCase
         // Las requests llegan por Vercel, que pone la IP real del visitante
         // primera en X-Forwarded-For; Render agrega la suya detrás. Antes
         // todas compartían la IP del balanceador y un solo contador.
-        $attempt = fn (string $visitorIp) => $this
+        // Un email distinto por intento: acá se prueba el límite por IP de la
+        // ruta, no el límite por cuenta (ver AccountAttemptLimitTest).
+        $attempt = fn (string $visitorIp, int $n) => $this
             ->withHeader('X-Forwarded-For', "{$visitorIp}, 76.76.21.21")
-            ->postJson('/api/login', ['email' => 'nadie@example.com', 'password' => 'incorrecta']);
+            ->postJson('/api/login', ['email' => "nadie{$n}@example.com", 'password' => 'incorrecta']);
 
         for ($i = 0; $i < 6; $i++) {
-            $attempt('203.0.113.10')->assertStatus(422);
+            $attempt('203.0.113.10', $i)->assertStatus(422);
         }
 
-        $attempt('203.0.113.10')->assertStatus(429);
-        $attempt('198.51.100.20')->assertStatus(422);
+        $attempt('203.0.113.10', 6)->assertStatus(429);
+        $attempt('198.51.100.20', 7)->assertStatus(422);
     }
 
     public function test_login_throttle_cannot_be_dodged_from_the_same_ip_without_forwarded_header(): void
     {
         for ($i = 0; $i < 6; $i++) {
-            $this->postJson('/api/login', ['email' => 'nadie@example.com', 'password' => 'incorrecta'])
+            $this->postJson('/api/login', ['email' => "nadie{$i}@example.com", 'password' => 'incorrecta'])
                 ->assertStatus(422);
         }
 
-        $this->postJson('/api/login', ['email' => 'nadie@example.com', 'password' => 'incorrecta'])
+        $this->postJson('/api/login', ['email' => 'otra@example.com', 'password' => 'incorrecta'])
             ->assertStatus(429);
     }
 
