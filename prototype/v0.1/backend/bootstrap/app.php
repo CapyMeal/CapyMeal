@@ -25,6 +25,25 @@ return Application::configure(basePath: dirname(__DIR__))
         // sin tocar las rutas.
         $middleware->statefulApi();
 
+        // IP real de quien usa la app. Sin esto, request->ip() era la del
+        // balanceador de Render, y los límites por IP (login 6/min, PDF
+        // 10/min) eran un solo contador compartido por todos: unos pocos
+        // intentos fallidos de cualquiera bloqueaban a los demás.
+        //
+        // Las requests llegan por Vercel (vercel.json reenvía /api), que
+        // completa X-Forwarded-For con la IP del visitante y pisa lo que
+        // haya mandado el cliente; Render agrega la suya detrás. Confiando
+        // en toda la cadena, Symfony toma la primera, la que puso Vercel.
+        // Límite conocido: quien le pegue directo a Render podría mandar un
+        // X-Forwarded-For inventado y esquivar el límite por IP; igual es
+        // mejor que un contador global que cualquiera puede agotar.
+        // Solo X-Forwarded-For: Host y Proto se dejan como los ve Render,
+        // para no cambiar las URLs que arma la app (OAuth, mails).
+        $middleware->trustProxies(
+            at: ['0.0.0.0/0', '::/0'],
+            headers: Request::HEADER_X_FORWARDED_FOR,
+        );
+
         // Lee el header X-Locale que manda el frontend en cada request (ver
         // httpClient.js) y fija el locale de la app antes de que corra
         // cualquier otra cosa del grupo "api" -- tiene que ir prepend, no
