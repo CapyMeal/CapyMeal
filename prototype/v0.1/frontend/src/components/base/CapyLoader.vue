@@ -1,6 +1,6 @@
 <template>
   <div class="capy-loader">
-    <img src="../../assets/icons/capy2.png" alt="Capi" class="capy-loader__capi">
+    <img src="../../assets/icons/capy2.png" alt="" class="capy-loader__capi">
     <p v-if="message" class="capy-loader__message">{{ message }}</p>
   </div>
 </template>

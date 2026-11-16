@@ -7,14 +7,25 @@ function mountCard(entry) {
     props: { date: '2026-11-11', entry },
     global: {
       stubs: {
-        VCard: { template: '<a><slot /></a>' },
+        VCard: { template: '<div><slot /></div>' },
         VCardText: { template: '<div><slot /></div>' },
+        RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' },
       },
     },
   })
 }
 
 describe('DiaryCard', () => {
+  it('el enlace es solo la fecha: el contenido queda fuera del nombre del enlace', () => {
+    const wrapper = mountCard({ breakfast: 'Café', notes: 'Cumple' })
+
+    const link = wrapper.find('a')
+    expect(link.attributes('href')).toBe('/recuerdos/2026-11-11')
+    expect(link.text()).toBe('miércoles, 11 de noviembre')
+    expect(link.attributes('aria-label')).toBeUndefined()
+    expect(wrapper.text()).toContain('Café')
+  })
+
   it('nombra cada comida a la vista, no solo con la ilustración', () => {
     const wrapper = mountCard({ breakfast: 'Café', dinner: 'Sopa' })
 

@@ -1,16 +1,15 @@
 <template>
-  <!-- aria-label: sin él, el nombre del enlace era el día entero leído
-       de corrido cada vez que se pasaba por la tarjeta. -->
-  <v-card
-    :to="`/recuerdos/${date}`"
-    :aria-label="formattedDate"
-    class="diary-card"
-    color="surface"
-    elevation="1"
-    hover
-  >
+  <!-- El enlace es solo la fecha, estirada sobre toda la tarjeta con un
+       ::after: se toca en cualquier parte, pero el lector de pantalla
+       anuncia "Viernes, 13 de noviembre, enlace" y después puede leer las
+       comidas como texto. Con la tarjeta entera como enlace, o leía el día
+       de corrido como nombre del enlace, o (con aria-label) tapaba todo
+       el contenido. -->
+  <v-card class="diary-card" color="surface" elevation="1">
     <v-card-text>
-      <p class="diary-card__date">{{ formattedDate }}</p>
+      <h3 class="diary-card__date">
+        <RouterLink :to="`/recuerdos/${date}`" class="diary-card__link">{{ formattedDate }}</RouterLink>
+      </h3>
 
       <!-- El recuerdo va primero: es lo que distingue a CapyMeal de anotar
            en el celular ("Las comidas pasan. Los recuerdos quedan."). Antes
@@ -81,15 +80,38 @@ const formattedDate = computed(() => formatDate(props.date, {
 
 <style scoped>
 .diary-card {
+  position: relative;
   display: block;
   border: 1px solid var(--color-border);
   transition: box-shadow .2s ease, transform .15s ease;
-  text-decoration: none;
+  cursor: pointer;
 }
 
 .diary-card:hover {
   box-shadow: var(--shadow-md) !important;
   transform: translateY(-2px);
+}
+
+.diary-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* El área tocable del enlace cubre la tarjeta entera. */
+.diary-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+/* El foco se marca en la tarjeta, no en el texto de la fecha. */
+.diary-card__link:focus-visible {
+  box-shadow: none;
+}
+
+.diary-card:has(.diary-card__link:focus-visible) {
+  box-shadow: var(--ring-focus) !important;
 }
 
 .diary-card :deep(.v-card-text) {

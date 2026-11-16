@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <header class="layout__header">
-      <img src="../assets/illustrations/Chef.png" alt="Capi" class="layout__header-icon">
+      <img src="../assets/illustrations/Chef.png" alt="" class="layout__header-icon">
       <span class="layout__brand">CapyMeal</span>
     </header>
 

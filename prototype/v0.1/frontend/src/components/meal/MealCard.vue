@@ -17,6 +17,8 @@
       <span
         v-else-if="persisted"
         class="meal-card__status meal-card__status--muted"
+        role="img"
+        :aria-label="t('common.saved')"
         :title="t('common.saved')"
       >
         <v-icon :icon="`svg:${mdiCheck}`" size="16" />

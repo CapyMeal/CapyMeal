@@ -3,7 +3,7 @@
 
     <!-- Confirmación de Capi -->
     <div v-if="saved" class="confirmation">
-      <img src="../assets/icons/diaGuardado.webp" alt="Capi" class="confirmation__capi">
+      <img src="../assets/icons/diaGuardado.webp" alt="" class="confirmation__capi">
       <p class="confirmation__message">
         {{ t('today.confirmationTitle') }}<br>
         <span>{{ t('today.confirmationSubtitle') }}</span>
@@ -22,7 +22,7 @@
         <div class="today-header__capi-row">
           <UserAvatar :avatar="currentUser?.avatar" :email="currentUser?.email" :size="56" />
           <div>
-            <p class="today-header__greeting">{{ t('today.greeting', { name: currentUser?.name?.split(' ')[0] }) }}</p>
+            <h1 class="today-header__greeting">{{ t('today.greeting', { name: currentUser?.name?.split(' ')[0] }) }}</h1>
             <p class="today-header__date">{{ formattedDate }}</p>
           </div>
         </div>

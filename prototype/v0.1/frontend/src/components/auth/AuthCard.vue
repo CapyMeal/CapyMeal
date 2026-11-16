@@ -1,7 +1,7 @@
 <template>
   <v-card class="auth-card" elevation="2" max-width="400">
     <v-card-text class="auth-card__content">
-      <img src="../../assets/illustrations/Chef.png" alt="Capi" class="auth-card__capi">
+      <img src="../../assets/illustrations/Chef.png" alt="" class="auth-card__capi">
 
       <h1 class="auth-card__title">{{ title }}</h1>
       <p v-if="subtitle" class="auth-card__subtitle">{{ subtitle }}</p>
