@@ -4,6 +4,7 @@ return [
 
     // Auth
     'login_failed' => 'El email o la contraseña son incorrectos.',
+    'csrf_requires_session' => 'No hay sesión para esta solicitud. Abrí CapyMeal desde el navegador e intentá de nuevo.',
     'password_incorrect' => 'La contraseña no es correcta.',
     'session_expired' => 'Tu sesión expiró. Volvé a iniciar sesión.',
     'social_login_expired' => 'Este enlace ya no es válido. Iniciá sesión de nuevo.',

@@ -100,6 +100,44 @@ class AuthTest extends TestCase
         $this->assertNotEmpty($response->json('token'));
     }
 
+    public function test_csrf_token_without_a_frontend_origin_says_why_instead_of_a_500(): void
+    {
+        // Sin Referer/Origin de la SPA, Sanctum no abre sesión. Antes eso
+        // terminaba en un 500 "Session store not set on request".
+        $response = $this->withoutHeader('Referer')->getJson('/api/csrf-token');
+
+        $response->assertStatus(400);
+        $response->assertJsonStructure(['message']);
+    }
+
+    public function test_login_throttle_counts_each_visitor_ip_separately(): void
+    {
+        // Las requests llegan por Vercel, que pone la IP real del visitante
+        // primera en X-Forwarded-For; Render agrega la suya detrás. Antes
+        // todas compartían la IP del balanceador y un solo contador.
+        $attempt = fn (string $visitorIp) => $this
+            ->withHeader('X-Forwarded-For', "{$visitorIp}, 76.76.21.21")
+            ->postJson('/api/login', ['email' => 'nadie@example.com', 'password' => 'incorrecta']);
+
+        for ($i = 0; $i < 6; $i++) {
+            $attempt('203.0.113.10')->assertStatus(422);
+        }
+
+        $attempt('203.0.113.10')->assertStatus(429);
+        $attempt('198.51.100.20')->assertStatus(422);
+    }
+
+    public function test_login_throttle_cannot_be_dodged_from_the_same_ip_without_forwarded_header(): void
+    {
+        for ($i = 0; $i < 6; $i++) {
+            $this->postJson('/api/login', ['email' => 'nadie@example.com', 'password' => 'incorrecta'])
+                ->assertStatus(422);
+        }
+
+        $this->postJson('/api/login', ['email' => 'nadie@example.com', 'password' => 'incorrecta'])
+            ->assertStatus(429);
+    }
+
     public function test_csrf_token_from_the_endpoint_actually_satisfies_csrf_validation(): void
     {
         // El resto del suite corre con la validación CSRF desactivada (ver

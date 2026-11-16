@@ -40,6 +40,14 @@ class AuthController extends Controller
     // reenvían fresco en su propia respuesta (regenerate() lo rota).
     public function csrfToken(Request $request)
     {
+        // Sin Origin/Referer del frontend, Sanctum no trata la request como
+        // de la SPA y no abre sesión: no hay token que dar. Antes eso
+        // explotaba con un 500 ("Session store not set on request"); ahora
+        // se dice qué pasa. Un cliente con bearer token no necesita CSRF.
+        if (! $request->hasSession()) {
+            return response()->json(['message' => __('messages.csrf_requires_session')], 400);
+        }
+
         return response()->json(['token' => $request->session()->token()]);
     }
 
