@@ -16,7 +16,7 @@
   },
   "errors": {
     "network": "Couldn't connect. Check your connection and try again.",
-    "csrfMismatch": "We couldn't validate your session. Reload the page and try again. If it keeps happening, make sure your browser allows cookies for CapyMeal.",
+    "csrfMismatch": "Couldn't validate your session. Reload the page and try again. If it keeps happening, make sure your browser allows cookies for CapyMeal.",
     "tooManyRequests": "Too many attempts in a row. Wait a minute and try again.",
     "unexpected": "Something went wrong on our side. Try again in a little while."
   },
@@ -39,7 +39,7 @@
     "viewDiary": "See my diary",
     "registerAnotherDay": "Log another day",
     "greeting": "Hi, {name} 🍂",
-    "closeDatePicker": "Close",
+    "closeDatePicker": "Hide dates",
     "changeDayLabel": "Change day",
     "today": "Today",
     "yesterday": "Yesterday",
@@ -56,7 +56,10 @@
     "saveFieldOfflineError": "Couldn't auto-save: you're offline.",
     "saveFieldError": "Couldn't save that change. Try again.",
     "gapBannerLabel": "Days not logged",
-    "gapBannerDismiss": "Not now"
+    "gapBannerDismiss": "Not now",
+    "gapBannerOne": "Missed logging {date}?",
+    "backToToday": "Back to today",
+    "keepEditing": "Keep editing"
   },
   "settings": {
     "title": "Settings",
@@ -237,7 +240,7 @@
     "title": "One moment… 🍂",
     "subtitle": "Connecting you with {provider}.",
     "loadingMessage": "Signing in…",
-    "connectionError": "We couldn't finish signing you in with {provider}.",
+    "connectionError": "Couldn't finish signing you in with {provider}.",
     "retryButton": "Try again"
   },
   "emailVerified": {
@@ -266,7 +269,7 @@
     "intro": "CapyMeal wants to be an app for everyone, so besides using it from the browser you can install it directly on your Android, without going through the Play Store. We're distributing it this way, instead of publishing it there, so it stays 100% free: we don't charge anyone, we don't show ads, we don't sell your data, and there's nothing hidden inside. The only purpose of this app is to help you keep your meal diary.",
     "downloadButton": "Download the .apk",
     "downloading": "Downloading…",
-    "downloadError": "We couldn't download the file. Check your connection and try again.",
+    "downloadError": "Couldn't download the file. Check your connection and try again.",
     "warningsHeading": "Before installing: two normal warnings",
     "warningsBody": "Since this version doesn't come from the Play Store, your Android will show you a couple of security warnings when installing it. This happens to {emphasis} app installed this way, it's not a sign that something's wrong: it just means Android doesn't recognize the Play Store as the source. Below we walk you through what to do with each one.",
     "warningsEmphasis": "any",

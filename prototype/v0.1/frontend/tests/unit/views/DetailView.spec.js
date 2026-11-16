@@ -178,7 +178,7 @@ describe('DetailView', () => {
 
       await editField(wrapper, 'breakfast', 'Otra cosa')
 
-      expect(wrapper.text()).toContain('No se pudo guardar: estás sin conexión.')
+      expect(wrapper.text()).toContain('No pude guardar: estás sin conexión.')
     })
 
     it('muestra un mensaje genérico con el nombre del campo cuando falla por otra razón', async () => {

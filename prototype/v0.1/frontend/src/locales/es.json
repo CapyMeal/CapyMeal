@@ -15,8 +15,8 @@
     "savedField": "{field}: guardado"
   },
   "errors": {
-    "network": "No pudimos conectar. Revisá tu conexión e intentá de nuevo.",
-    "csrfMismatch": "No pudimos validar tu sesión. Recargá la página e intentá de nuevo. Si sigue pasando, revisá que tu navegador permita las cookies de CapyMeal.",
+    "network": "No pude conectarme. Revisá tu conexión e intentá de nuevo.",
+    "csrfMismatch": "No pude validar tu sesión. Recargá la página e intentá de nuevo. Si sigue pasando, revisá que tu navegador permita las cookies de CapyMeal.",
     "tooManyRequests": "Demasiados intentos seguidos. Esperá un minuto y volvé a intentar.",
     "unexpected": "Algo falló de nuestro lado. Intentá de nuevo en un rato."
   },
@@ -39,7 +39,7 @@
     "viewDiary": "Ver mi diario",
     "registerAnotherDay": "Registrar otro día",
     "greeting": "Hola, {name} 🍂",
-    "closeDatePicker": "Cerrar",
+    "closeDatePicker": "Ocultar fechas",
     "changeDayLabel": "Cambiar día",
     "today": "Hoy",
     "yesterday": "Ayer",
@@ -51,12 +51,15 @@
     "autosaveHint": "Lo que escribís se guarda solo. Después de cerrar el día lo podés seguir editando desde el diario.",
     "loadError": "No pude cargar ese día. Intentá nuevamente.",
     "atLeastOneFieldRequired": "Completá al menos una comida o un recuerdo antes de cerrar el día.",
-    "saveOfflineError": "No se pudo guardar: estás sin conexión.",
+    "saveOfflineError": "No pude guardar: estás sin conexión.",
     "saveError": "No pude guardar este día. Intentá nuevamente.",
-    "saveFieldOfflineError": "No se pudo guardar automáticamente: estás sin conexión.",
+    "saveFieldOfflineError": "No pude guardar automáticamente: estás sin conexión.",
     "saveFieldError": "No pude guardar ese cambio. Intentá nuevamente.",
     "gapBannerLabel": "Días sin anotar",
-    "gapBannerDismiss": "Ahora no"
+    "gapBannerDismiss": "Ahora no",
+    "gapBannerOne": "¿Te quedó sin anotar el {date}?",
+    "backToToday": "Volver a hoy",
+    "keepEditing": "Seguir editando"
   },
   "settings": {
     "title": "Ajustes",
@@ -85,7 +88,7 @@
     "confirmDelete": "Sí, eliminar mi cuenta",
     "cancel": "Cancelar",
     "confirmPasswordRequired": "Ingresá tu contraseña para confirmar.",
-    "deleteOfflineError": "No se pudo eliminar: estás sin conexión.",
+    "deleteOfflineError": "No pude eliminar: estás sin conexión.",
     "sectionPreferences": "Preferencias",
     "sectionAccount": "Cuenta",
     "themeSystem": "Sistema"
@@ -120,9 +123,9 @@
     "editSnackPlaceholder": "¿Merendaste algo?",
     "editDinnerPlaceholder": "¿Qué cenaste?",
     "editNotesPlaceholder": "¿Hubo algo especial?",
-    "saveOfflineError": "No se pudo guardar: estás sin conexión.",
+    "saveOfflineError": "No pude guardar: estás sin conexión.",
     "saveFieldGenericError": "No pude guardar {field}. Intentá nuevamente.",
-    "deleteOfflineError": "No se pudo eliminar: estás sin conexión.",
+    "deleteOfflineError": "No pude eliminar: estás sin conexión.",
     "deleteGenericError": "No pude eliminar este día. Intentá nuevamente.",
     "loadOfflineError": "No pude cargar este día: estás sin conexión.",
     "loadGenericError": "No pude cargar este día. Intentá nuevamente.",
@@ -215,7 +218,7 @@
     "backToLogin": "← Volver al inicio de sesión",
     "rateLimitError": "Ya enviamos un enlace hace poco. Esperá un minuto antes de volver a intentarlo.",
     "genericError": "Revisá el email ingresado e intentá de nuevo.",
-    "networkError": "No pudimos conectar. Revisá tu conexión e intentá de nuevo."
+    "networkError": "No pude conectarme. Revisá tu conexión e intentá de nuevo."
   },
   "resetPassword": {
     "invalidLinkTitle": "Enlace inválido",
@@ -237,7 +240,7 @@
     "title": "Un momento… 🍂",
     "subtitle": "Te estamos conectando con {provider}.",
     "loadingMessage": "Entrando…",
-    "connectionError": "No pudimos completar el ingreso con {provider}.",
+    "connectionError": "No pude completar el ingreso con {provider}.",
     "retryButton": "Volver a intentar"
   },
   "emailVerified": {
@@ -266,7 +269,7 @@
     "intro": "CapyMeal quiere ser una app para todos, así que además de usarla desde el navegador la podés instalar directo en tu Android, sin pasar por Play Store. La bajamos así, en vez de publicarla ahí, para que siga siendo 100% gratuita: no le pedimos plata a nadie, no mostramos publicidad, no vendemos tus datos ni escondemos nada raro adentro. El único propósito de esta app es ayudarte a llevar tu diario de comidas.",
     "downloadButton": "Descargar el .apk",
     "downloading": "Descargando…",
-    "downloadError": "No pudimos descargar el archivo. Revisá tu conexión e intentá de nuevo.",
+    "downloadError": "No pude descargar el archivo. Revisá tu conexión e intentá de nuevo.",
     "warningsHeading": "Antes de instalar: dos avisos normales",
     "warningsBody": "Como esta versión no viene de Play Store, tu Android va a mostrarte un par de avisos de seguridad al instalarla. Le pasa a {emphasis} app que se instala así, no es una señal de que algo esté mal: es simplemente que Android no reconoce a Play Store como origen. Abajo te explicamos paso a paso qué hacer con cada uno.",
     "warningsEmphasis": "cualquier",

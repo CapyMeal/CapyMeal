@@ -94,7 +94,7 @@ describe('TodayView', () => {
       await findButtonByText(wrapper, 'Cerrar el día').trigger('click')
       await flushPromises()
 
-      expect(wrapper.text()).toContain('No se pudo guardar: estás sin conexión.')
+      expect(wrapper.text()).toContain('No pude guardar: estás sin conexión.')
     })
 
     it('muestra un mensaje genérico cuando falla por otra razón', async () => {
@@ -146,7 +146,7 @@ describe('TodayView', () => {
       await wrapper.find('[data-test="save-Desayuno"]').trigger('click')
       await flushPromises()
 
-      expect(wrapper.text()).toContain('No se pudo guardar automáticamente: estás sin conexión.')
+      expect(wrapper.text()).toContain('No pude guardar automáticamente: estás sin conexión.')
     })
 
     it('muestra un mensaje genérico cuando falla por otra razón', async () => {
@@ -230,6 +230,31 @@ describe('TodayView', () => {
       const again = mountTodayView()
       await flushPromises()
       expect(again.text()).not.toContain('¿Te quedaron días sin anotar?')
+    })
+
+    it('si falta un solo día lo nombra, sin hablar de un rango', async () => {
+      getMealEntries.mockResolvedValue([{ date: addDaysISO(-2) }])
+      const wrapper = mountTodayView()
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('¿Te quedó sin anotar el')
+      expect(wrapper.text()).not.toContain('ponerte al día desde')
+    })
+  })
+
+  describe('después de cerrar el día', () => {
+    it('si se cerró hoy ofrece seguir editando, no "registrar otro día"', async () => {
+      upsertMealEntry.mockResolvedValue({})
+      const wrapper = mountTodayView()
+      await flushPromises()
+
+      await wrapper.find('[data-test="Desayuno"]').setValue('Café')
+      await findButtonByText(wrapper, 'Cerrar el día').trigger('click')
+      await flushPromises()
+
+      expect(findButtonByText(wrapper, 'Registrar otro día')).toBeFalsy()
+      await findButtonByText(wrapper, 'Seguir editando').trigger('click')
+      expect(wrapper.find('[data-test="Desayuno"]').exists()).toBe(true)
     })
   })
 })

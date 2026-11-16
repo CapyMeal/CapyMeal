@@ -118,7 +118,7 @@ describe('apiRequest', () => {
       .mockResolvedValueOnce(new Response('{}', { status: 419 }))
 
     await expect(apiRequest(BASE_URL, '/api/login', { method: 'POST' }))
-      .rejects.toThrow('No pudimos validar tu sesión.')
+      .rejects.toThrow('No pude validar tu sesión.')
     expect(global.fetch).toHaveBeenCalledTimes(3)
   })
 
@@ -127,7 +127,7 @@ describe('apiRequest', () => {
 
     const error = await apiRequest(BASE_URL, '/api/me').catch((e) => e)
 
-    expect(error.message).toBe('No pudimos conectar. Revisá tu conexión e intentá de nuevo.')
+    expect(error.message).toBe('No pude conectarme. Revisá tu conexión e intentá de nuevo.')
     expect(error.status).toBeUndefined()
   })
 

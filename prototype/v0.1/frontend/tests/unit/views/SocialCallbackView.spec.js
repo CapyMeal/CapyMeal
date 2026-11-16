@@ -61,7 +61,7 @@ describe.each([
 
     expect(exchangeSocialCode).not.toHaveBeenCalled()
     expect(replace).not.toHaveBeenCalled()
-    expect(wrapper.text()).toContain(`No pudimos completar el ingreso con ${label}.`)
+    expect(wrapper.text()).toContain(`No pude completar el ingreso con ${label}.`)
   })
 
   it('muestra el mensaje de error del store cuando el canje falla', async () => {

@@ -10,7 +10,10 @@
       </p>
       <div class="confirmation__actions">
         <CapyButton @click="goToDiary">{{ t('today.viewDiary') }}</CapyButton>
-        <CapyButton variant="ghost" @click="resetForm">{{ t('today.registerAnotherDay') }}</CapyButton>
+        <!-- Si se cerró hoy no hay "otro día" adonde ir: antes este botón
+             recargaba el mismo día y prometía algo que no hacía. -->
+        <CapyButton v-if="isToday" variant="ghost" @click="keepEditing">{{ t('today.keepEditing') }}</CapyButton>
+        <CapyButton v-else variant="ghost" @click="resetForm">{{ t('today.registerAnotherDay') }}</CapyButton>
       </div>
     </div>
 
@@ -23,21 +26,33 @@
           <UserAvatar :avatar="currentUser?.avatar" :email="currentUser?.email" :size="56" />
           <div>
             <h1 class="today-header__greeting">{{ t('today.greeting', { name: currentUser?.name?.split(' ')[0] }) }}</h1>
-            <p class="today-header__date">{{ formattedDate }}</p>
+            <!-- En otra fecha, la fecha se destaca: si no, editar el 14 se
+                 veía igual que editar hoy. -->
+            <p class="today-header__date" :class="{ 'today-header__date--other': !isToday }">{{ formattedDate }}</p>
           </div>
         </div>
 
         <!-- Selector de fecha discreto -->
-        <button
-          type="button"
-          class="today-header__date-toggle"
-          :aria-expanded="showDatePicker"
-          aria-controls="today-date-panel"
-          @click="showDatePicker = !showDatePicker"
-        >
-          <v-icon :icon="`svg:${mdiCalendarMonthOutline}`" size="18" />
-          {{ showDatePicker ? t('today.closeDatePicker') : t('today.changeDayLabel') }}
-        </button>
+        <div class="today-header__date-actions">
+          <button
+            type="button"
+            class="today-header__date-toggle"
+            :aria-expanded="showDatePicker"
+            aria-controls="today-date-panel"
+            @click="showDatePicker = !showDatePicker"
+          >
+            <v-icon :icon="`svg:${mdiCalendarMonthOutline}`" size="18" />
+            {{ showDatePicker ? t('today.closeDatePicker') : t('today.changeDayLabel') }}
+          </button>
+          <button
+            v-if="!isToday"
+            type="button"
+            class="today-header__date-toggle"
+            @click="setQuickDate(0)"
+          >
+            {{ t('today.backToToday') }}
+          </button>
+        </div>
 
         <div v-if="showDatePicker" id="today-date-panel" class="today-header__date-panel">
           <v-text-field
@@ -68,7 +83,7 @@
         <img :src="capyMate" alt="" class="today-gap__capi">
         <div class="today-gap__body">
           <p class="today-gap__text">
-            {{ t('today.gapBanner', { date: gapDateFormatted }) }}
+            {{ t(gapIsOneDay ? 'today.gapBannerOne' : 'today.gapBanner', { date: gapDateFormatted }) }}
           </p>
           <div class="today-gap__actions">
             <button type="button" class="today-gap__action today-gap__action--primary" @click="goToGap">
@@ -207,6 +222,8 @@ const formattedDate = computed(() => formatDate(selectedDate.value, {
 
 const yesterdayISO = addDays(todayISO, -1)
 
+const isToday = computed(() => selectedDate.value === todayISO)
+
 // Solo tiene sentido sugerir "seguir desde ahi" mientras se esta mirando
 // el dia de hoy: si el ultimo recuerdo es de hoy o ayer no hay hueco real,
 // y si el usuario ya cambio de fecha, ya esta resolviendo el hueco solo.
@@ -238,6 +255,9 @@ function dismissGap() {
 const gapStartDate = computed(() =>
   lastRecordedDate.value ? addDays(lastRecordedDate.value, 1) : ''
 )
+
+// Si falta un solo día, "desde el 14" sugería un rango que no existe.
+const gapIsOneDay = computed(() => gapStartDate.value === yesterdayISO)
 
 const gapDateFormatted = computed(() => {
   if (!gapStartDate.value) return ''
@@ -297,18 +317,16 @@ async function saveDay() {
 
 function resetForm() {
   // "Registrar otro día" avanza al día siguiente al que se acaba de
-  // guardar (util para ponerse al dia con varias fechas atrasadas),
-  // sin pasarse de hoy. Si el día no cambia (ya se estaba en hoy), el
-  // watch no se dispara y hay que recargar a mano.
-  const nextDate = addDays(selectedDate.value, 1)
-  const target   = nextDate > todayISO ? todayISO : nextDate
-
+  // guardar (útil para ponerse al día con varias fechas atrasadas). Solo
+  // se ofrece si el día cerrado no es hoy, así que nunca se pasa de hoy y
+  // el cambio de fecha recarga el día solo (watch de selectedDate).
   saved.value = false
-  if (target === selectedDate.value) {
-    loadSelectedDay()
-  } else {
-    selectedDate.value = target
-  }
+  selectedDate.value = addDays(selectedDate.value, 1)
+}
+
+// Después de cerrar hoy: volver al formulario del mismo día, ya guardado.
+function keepEditing() {
+  saved.value = false
 }
 
 function goToDiary() {
@@ -360,8 +378,19 @@ onMounted(() => {
 }
 
 /* Solo la primera letra: capitalize ponía "15 De Noviembre". */
+.today-header__date--other {
+  color: var(--color-primary-text);
+  font-weight: 700;
+}
+
 .today-header__date::first-letter {
   text-transform: uppercase;
+}
+
+.today-header__date-actions {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-lg);
 }
 
 .today-header__date-toggle {
