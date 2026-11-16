@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { API_BASE_URL, BACKEND_URL } from '../config/api'
+import { API_BASE_URL } from '../config/api'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -89,14 +89,13 @@ import { register } from '../stores/authStore'
 const router = useRouter()
 const { t }  = useI18n()
 
-// Google va por el /api del mismo sitio (Vercel lo reenvía al backend) y
-// vuelve por ahí: así la cookie que guarda el "state" del ingreso es de
-// capy-meal.vercel.app. Pasando por capymeal.onrender.com, Samsung Internet
-// y otros navegadores con protección contra rastreo la bloqueaban y el
-// ingreso fallaba. Microsoft sigue directo al backend hasta registrar la
-// URL de vuelta del frontend en Azure (ver SocialAuthController).
+// Google y Microsoft van por el /api del mismo sitio (Vercel lo reenvía al
+// backend) y vuelven por ahí: así la cookie que guarda el "state" del
+// ingreso es de capy-meal.vercel.app. Pasando por capymeal.onrender.com,
+// Samsung Internet y otros navegadores con protección contra rastreo la
+// bloqueaban y el ingreso fallaba (ver SocialAuthController).
 const googleRedirectUrl = `${API_BASE_URL}/api/auth/google/redirect`
-const microsoftRedirectUrl = `${BACKEND_URL}/api/auth/microsoft/redirect`
+const microsoftRedirectUrl = `${API_BASE_URL}/api/auth/microsoft/redirect`
 
 const name             = ref('')
 const email             = ref('')
