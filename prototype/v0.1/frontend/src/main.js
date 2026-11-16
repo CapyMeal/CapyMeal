@@ -5,6 +5,7 @@
 import './styles/main.css'
 
 import { createApp } from 'vue'
+import { registerSW } from 'virtual:pwa-register'
 import * as Sentry from '@sentry/vue'
 import App from './App.vue'
 import router from './router'
@@ -57,6 +58,26 @@ window.addEventListener('vite:preloadError', (event) => {
   reloading = true
   sessionStorage.setItem('capymeal-reloaded-after-stale-chunk', '1')
   window.location.reload()
+})
+
+// Actualización de la app instalada (.apk / PWA). El service worker se
+// actualizaba en segundo plano, pero la página no se recargaba: en el .apk,
+// Android mantiene la app viva en memoria y alguien podía seguir horas con
+// el código viejo después de un deploy (pasó con un arreglo de login que
+// no le llegaba a Leonel). Con registerType "autoUpdate", registerSW
+// recarga la página cuando el service worker nuevo toma el control.
+//
+// La búsqueda de versión nueva se hace al volver la app a primer plano: en
+// ese momento nadie está escribiendo, así que la recarga no pisa texto a
+// medio guardar.
+registerSW({
+  immediate: true,
+  onRegisteredSW(_url, registration) {
+    if (!registration) return
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') registration.update().catch(() => {})
+    })
+  },
 })
 
 const app = createApp(App)
