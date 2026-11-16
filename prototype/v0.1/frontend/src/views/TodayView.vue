@@ -56,21 +56,30 @@
         </div>
       </div>
 
-      <!-- Aviso de dia salteado -->
-      <v-alert
+      <!-- Días sin anotar: una invitación de Capi, no una advertencia. Antes
+           era un aviso amarillo con "!" justo el día en que alguien vuelve,
+           y "Nunca generar culpa" es el primer principio. Se puede dejar
+           para otro momento y no vuelve a aparecer hasta mañana. -->
+      <section
         v-if="showGapBanner"
-        type="warning"
-        variant="tonal"
-        density="compact"
-        class="today-status today-gap-banner"
+        class="today-gap"
+        :aria-label="t('today.gapBannerLabel')"
       >
-        <div class="today-gap-banner__text">
-          {{ t('today.gapBanner', { date: gapDateFormatted }) }}
+        <img :src="capyMate" alt="" class="today-gap__capi">
+        <div class="today-gap__body">
+          <p class="today-gap__text">
+            {{ t('today.gapBanner', { date: gapDateFormatted }) }}
+          </p>
+          <div class="today-gap__actions">
+            <button type="button" class="today-gap__action today-gap__action--primary" @click="goToGap">
+              {{ t('today.gapBannerButton', { date: gapDateFormatted }) }}
+            </button>
+            <button type="button" class="today-gap__action" @click="dismissGap">
+              {{ t('today.gapBannerDismiss') }}
+            </button>
+          </div>
         </div>
-        <CapyButton variant="ghost" class="today-gap-banner__button" @click="goToGap">
-          {{ t('today.gapBannerButton') }}
-        </CapyButton>
-      </v-alert>
+      </section>
 
       <!-- Feedback inline -->
       <CapyLoader v-if="loading" :message="t('today.loading')" />
@@ -85,7 +94,7 @@
         @retry="loadSelectedDay"
       />
 
-      <!-- Tarjetas de comida -->
+      <!-- Tarjetas de comida. El error de un campo va en su tarjeta. -->
       <div class="today-meals">
         <MealCard
           v-for="meal in mealFields"
@@ -94,26 +103,30 @@
           :meal="meal.key"
           :title="meal.title"
           :placeholder="meal.placeholder"
-          :saving="savingKey === meal.key"
+          :saving="savingKeys.has(meal.key)"
           :just-saved="recentlySaved.has(meal.key)"
+          :persisted="isFieldSaved(meal.key)"
+          :error="errorKey === meal.key ? errorMessage : ''"
           @save-field="saveField(meal.key)"
         />
       </div>
 
-      <StickyActionBar>
+      <!-- "Cerrar el día" al final, después del Recuerdo: como todo se
+           guarda solo, no hace falta tenerlo fijo en pantalla (la barra
+           fija ocupaba ~105px del celular). Es el cierre del ritual que
+           lleva al "Listo 🍂", y llega justo cuando se termina de anotar. -->
+      <div class="today-close">
         <StatusAlert
-          v-if="!loadFailed && errorMessage"
+          v-if="!loadFailed && !errorKey && errorMessage"
           :message="errorMessage"
           :retryable="saveDayFailed"
           @retry="saveDay"
         />
-        <!-- "Cerrar el día" es el ritual que lleva al "Listo 🍂", no un
-             botón de formulario: lo escrito ya está guardado y se dice. -->
-        <p v-else class="today-autosave-hint">{{ t('today.autosaveHint') }}</p>
         <CapyButton :disabled="loading || savingDay" @click="saveDay">
           {{ t('today.saveDay') }}
         </CapyButton>
-      </StickyActionBar>
+        <p class="today-autosave-hint">{{ t('today.autosaveHint') }}</p>
+      </div>
 
     </template>
 
@@ -126,7 +139,6 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import MainLayout      from '../layouts/MainLayout.vue'
 import MealCard        from '../components/meal/MealCard.vue'
-import StickyActionBar from '../components/base/StickyActionBar.vue'
 import CapyButton      from '../components/base/CapyButton.vue'
 import CapyLoader      from '../components/base/CapyLoader.vue'
 import UserAvatar      from '../components/base/UserAvatar.vue'
@@ -137,6 +149,7 @@ import { formatDate, formatDateISO, addDays } from '../utils/date'
 import { MEAL_KEYS } from '../utils/meals'
 import { useDayEntry } from '../utils/useDayEntry'
 import { mdiCalendarMonthOutline } from '@mdi/js'
+import capyMate from '../assets/icons/capyMate.png'
 
 const router = useRouter()
 const { t }  = useI18n()
@@ -151,13 +164,18 @@ const {
   form,
   loading,
   errorMessage,
-  savingKey,
+  errorKey,
+  savingKeys,
   recentlySaved,
   load,
   reset,
   saveField,
+  flushPending,
   hasAnyContent,
+  isFieldSaved,
   markAllSaved,
+  setError,
+  clearError,
 } = useDayEntry({
   date: () => selectedDate.value,
   messages: {
@@ -196,11 +214,34 @@ const showGapBanner = computed(() =>
   lastRecordedDate.value
   && lastRecordedDate.value < yesterdayISO
   && selectedDate.value === todayISO
+  && !gapDismissed.value
+)
+
+// "Ahora no" vale por el día: mañana se vuelve a ofrecer, sin insistir hoy.
+// Es una comodidad de este dispositivo; si el almacenamiento no está
+// disponible (navegación privada), el aviso simplemente vuelve a aparecer.
+const GAP_DISMISS_KEY = 'capymeal.gapDismissedOn'
+
+function readGapDismissed() {
+  try { return localStorage.getItem(GAP_DISMISS_KEY) === todayISO } catch { return false }
+}
+
+const gapDismissed = ref(readGapDismissed())
+
+function dismissGap() {
+  gapDismissed.value = true
+  try { localStorage.setItem(GAP_DISMISS_KEY, todayISO) } catch { /* sin almacenamiento */ }
+}
+
+// Se nombra el primer día sin anotar (el siguiente al último guardado),
+// que es justo adónde lleva el botón.
+const gapStartDate = computed(() =>
+  lastRecordedDate.value ? addDays(lastRecordedDate.value, 1) : ''
 )
 
 const gapDateFormatted = computed(() => {
-  if (!lastRecordedDate.value) return ''
-  return formatDate(lastRecordedDate.value, {
+  if (!gapStartDate.value) return ''
+  return formatDate(gapStartDate.value, {
     day:   'numeric',
     month: 'long',
   })
@@ -230,24 +271,25 @@ async function loadLastRecordedDate() {
 
 async function saveDay() {
   if (!hasAnyContent()) {
-    errorMessage.value = t('today.atLeastOneFieldRequired')
+    setError(t('today.atLeastOneFieldRequired'))
     return
   }
 
   savingDay.value     = true
   saveDayFailed.value = false
   loadFailed.value    = false
-  errorMessage.value  = ''
+  clearError()
 
   try {
+    // Lo que esperaba la pausa de escritura se manda antes: si no, ese
+    // guardado podría llegar después y quedar como si nada.
+    await flushPending()
     await upsertMealEntry({ date: selectedDate.value, ...form })
     markAllSaved()
     saved.value = true
   } catch (error) {
     saveDayFailed.value = true
-    errorMessage.value = isNetworkError(error)
-      ? t('today.saveOfflineError')
-      : t('today.saveError')
+    setError(isNetworkError(error) ? t('today.saveOfflineError') : t('today.saveError'))
   } finally {
     savingDay.value = false
   }
@@ -279,8 +321,8 @@ function setQuickDate(daysAgo) {
 }
 
 function goToGap() {
-  if (!lastRecordedDate.value) return
-  selectedDate.value = addDays(lastRecordedDate.value, 1)
+  if (!gapStartDate.value) return
+  selectedDate.value = gapStartDate.value
   showDatePicker.value = false
 }
 
@@ -294,7 +336,7 @@ onMounted(() => {
 <style scoped>
 /* ── Encabezado ─────────────────────────────── */
 .today-header {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
 
 .today-header__capi-row {
@@ -306,14 +348,14 @@ onMounted(() => {
 
 .today-header__greeting {
   font-family: var(--font-title);
-  font-size: 1.4rem;
+  font-size: var(--font-size-title-md);
   font-weight: 700;
   color: var(--color-title);
   line-height: 1.2;
 }
 
 .today-header__date {
-  font-size: .9rem;
+  font-size: var(--font-size-body);
   color: var(--color-muted);
 }
 
@@ -375,26 +417,68 @@ onMounted(() => {
 
 /* ── Estado inline ──────────────────────────── */
 .today-status {
-  font-size: .85rem;
   margin-bottom: var(--space-md);
-  border-radius: var(--radius-sm);
-  padding: .5rem var(--space-md);
 }
 
-.today-gap-banner :deep(.v-alert__content) {
+/* ── Días sin anotar ────────────────────────── */
+/* Superficie cálida y sin color de estado: es una sugerencia de Capi. */
+.today-gap {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  align-items: flex-start;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--color-surface-warm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
 }
 
-.today-gap-banner__text {
-  font-size: .9rem;
+.today-gap__capi {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: var(--illustration-shadow-sm);
 }
 
-.today-gap-banner__button {
-  align-self: flex-start;
-  width: auto !important;
+.today-gap__body {
   min-width: 0;
+}
+
+.today-gap__text {
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+
+.today-gap__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-xs);
+}
+
+/* Botones de texto, como "Cambiar día": la invitación no compite con las
+   tarjetas, que son la tarea. */
+.today-gap__action {
+  min-height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-label);
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.today-gap__action--primary {
+  color: var(--color-primary-text);
+}
+
+.today-gap__action:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* ── Tarjetas ───────────────────────────────── */
@@ -405,16 +489,18 @@ onMounted(() => {
   margin-bottom: var(--space-xl);
 }
 
+/* ── Cerrar el día ──────────────────────────── */
+.today-close {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
 .today-autosave-hint {
   font-size: var(--font-size-caption);
   color: var(--color-muted);
   text-align: center;
-}
-
-
-/* ── Botón principal ────────────────────────── */
-.today-save {
-  width: 100%;
+  text-wrap: balance;
 }
 
 /* ── Confirmación ───────────────────────────── */
@@ -435,14 +521,14 @@ onMounted(() => {
 
 .confirmation__message {
   font-family: var(--font-title);
-  font-size: 1.35rem;
+  font-size: var(--font-size-title-md);
   line-height: 1.8;
   color: var(--color-title);
 }
 
 .confirmation__message span {
   font-family: var(--font-main);
-  font-size: 1rem;
+  font-size: var(--font-size-body);
   color: var(--color-muted);
 }
 

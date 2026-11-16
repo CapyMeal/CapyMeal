@@ -9,7 +9,10 @@
     "lastFieldError": "Un día guardado necesita al menos una comida o un recuerdo. Si querés borrarlo entero, usá \"Eliminar este día\" en el diario.",
     "slowBackendMessage": "Despertando a Capi… 🦫",
     "passwordMismatch": "Las contraseñas no coinciden.",
-    "forgotPasswordLink": "¿Olvidaste tu contraseña?"
+    "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+    "saving": "Guardando…",
+    "saved": "Guardado",
+    "savedField": "{field}: guardado"
   },
   "errors": {
     "network": "No pudimos conectar. Revisá tu conexión e intentá de nuevo.",
@@ -41,17 +44,19 @@
     "today": "Hoy",
     "yesterday": "Ayer",
     "sevenDaysAgo": "Hace 7 días",
-    "gapBanner": "Tu último recuerdo fue el {date}. ¿Seguimos desde ahí?",
-    "gapBannerButton": "Seguir desde ahí",
+    "gapBanner": "¿Te quedaron días sin anotar? Podés ponerte al día desde el {date}.",
+    "gapBannerButton": "Anotar el {date}",
     "loading": "Cargando…",
     "saveDay": "Cerrar el día",
-    "autosaveHint": "Cada comida se guarda sola al salir del campo.",
+    "autosaveHint": "Lo que escribís se guarda solo. Después de cerrar el día lo podés seguir editando desde el diario.",
     "loadError": "No pude cargar ese día. Intentá nuevamente.",
     "atLeastOneFieldRequired": "Completá al menos una comida o un recuerdo antes de cerrar el día.",
     "saveOfflineError": "No se pudo guardar: estás sin conexión.",
     "saveError": "No pude guardar este día. Intentá nuevamente.",
     "saveFieldOfflineError": "No se pudo guardar automáticamente: estás sin conexión.",
-    "saveFieldError": "No pude guardar ese cambio. Intentá nuevamente."
+    "saveFieldError": "No pude guardar ese cambio. Intentá nuevamente.",
+    "gapBannerLabel": "Días sin anotar",
+    "gapBannerDismiss": "Ahora no"
   },
   "settings": {
     "title": "Ajustes",
@@ -119,7 +124,8 @@
     "deleteGenericError": "No pude eliminar este día. Intentá nuevamente.",
     "loadOfflineError": "No pude cargar este día: estás sin conexión.",
     "loadGenericError": "No pude cargar este día. Intentá nuevamente.",
-    "exportError": "No pude exportar este día. Intentá nuevamente."
+    "exportError": "No pude exportar este día. Intentá nuevamente.",
+    "autosaveHint": "Los cambios se guardan solos."
   },
   "export": {
     "title": "Exportar PDF",

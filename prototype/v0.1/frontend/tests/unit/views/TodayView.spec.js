@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import TodayView from '../../../src/views/TodayView.vue'
 import { getMealEntries, getMealEntry, upsertMealEntry, isNetworkError } from '../../../src/services/mealEntriesApi'
@@ -18,12 +18,13 @@ vi.mock('vue-router', () => ({
 // saveSingleField (la lógica de guardado de TodayView), no MealCard en sí,
 // que ya tiene su propio contrato simple de v-model + save-field.
 const MealCardStub = {
-  props: ['modelValue', 'meal', 'title', 'placeholder', 'saving', 'justSaved'],
+  props: ['modelValue', 'meal', 'title', 'placeholder', 'saving', 'justSaved', 'persisted', 'error'],
   emits: ['update:modelValue', 'save-field'],
   template: `
     <div>
       <textarea :data-test="title" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
       <button :data-test="'save-' + title" type="button" @click="$emit('save-field')">guardar</button>
+      <p v-if="error" :data-error="meal">{{ error }}</p>
     </div>
   `,
 }
@@ -160,5 +161,81 @@ describe('TodayView', () => {
 
       expect(wrapper.text()).toContain('No pude guardar ese cambio. Intentá nuevamente.')
     })
+
+    it('el error de un campo va en su tarjeta, no abajo de "Cerrar el día"', async () => {
+      upsertMealEntry.mockRejectedValue(new Error('server error'))
+      const wrapper = mountTodayView()
+      await flushPromises()
+
+      await wrapper.find('[data-test="Desayuno"]').setValue('Café')
+      await wrapper.find('[data-test="save-Desayuno"]').trigger('click')
+      await flushPromises()
+
+      expect(wrapper.find('[data-error="breakfast"]').text()).toBe('No pude guardar ese cambio. Intentá nuevamente.')
+    })
+  })
+
+  describe('guardado al escribir', () => {
+    beforeEach(() => { vi.useFakeTimers() })
+    afterEach(() => { vi.useRealTimers() })
+
+    it('guarda sola tras una pausa, sin tener que salir del campo', async () => {
+      upsertMealEntry.mockResolvedValue({})
+      const wrapper = mountTodayView()
+      await flushPromises()
+
+      await wrapper.find('[data-test="Desayuno"]').setValue('Café')
+      expect(upsertMealEntry).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1300)
+
+      expect(upsertMealEntry).toHaveBeenCalledWith(expect.objectContaining({ breakfast: 'Café' }))
+    })
+
+    it('guarda lo pendiente cuando la app pasa a segundo plano', async () => {
+      upsertMealEntry.mockResolvedValue({})
+      const wrapper = mountTodayView()
+      await flushPromises()
+
+      await wrapper.find('[data-test="Cena"]').setValue('Sopa')
+      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true })
+      document.dispatchEvent(new Event('visibilitychange'))
+      await flushPromises()
+
+      expect(upsertMealEntry).toHaveBeenCalledWith(expect.objectContaining({ dinner: 'Sopa' }))
+      delete document.visibilityState
+    })
+  })
+
+  describe('días sin anotar', () => {
+    beforeEach(() => { localStorage.clear() })
+
+    it('invita a anotar desde el primer día sin registro, sin tono de advertencia', async () => {
+      getMealEntries.mockResolvedValue([{ date: addDaysISO(-5) }])
+      const wrapper = mountTodayView()
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('¿Te quedaron días sin anotar?')
+      expect(findButtonByText(wrapper, 'Anotar el')).toBeTruthy()
+    })
+
+    it('"Ahora no" lo oculta y no vuelve a aparecer en el mismo día', async () => {
+      getMealEntries.mockResolvedValue([{ date: addDaysISO(-5) }])
+      const wrapper = mountTodayView()
+      await flushPromises()
+
+      await findButtonByText(wrapper, 'Ahora no').trigger('click')
+      expect(wrapper.text()).not.toContain('¿Te quedaron días sin anotar?')
+
+      const again = mountTodayView()
+      await flushPromises()
+      expect(again.text()).not.toContain('¿Te quedaron días sin anotar?')
+    })
   })
 })
+
+function addDaysISO(days) {
+  const d = new Date()
+  d.setDate(d.getDate() + days)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}

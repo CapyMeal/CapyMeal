@@ -27,15 +27,18 @@ vi.mock('vue-router', () => ({
 // Stub liviano de MealCard: el punto de estos tests es la lógica de guardado
 // del Detalle (useDayEntry), no la tarjeta en sí.
 const MealCardStub = {
-  props: ['modelValue', 'meal', 'title', 'placeholder', 'saving', 'justSaved'],
+  props: ['modelValue', 'meal', 'title', 'placeholder', 'saving', 'justSaved', 'persisted', 'error'],
   emits: ['update:modelValue', 'save-field'],
   template: `
-    <textarea
-      :data-meal="meal"
-      :value="modelValue"
-      @input="$emit('update:modelValue', $event.target.value)"
-      @blur="$emit('save-field')"
-    />
+    <div>
+      <textarea
+        :data-meal="meal"
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+        @blur="$emit('save-field')"
+      />
+      <p v-if="error" :data-error="meal">{{ error }}</p>
+    </div>
   `,
 }
 

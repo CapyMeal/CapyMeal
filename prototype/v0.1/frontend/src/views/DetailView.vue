@@ -28,6 +28,9 @@
           {{ t('detail.back') }}
         </button>
         <h1 class="detail-date">{{ formattedDate }}</h1>
+        <!-- Mismo aviso que en "Hoy": sin él, editar un día pasado no
+             decía si los cambios quedaban. -->
+        <p v-if="hasEntry && !loading" class="detail-hint">{{ t('detail.autosaveHint') }}</p>
       </div>
 
       <CapyLoader v-if="loading" :message="t('detail.loading')" />
@@ -52,7 +55,7 @@
       <!-- Mismo modelo que "Hoy": cada tarjeta se edita en el lugar y se
            guarda sola al salir del campo, también al vaciarla. -->
       <template v-else>
-        <StatusAlert v-if="errorMessage" :message="errorMessage" class="detail-status" />
+        <StatusAlert v-if="errorMessage && !errorKey" :message="errorMessage" class="detail-status" />
 
         <div class="detail-meals">
           <MealCard
@@ -62,8 +65,10 @@
             :meal="field.key"
             :title="field.title"
             :placeholder="field.placeholder"
-            :saving="savingKey === field.key"
+            :saving="savingKeys.has(field.key)"
             :just-saved="recentlySaved.has(field.key)"
+            :persisted="isFieldSaved(field.key)"
+            :error="errorKey === field.key ? errorMessage : ''"
             @save-field="saveField(field.key)"
           />
         </div>
@@ -130,10 +135,12 @@ const {
   form,
   loading,
   errorMessage,
-  savingKey,
+  errorKey,
+  savingKeys,
   recentlySaved,
   load,
   saveField,
+  isFieldSaved,
 } = useDayEntry({
   date: () => dateKey,
   messages: {
@@ -270,6 +277,11 @@ onMounted(loadDay)
   text-transform: uppercase;
 }
 
+.detail-hint {
+  font-size: var(--font-size-label);
+  color: var(--color-muted);
+}
+
 .detail-status {
   margin-bottom: var(--space-md);
 }
@@ -286,6 +298,12 @@ onMounted(loadDay)
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
+}
+
+/* Más aire entre "Exportar" y "Eliminar": pegados, borrar el día quedaba
+   al alcance de un toque errado. */
+.detail-actions .detail-delete {
+  margin-top: var(--space-lg);
 }
 
 .detail-delete {
