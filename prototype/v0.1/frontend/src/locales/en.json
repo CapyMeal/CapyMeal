@@ -142,6 +142,7 @@
     "rangeLastMonth": "Last month",
     "rangeLastThreeMonths": "Last 3 months",
     "rangeAll": "All",
+    "rangeCustom": "Pick dates",
     "downloaded": "Done, the PDF was downloaded. You'll find it in Downloads.",
     "emptyMessage": "Couldn't find any entries for those dates.",
     "networkError": "Couldn't load the entries to export: you're offline.",
@@ -156,7 +157,7 @@
     "label": "Main navigation",
     "today": "Today",
     "diary": "Diary",
-    "pdf": "PDF",
+    "pdf": "Export",
     "settings": "Settings"
   },
   "verifyEmail": {

@@ -142,6 +142,7 @@
     "rangeLastMonth": "Último mes",
     "rangeLastThreeMonths": "Últimos 3 meses",
     "rangeAll": "Todo",
+    "rangeCustom": "Elegir fechas",
     "downloaded": "Listo, el PDF se descargó. Lo encontrás en Descargas.",
     "emptyMessage": "No encontré registros para esas fechas.",
     "networkError": "No pude cargar los registros para exportar: estás sin conexión.",
@@ -156,7 +157,7 @@
     "label": "Navegación principal",
     "today": "Hoy",
     "diary": "Diario",
-    "pdf": "PDF",
+    "pdf": "Exportar",
     "settings": "Ajustes"
   },
   "verifyEmail": {

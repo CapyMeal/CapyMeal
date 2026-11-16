@@ -25,7 +25,9 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { mdiCalendarToday, mdiCog, mdiFilePdfBox, mdiNotebook } from '@mdi/js'
+// Íconos de línea, como el resto de la app (regla de "una sola voz" en
+// DESIGN.md). La píldora de fondo ya marca cuál está activo.
+import { mdiCalendarTodayOutline, mdiCogOutline, mdiNotebookOutline, mdiTrayArrowDown } from '@mdi/js'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -35,10 +37,10 @@ function isActive(path) {
 }
 
 const items = [
-  { to: '/hoy',       icon: mdiCalendarToday, label: 'nav.today' },
-  { to: '/recuerdos', icon: mdiNotebook,      label: 'nav.diary' },
-  { to: '/exportar',  icon: mdiFilePdfBox,    label: 'nav.pdf' },
-  { to: '/ajustes',   icon: mdiCog,           label: 'nav.settings' },
+  { to: '/hoy',       icon: mdiCalendarTodayOutline, label: 'nav.today' },
+  { to: '/recuerdos', icon: mdiNotebookOutline,      label: 'nav.diary' },
+  { to: '/exportar',  icon: mdiTrayArrowDown,        label: 'nav.pdf' },
+  { to: '/ajustes',   icon: mdiCogOutline,           label: 'nav.settings' },
 ]
 </script>
 

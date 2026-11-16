@@ -10,14 +10,27 @@
         :key="range.key"
         type="button"
         class="export-ranges__chip"
-        :aria-pressed="activeRange === range.key"
+        :aria-pressed="selectedChip === range.key"
         @click="applyRange(range)"
       >
         {{ range.label }}
       </button>
+      <button
+        type="button"
+        class="export-ranges__chip"
+        :aria-pressed="selectedChip === 'custom'"
+        aria-controls="export-dates"
+        @click="customOpen = true"
+      >
+        {{ t('export.rangeCustom') }}
+      </button>
     </div>
 
-    <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
+    <!-- Las fechas a mano solo cuando hacen falta: con "Todo" elegido, dos
+         campos "dd/mm/aaaa" vacíos al lado parecían algo sin terminar. -->
+    <div v-if="selectedChip !== 'all'" id="export-dates">
+      <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
+    </div>
 
     <StatusAlert
       v-if="exportedNotice"
@@ -139,7 +152,16 @@ const activeRange = computed(() => {
   return match?.key ?? ''
 })
 
+// "Elegir fechas" abierto a mano, o un rango que no coincide con ningún
+// atajo (por ejemplo, fechas que ya venían elegidas).
+const customOpen = ref(activeRange.value === '')
+
+const selectedChip = computed(() =>
+  customOpen.value || activeRange.value === '' ? 'custom' : activeRange.value
+)
+
 function applyRange(range) {
+  customOpen.value = false
   fromDate.value = range.from
   toDate.value   = range.from ? todayISO : ''
 }
@@ -216,7 +238,10 @@ async function printPdf() {
   padding: var(--space-md);
 }
 
+/* Mismo tamaño que los títulos de tarjeta del resto de la app: con el h2
+   por defecto la fecha completa ocupaba dos renglones en el celular. */
 .export-card h2 {
+  font-size: var(--font-size-title-sm);
   margin-bottom: var(--space-sm);
   color: var(--color-title);
   text-wrap: balance;
