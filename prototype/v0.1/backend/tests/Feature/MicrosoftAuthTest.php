@@ -44,6 +44,24 @@ class MicrosoftAuthTest extends TestCase
         $this->assertNotNull($user->email_verified_at);
     }
 
+    public function test_redirect_through_the_frontend_returns_to_the_frontend(): void
+    {
+        config([
+            'app.frontend_url' => 'https://capy-meal.vercel.app',
+            'services.microsoft.client_id' => 'client-id',
+            'services.microsoft.redirect' => 'https://capymeal.onrender.com/api/auth/microsoft/callback',
+        ]);
+
+        $location = $this->withHeader('X-Forwarded-Host', 'capy-meal.vercel.app')
+            ->get('/api/auth/microsoft/redirect')
+            ->headers->get('Location');
+
+        $this->assertStringContainsString(
+            'redirect_uri='.urlencode('https://capy-meal.vercel.app/api/auth/microsoft/callback'),
+            $location
+        );
+    }
+
     public function test_existing_microsoft_user_logs_in_again_without_duplicating(): void
     {
         $user = User::factory()->create(['microsoft_id' => 'm-1', 'password' => null]);

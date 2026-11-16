@@ -17,6 +17,13 @@ class MicrosoftAuthController extends SocialAuthController
         return 'microsoft_id';
     }
 
+    // https://capy-meal.vercel.app/api/auth/microsoft/callback ya está
+    // registrada en el App registration de Azure (2026-11-16).
+    protected function supportsCallbackViaFrontend(): bool
+    {
+        return true;
+    }
+
     // El provider de Socialite mapea getEmail() a "userPrincipalName", que
     // en cuentas de trabajo/escuela es sólo el nombre de inicio de sesión --
     // un admin de esa organización puede asignarlo sin que pruebe ser dueño
