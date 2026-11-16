@@ -13,7 +13,10 @@
     <p class="settings-delete-account__warning">
       {{ t('settings.deleteAccountWarning') }}
     </p>
+    <!-- Las cuentas creadas con Google o Microsoft no tienen contraseña:
+         antes se les pedía igual y no tenían forma de borrarse. -->
     <PasswordField
+      v-if="needsPassword"
       v-model="deletePassword"
       :label="t('settings.confirmPassword')"
       autocomplete="current-password"
@@ -29,14 +32,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { mdiDeleteOutline } from '@mdi/js'
 import PasswordField from '../base/PasswordField.vue'
 import CapyButton from '../base/CapyButton.vue'
 import StatusAlert from '../base/StatusAlert.vue'
-import { deleteAccount } from '../../stores/authStore'
+import { deleteAccount, currentUser } from '../../stores/authStore'
 import { isNetworkError } from '../../services/mealEntriesApi'
 
 const router = useRouter()
@@ -47,6 +50,10 @@ const deletePassword = ref('')
 const deletingAccount = ref(false)
 const deleteError = ref('')
 
+// Sin el dato (sesión guardada antes de que la API lo enviara) se pide la
+// contraseña, como siempre: el backend la ignora si la cuenta no tiene.
+const needsPassword = computed(() => currentUser.value?.has_password !== false)
+
 function cancelDeleteAccount() {
   confirmingDeleteAccount.value = false
   deletePassword.value = ''
@@ -54,7 +61,7 @@ function cancelDeleteAccount() {
 }
 
 async function handleDeleteAccount() {
-  if (!deletePassword.value) {
+  if (needsPassword.value && !deletePassword.value) {
     deleteError.value = t('settings.confirmPasswordRequired')
     return
   }
@@ -63,9 +70,11 @@ async function handleDeleteAccount() {
   deleteError.value = ''
 
   try {
-    await deleteAccount(deletePassword.value)
+    await deleteAccount(needsPassword.value ? deletePassword.value : undefined)
     router.push('/login')
   } catch (error) {
+    // error.message ya viene redactado: httpClient traduce los errores del
+    // servidor y los de validación llegan en el idioma de la usuaria.
     deleteError.value = isNetworkError(error)
       ? t('settings.deleteOfflineError')
       : error.message
@@ -79,7 +88,7 @@ async function handleDeleteAccount() {
 
 <style scoped>
 .settings-delete-account__warning {
-  font-size: .85rem;
+  font-size: var(--font-size-label);
   color: var(--color-danger-text);
   line-height: 1.5;
 }

@@ -19,6 +19,12 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'email_verified' => ! is_null($this->email_verified_at),
+            // Las cuentas creadas con Google o Microsoft no tienen
+            // contraseña propia. El frontend lo necesita para no pedirla al
+            // eliminar la cuenta (destroy() ya no la exige en ese caso):
+            // sin esto, esas cuentas no tenían forma de borrarse. Solo se
+            // expone a la propia usuaria autenticada.
+            'has_password' => ! is_null($this->password),
             'two_factor_enabled' => $this->hasTwoFactorEnabled(),
             'two_factor_recovery_codes_remaining' => count($this->two_factor_recovery_codes ?? []),
             'avatar' => $this->avatar,

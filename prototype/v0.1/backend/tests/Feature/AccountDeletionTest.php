@@ -56,6 +56,32 @@ class AccountDeletionTest extends TestCase
         $this->assertDatabaseHas('users', ['id' => $user->id]);
     }
 
+    public function test_social_account_without_password_deletes_without_asking_for_one(): void
+    {
+        $user = User::factory()->create(['password' => null]);
+        $token = $user->createToken('capymeal')->plainTextToken;
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson('/api/me')
+            ->assertJsonPath('has_password', false);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->deleteJson('/api/me')
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    }
+
+    public function test_me_reports_that_a_password_account_has_a_password(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('capymeal123')]);
+        $token = $user->createToken('capymeal')->plainTextToken;
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson('/api/me')
+            ->assertJsonPath('has_password', true);
+    }
+
     public function test_token_stops_working_after_account_is_deleted(): void
     {
         $user = User::factory()->create(['password' => Hash::make('capymeal123')]);
