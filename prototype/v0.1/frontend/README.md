@@ -29,3 +29,13 @@ npm test         # Vitest
 
 Vercel, build estático de este directorio. Auto-deploy desde la rama `dev` (no `main`). Variables
 de entorno (`VITE_API_URL`, `VITE_SENTRY_DSN`) configuradas en el dashboard de Vercel.
+
+En producción la app no llama al backend de Render directamente: pide `/api/...` al mismo sitio
+y `vercel.json` lo reenvía a `https://capymeal.onrender.com/api/...`. Así la cookie de sesión es
+del propio sitio y no "de un tercero", y el ingreso funciona en navegadores que bloquean cookies
+de terceros (Samsung Internet, Brave, Safari en iPhone). Lo activa `VITE_API_SAME_ORIGIN=true`
+en `.env.production`; el ingreso con Google y Microsoft sigue yendo directo al backend porque es
+una navegación de página completa. Ver `src/config/api.js`.
+
+Para probar un build local contra otro backend (por ejemplo, una API falsa), compilar con
+`VITE_API_SAME_ORIGIN=false VITE_API_URL=http://localhost:8787`.

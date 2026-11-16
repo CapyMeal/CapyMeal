@@ -1,7 +1,7 @@
 import { handleUnauthorized } from '../stores/authStore'
 import { apiRequest, buildHttpError } from './httpClient'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+import { API_BASE_URL } from '../config/api'
 
 function request(path, options = {}) {
   return apiRequest(API_BASE_URL, path, {

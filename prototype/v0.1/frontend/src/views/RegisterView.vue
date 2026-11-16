@@ -73,6 +73,7 @@
 </template>
 
 <script setup>
+import { BACKEND_URL } from '../config/api'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -88,12 +89,10 @@ import { register } from '../stores/authStore'
 const router = useRouter()
 const { t }  = useI18n()
 
-// Mismo fallback que ya usan authStore.js/mealEntriesApi.js -- la
-// constante está duplicada en varios lugares, aceptado y fuera de
-// alcance tocarlo acá.
-const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
-const googleRedirectUrl = `${apiBaseUrl}/api/auth/google/redirect`
-const microsoftRedirectUrl = `${apiBaseUrl}/api/auth/microsoft/redirect`
+// Navegación de página completa al backend real (no pasa por el /api de
+// Vercel): el proveedor vuelve directo al backend. Ver config/api.js.
+const googleRedirectUrl = `${BACKEND_URL}/api/auth/google/redirect`
+const microsoftRedirectUrl = `${BACKEND_URL}/api/auth/microsoft/redirect`
 
 const name             = ref('')
 const email             = ref('')

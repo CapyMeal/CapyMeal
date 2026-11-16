@@ -38,7 +38,9 @@ export default defineConfig({
         // service worker la agarraba y servía index.html en vez del
         // archivo, y la app terminaba mostrando su propio 404 en vez de
         // bajar el instalador.
-        navigateFallbackDenylist: [/^\/capymeal\.apk$/],
+        // /api va al backend (vercel.json lo reenvía): el service worker no
+        // tiene que responder esas rutas con el index.html de la app.
+        navigateFallbackDenylist: [/^\/capymeal\.apk$/, /^\/api\//],
         // Los GET a /api/meal-entries se cachean para que el diario siga
         // visible sin señal; POST/PUT/DELETE quedan fuera a propósito, van
         // directo a la red y fallan "al desnudo" (ver useOnlineStatus.js).
