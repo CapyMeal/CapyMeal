@@ -26,9 +26,10 @@
       </button>
     </div>
 
-    <!-- Las fechas a mano solo cuando hacen falta: con "Todo" elegido, dos
-         campos "dd/mm/aaaa" vacíos al lado parecían algo sin terminar. -->
-    <div v-if="selectedChip !== 'all'" id="export-dates">
+    <!-- Las fechas a mano solo con "Elegir fechas": con "Todo" eran dos
+         campos "dd/mm/aaaa" vacíos, y con un rango rápido repetían lo que
+         ya dice el chip y el resumen de abajo. -->
+    <div v-if="selectedChip === 'custom'" id="export-dates">
       <DateRangeFilter v-model:from="fromDate" v-model:to="toDate" />
     </div>
 

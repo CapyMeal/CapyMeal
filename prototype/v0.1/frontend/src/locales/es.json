@@ -1,7 +1,7 @@
 {
   "common": {
-    "notRecorded": "No registrado",
-    "preparingPdf": "Preparando PDF...",
+    "notRecorded": "Sin anotar",
+    "preparingPdf": "Preparando PDF…",
     "email": "Email",
     "emailPlaceholder": "tu{'@'}email.com",
     "or": "o",
@@ -84,7 +84,7 @@
     "deleteAccount": "Eliminar mi cuenta",
     "deleteAccountWarning": "Esto borra tu cuenta y todo tu diario para siempre. No se puede deshacer.",
     "confirmPassword": "Confirmá tu contraseña",
-    "deleting": "Eliminando...",
+    "deleting": "Eliminando…",
     "confirmDelete": "Sí, eliminar mi cuenta",
     "cancel": "Cancelar",
     "confirmPasswordRequired": "Ingresá tu contraseña para confirmar.",
@@ -95,7 +95,7 @@
   },
   "diary": {
     "title": "Mi Diario",
-    "loading": "Cargando tu diario...",
+    "loading": "Cargando tu diario…",
     "emptyMessage": "Todavía no guardamos ningún recuerdo.",
     "emptyAction": "Registrar mi primer día",
     "emptyFilteredMessage": "No encontré registros para esas fechas.",
@@ -110,9 +110,9 @@
   "detail": {
     "deleteConfirmMessage": "¿Querés eliminar el recuerdo del {date}? No se puede deshacer.",
     "deleteConfirmYes": "Sí, eliminar",
-    "deleting": "Eliminando...",
+    "deleting": "Eliminando…",
     "cancel": "Cancelar",
-    "loading": "Cargando el detalle del día...",
+    "loading": "Cargando el detalle del día…",
     "emptyMessage": "No encontré ese recuerdo.",
     "emptyAction": "Volver al diario",
     "back": "Volver al diario",
@@ -134,7 +134,7 @@
   },
   "export": {
     "title": "Exportar PDF",
-    "loading": "Cargando registros para exportar...",
+    "loading": "Cargando registros para exportar…",
     "notesLabel": "Recuerdo",
     "downloadButton": "Descargar PDF (1 día) | Descargar PDF ({n} días)",
     "daysCount": "1 día | {n} días",
@@ -350,7 +350,7 @@
     "challengeRecoverySubtitle": "Ingresá uno de tus códigos de recuperación.",
     "codeLabel": "Código",
     "recoveryCodeLabel": "Código de recuperación",
-    "verifying": "Verificando...",
+    "verifying": "Verificando…",
     "verifyButton": "Verificar",
     "useRecoveryCodeInstead": "Usar un código de recuperación",
     "useAppCodeInstead": "Usar el código de la app",
@@ -372,6 +372,6 @@
     "recoveryCodesSavedButton": "Ya los guardé",
     "recoveryCodesLeaveConfirm": "¿Seguro que querés salir? Todavía no guardaste tus códigos de recuperación y no los vamos a poder mostrar de nuevo.",
     "disableConfirmButton": "Sí, desactivar",
-    "disabling": "Desactivando..."
+    "disabling": "Desactivando…"
   }
 }

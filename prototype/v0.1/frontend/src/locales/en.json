@@ -1,7 +1,7 @@
 {
   "common": {
-    "notRecorded": "Not recorded",
-    "preparingPdf": "Preparing PDF...",
+    "notRecorded": "Not logged",
+    "preparingPdf": "Preparing PDF…",
     "email": "Email",
     "emailPlaceholder": "you{'@'}email.com",
     "or": "or",
@@ -84,7 +84,7 @@
     "deleteAccount": "Delete my account",
     "deleteAccountWarning": "This deletes your account and your whole diary forever. It can't be undone.",
     "confirmPassword": "Confirm your password",
-    "deleting": "Deleting...",
+    "deleting": "Deleting…",
     "confirmDelete": "Yes, delete my account",
     "cancel": "Cancel",
     "confirmPasswordRequired": "Enter your password to confirm.",
@@ -95,7 +95,7 @@
   },
   "diary": {
     "title": "My Diary",
-    "loading": "Loading your diary...",
+    "loading": "Loading your diary…",
     "emptyMessage": "You haven't saved any memories yet.",
     "emptyAction": "Log my first day",
     "emptyFilteredMessage": "Couldn't find any entries for those dates.",
@@ -110,9 +110,9 @@
   "detail": {
     "deleteConfirmMessage": "Delete your memory from {date}? This can't be undone.",
     "deleteConfirmYes": "Yes, delete",
-    "deleting": "Deleting...",
+    "deleting": "Deleting…",
     "cancel": "Cancel",
-    "loading": "Loading this day's details...",
+    "loading": "Loading this day's details…",
     "emptyMessage": "Couldn't find that memory.",
     "emptyAction": "Back to diary",
     "back": "Back to diary",
@@ -134,7 +134,7 @@
   },
   "export": {
     "title": "Export PDF",
-    "loading": "Loading entries to export...",
+    "loading": "Loading entries to export…",
     "notesLabel": "Memory",
     "downloadButton": "Download PDF (1 day) | Download PDF ({n} days)",
     "daysCount": "1 day | {n} days",
@@ -350,7 +350,7 @@
     "challengeRecoverySubtitle": "Enter one of your recovery codes.",
     "codeLabel": "Code",
     "recoveryCodeLabel": "Recovery code",
-    "verifying": "Verifying...",
+    "verifying": "Verifying…",
     "verifyButton": "Verify",
     "useRecoveryCodeInstead": "Use a recovery code",
     "useAppCodeInstead": "Use the app code",
@@ -372,6 +372,6 @@
     "recoveryCodesSavedButton": "I saved them",
     "recoveryCodesLeaveConfirm": "Are you sure you want to leave? You haven't saved your recovery codes yet, and we won't be able to show them again.",
     "disableConfirmButton": "Yes, disable",
-    "disabling": "Disabling..."
+    "disabling": "Disabling…"
   }
 }

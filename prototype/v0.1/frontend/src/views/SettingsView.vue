@@ -233,7 +233,7 @@ async function handleLogout() {
 .settings-list {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-control);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }

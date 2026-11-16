@@ -87,7 +87,7 @@
           <CapyButton
             variant="ghost"
             :disabled="exportingPdf"
-            :prepend-icon="`svg:${mdiFilePdfBox}`"
+            :prepend-icon="`svg:${mdiTrayArrowDown}`"
             @click="exportDayPdf"
           >
             {{ exportingPdf ? t('common.preparingPdf') : t('detail.exportDayButton') }}
@@ -107,7 +107,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { mdiArrowLeft, mdiDeleteOutline, mdiFilePdfBox } from '@mdi/js'
+import { mdiArrowLeft, mdiDeleteOutline, mdiTrayArrowDown } from '@mdi/js'
 import MainLayout  from '../layouts/MainLayout.vue'
 import MealCard    from '../components/meal/MealCard.vue'
 import EmptyState  from '../components/diary/EmptyState.vue'

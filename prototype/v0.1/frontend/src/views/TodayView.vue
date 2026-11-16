@@ -414,7 +414,7 @@ onMounted(() => {
   margin-top: var(--space-sm);
   background: var(--color-surface);
   border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-control);
   padding: var(--space-md);
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -459,7 +459,7 @@ onMounted(() => {
   padding: var(--space-md);
   background: var(--color-surface-warm);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-control);
 }
 
 .today-gap__capi {
