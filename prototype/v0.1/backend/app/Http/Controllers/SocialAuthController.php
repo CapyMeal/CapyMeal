@@ -45,6 +45,11 @@ abstract class SocialAuthController extends Controller
         try {
             $socialiteUser = Socialite::driver($this->driver())->user();
         } catch (InvalidStateException|ClientException $e) {
+            // Se sigue reportando a Sentry (con el motivo: state que no
+            // coincide, código ya usado, redirect_uri mal configurada...):
+            // la persona ve un aviso amable, pero el error no se pierde.
+            report($e);
+
             return redirect("{$frontendUrl}/login?social_error={$this->driver()}");
         }
 
