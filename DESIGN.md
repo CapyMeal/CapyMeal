@@ -194,7 +194,7 @@ El tema oscuro reemplaza la terracota por **Miel** (`noche-miel`, hover `noche-m
 
 Una sola columna centrada de 600px como máximo, con margen lateral de 1rem en el celular y 1.5rem desde 768px. El espaciado sigue la escala `xs` a `2xl` (0.5 a 2.75rem), que crece apenas en pantallas de 768px o más (`lg` 1.75rem, `xl` 2.25rem, `2xl` 3rem).
 
-Estructura fija de las pantallas con sesión: encabezado pegajoso de 68px con Capi chef y la marca centrados; contenido; barra de navegación inferior fija de 70px. Las pantallas con un formulario largo suman una barra de acción pegajosa justo encima de la navegación, con el botón principal siempre a mano. El contenido reserva espacio abajo para que nada quede tapado por esas barras.
+Estructura fija de las pantallas con sesión: encabezado pegajoso de 68px con Capi chef y la marca centrados; contenido; barra de navegación inferior fija de 70px. No hay barras de acción fijas: como todo se guarda solo, el botón principal ("Cerrar el día") va al final del contenido, donde termina la tarea, y no le resta pantalla al celular. El contenido reserva espacio abajo para que nada quede tapado por la navegación.
 
 Las pantallas de autenticación centran una tarjeta de 400px como máximo sobre el fondo.
 
@@ -246,12 +246,14 @@ Grandes, cómodos y tranquilos: nunca agresivos.
 - **Internal Padding:** `lg` (1.5rem); las de autenticación, `2xl` por `xl`.
 
 ### Inputs / Fields
-- **Campo de comida:** área de texto de 3 líneas sin borde visible, fondo arena, esquinas de 8px, placeholder en tinta suave sin opacidad extra, sin redimensionar. Con foco, el fondo pasa a mantel y aparece un borde terracota de 1.5px. Se guarda sola al salir del campo.
+- **Campo de comida:** área de texto que arranca de una línea y crece con lo escrito, sin borde visible, fondo arena, esquinas de 8px, placeholder en tinta suave sin opacidad extra. Con foco, el fondo pasa a mantel y aparece un borde terracota de 1.5px. Se guarda sola tras una pausa al escribir, al salir del campo y cuando la app pasa a segundo plano. Su estado se lee sin color: "Guardando…", tilde con "Guardado" (que también se anuncia a lectores de pantalla) y después un tilde suave que queda.
 - **Campos de formulario (Vuetify):** variante rellena, 8px, con 20px de margen interno a los lados; el foco se marca con la línea inferior terracota, sin anillo extra.
-- **Error / Disabled:** los errores se muestran en un aviso tonal rosa arcilla arriba del contenido, no en rojo sobre el campo.
+- **Elección entre pocas opciones:** control segmentado (`SegmentedControl`), una píldora arena con la opción elegida en mantel y sombra de apoyo. Reemplaza a los interruptores: tema (Claro, Oscuro, Sistema) e idioma (cada uno escrito en su propio idioma).
+- **Error / Disabled:** los errores se muestran en un aviso tonal (`StatusAlert`) al lado de lo que falló: el de un campo, dentro de su tarjeta; el de la pantalla, arriba del contenido. Nunca en rojo sobre el campo.
+- **Invitaciones de Capi:** sugerencias que no son errores (días sin anotar) van en la superficie cálida con una ilustración chica de Capi y botones de texto, sin color de estado ni "!". Siempre se pueden dejar para otro momento.
 
 ### Navigation
-- **Barra inferior:** fija, 70px, fondo mantel semitransparente con desenfoque a todo el ancho; los cuatro destinos (Hoy, Diario, PDF, Ajustes) quedan alineados con la columna de 600px. Ícono de línea de 24px y etiqueta `caption`. Inactivos en tinta suave; el activo en terracota de texto con una píldora de 56×30px detrás del ícono (terracota al 16%), para que no dependa solo del color.
+- **Barra inferior:** fija, 70px, fondo mantel semitransparente con desenfoque a todo el ancho; los cuatro destinos (Hoy, Diario, Exportar, Ajustes) quedan alineados con la columna de 600px. Ícono de línea de 24px y etiqueta `caption`. Inactivos en tinta suave; el activo en terracota de texto con una píldora de 56×30px detrás del ícono (terracota al 16%), para que no dependa solo del color.
 - **Encabezado:** pegajoso, 68px, mantel con borde y sombra de apoyo, Capi chef de 40px y "CapyMeal" en Fredoka 700.
 
 ### Iconografía e ilustraciones
