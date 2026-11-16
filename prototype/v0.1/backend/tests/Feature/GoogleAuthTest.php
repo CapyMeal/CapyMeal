@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Tests\TestCase;
 
@@ -45,6 +46,19 @@ class GoogleAuthTest extends TestCase
 
         $user = User::where('email', 'mercedes@example.com')->first();
         $this->assertNotNull($user->email_verified_at);
+    }
+
+    public function test_used_or_expired_google_link_returns_to_login_instead_of_a_500(): void
+    {
+        // Pasa al reabrir el callback con un "state" ya usado (por ejemplo,
+        // al tocar "Volver a intentar"): antes era una pantalla 500.
+        config(['app.frontend_url' => 'https://capy-meal.vercel.app']);
+        Socialite::shouldReceive('driver->user')->andThrow(new InvalidStateException);
+
+        $this->get('/api/auth/google/callback')
+            ->assertRedirect('https://capy-meal.vercel.app/login?social_error=google');
+
+        $this->assertDatabaseCount('users', 0);
     }
 
     public function test_existing_google_user_logs_in_again_without_duplicating(): void

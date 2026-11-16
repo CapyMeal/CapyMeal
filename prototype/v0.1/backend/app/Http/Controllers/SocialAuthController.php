@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -11,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 
 abstract class SocialAuthController extends Controller
 {
@@ -32,7 +34,20 @@ abstract class SocialAuthController extends Controller
 
     public function callback()
     {
-        $socialiteUser = Socialite::driver($this->driver())->user();
+        $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+
+        // Si el proveedor no devuelve un usuario válido (la persona canceló,
+        // el enlace ya se usó o venció, o el "state" no coincide porque se
+        // recargó la página), se vuelve al login con un aviso. Antes esto
+        // terminaba en una pantalla "500 Server Error" del backend, sin
+        // salida: pasaba al tocar "Volver a intentar" sobre un enlace ya
+        // usado.
+        try {
+            $socialiteUser = Socialite::driver($this->driver())->user();
+        } catch (InvalidStateException|ClientException $e) {
+            return redirect("{$frontendUrl}/login?social_error={$this->driver()}");
+        }
+
         $user = $this->findOrCreateUser($socialiteUser);
 
         // La sesión autenticada se abre recién en exchange(), no acá -- si
@@ -44,8 +59,6 @@ abstract class SocialAuthController extends Controller
             ['user_id' => $user->id],
             now()->addSeconds(self::EXCHANGE_TTL_SECONDS)
         );
-
-        $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
 
         return redirect("{$frontendUrl}/auth/{$this->driver()}/callback?code={$code}");
     }

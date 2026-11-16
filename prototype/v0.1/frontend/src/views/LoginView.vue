@@ -87,7 +87,20 @@ const slowLogin      = ref(false)
 // authStore.js), avisamos por qué en vez de dejar que parezca que el
 // login en sí falló.
 const sessionExpired = ref(!!route.query.expired)
-const errorMessage   = ref(sessionExpired.value ? t('login.sessionExpired') : '')
+
+// El backend vuelve acá con ?social_error=google|microsoft si el ingreso
+// con el proveedor no se pudo completar (canceló, o el enlace ya se usó o
+// venció). Antes eso era una pantalla "500 Server Error" sin salida.
+const SOCIAL_PROVIDERS = { google: 'Google', microsoft: 'Microsoft' }
+const socialErrorProvider = SOCIAL_PROVIDERS[route.query.social_error]
+
+function initialErrorMessage() {
+  if (sessionExpired.value) return t('login.sessionExpired')
+  if (socialErrorProvider) return t('login.socialError', { provider: socialErrorProvider })
+  return ''
+}
+
+const errorMessage   = ref(initialErrorMessage())
 const errorType      = computed(() => sessionExpired.value ? 'warning' : 'error')
 
 const loadingButtonLabel = computed(() => {

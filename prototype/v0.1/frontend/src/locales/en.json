@@ -185,7 +185,8 @@
     "sessionExpired": "Your session expired. Sign in again.",
     "submitButton": "Sign in",
     "loggingIn": "Signing in…",
-    "genericError": "Couldn't sign you in. Try again."
+    "genericError": "Couldn't sign you in. Try again.",
+    "socialError": "Couldn't finish signing you in with {provider}. Try again."
   },
   "register": {
     "title": "Create account",

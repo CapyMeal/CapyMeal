@@ -185,7 +185,8 @@
     "sessionExpired": "Tu sesión expiró. Iniciá sesión de nuevo.",
     "submitButton": "Entrar",
     "loggingIn": "Entrando…",
-    "genericError": "No pude iniciar sesión. Intentá nuevamente."
+    "genericError": "No pude iniciar sesión. Intentá nuevamente.",
+    "socialError": "No pude completar el ingreso con {provider}. Probá de nuevo."
   },
   "register": {
     "title": "Crear cuenta",
