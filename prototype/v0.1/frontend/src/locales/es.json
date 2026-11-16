@@ -100,7 +100,8 @@
     "deletedNotice": "Listo, eliminamos el recuerdo del {date}.",
     "filterToggle": "Filtrar por fechas",
     "filterHide": "Ocultar filtro",
-    "filterClear": "Ver todo el diario"
+    "filterClear": "Ver todo el diario",
+    "notRecorded": "Sin anotar: {meals}."
   },
   "detail": {
     "deleteConfirmMessage": "¿Querés eliminar el recuerdo del {date}? No se puede deshacer.",

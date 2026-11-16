@@ -1,5 +1,14 @@
 <template>
-  <v-card :to="`/recuerdos/${date}`" class="diary-card" color="surface" elevation="1" hover>
+  <!-- aria-label: sin él, el nombre del enlace era el día entero leído
+       de corrido cada vez que se pasaba por la tarjeta. -->
+  <v-card
+    :to="`/recuerdos/${date}`"
+    :aria-label="formattedDate"
+    class="diary-card"
+    color="surface"
+    elevation="1"
+    hover
+  >
     <v-card-text>
       <p class="diary-card__date">{{ formattedDate }}</p>
 
@@ -11,12 +20,24 @@
         <span class="diary-card__text">{{ entry.notes }}</span>
       </p>
 
+      <!-- El nombre de la comida a la vista: las ilustraciones de almuerzo,
+           merienda y cena son platos parecidos a este tamaño, y quien lee
+           el diario en una consulta no tiene por qué conocerlas. -->
       <ul v-if="filledMeals.length" class="diary-card__meals">
         <li v-for="meal in filledMeals" :key="meal.key" class="diary-card__meal">
-          <MealIcon :meal="meal.key" :label="t(`meals.${meal.key}`)" />
-          <span class="diary-card__text">{{ meal.value }}</span>
+          <MealIcon :meal="meal.key" />
+          <span class="diary-card__text">
+            <span class="diary-card__label">{{ t(`meals.${meal.key}`) }}</span>
+            {{ meal.value }}
+          </span>
         </li>
       </ul>
+
+      <!-- Lo que no se anotó se nombra en una línea tranquila: si no, "no
+           comió" y "no lo anotó" se veían igual. -->
+      <p v-if="filledMeals.length && missingMeals" class="diary-card__missing">
+        {{ t('diary.notRecorded', { meals: missingMeals }) }}
+      </p>
     </v-card-text>
   </v-card>
 </template>
@@ -33,13 +54,22 @@ const props = defineProps({
   entry: { type: Object, required: true },
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const filledMeals = computed(() =>
   MEAL_KEYS
     .filter(key => props.entry[key])
     .map(key => ({ key, value: props.entry[key] }))
 )
+
+// "merienda y cena": en minúscula porque va dentro de una frase.
+const missingMeals = computed(() => {
+  const names = MEAL_KEYS
+    .filter(key => !props.entry[key])
+    .map(key => t(`meals.${key}`).toLocaleLowerCase(locale.value))
+  if (names.length === 0) return ''
+  return new Intl.ListFormat(locale.value, { type: 'conjunction' }).format(names)
+})
 
 // Sin año: el Diario agrupa por mes y el encabezado del grupo ya lo dice.
 const formattedDate = computed(() => formatDate(props.date, {
@@ -113,6 +143,18 @@ const formattedDate = computed(() => formatDate(props.date, {
 /* Hasta dos líneas: "Café con leche y tostadas con que…" en una sola
    línea no se terminaba de leer. min-width: 0 deja que el texto se
    achique dentro del flex. */
+.diary-card__label {
+  font-weight: 600;
+  color: var(--color-title);
+  margin-right: .25em;
+}
+
+.diary-card__missing {
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-label);
+  color: var(--color-muted);
+}
+
 .diary-card__text {
   min-width: 0;
   font-size: var(--font-size-body);

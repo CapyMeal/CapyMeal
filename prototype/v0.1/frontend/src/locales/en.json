@@ -100,7 +100,8 @@
     "deletedNotice": "Done, we deleted your memory from {date}.",
     "filterToggle": "Filter by date",
     "filterHide": "Hide filter",
-    "filterClear": "Show the whole diary"
+    "filterClear": "Show the whole diary",
+    "notRecorded": "Not logged: {meals}."
   },
   "detail": {
     "deleteConfirmMessage": "Delete your memory from {date}? This can't be undone.",
