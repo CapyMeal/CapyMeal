@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\InvalidStateException;
 
 abstract class SocialAuthController extends Controller
@@ -29,7 +31,7 @@ abstract class SocialAuthController extends Controller
 
     public function redirect()
     {
-        return Socialite::driver($this->driver())->redirect();
+        return $this->provider()->redirect();
     }
 
     public function callback()
@@ -43,7 +45,7 @@ abstract class SocialAuthController extends Controller
         // salida: pasaba al tocar "Volver a intentar" sobre un enlace ya
         // usado.
         try {
-            $socialiteUser = Socialite::driver($this->driver())->user();
+            $socialiteUser = $this->provider()->user();
         } catch (InvalidStateException|ClientException $e) {
             // Se sigue reportando a Sentry (con el motivo: state que no
             // coincide, código ya usado, redirect_uri mal configurada...):
@@ -66,6 +68,61 @@ abstract class SocialAuthController extends Controller
         );
 
         return redirect("{$frontendUrl}/auth/{$this->driver()}/callback?code={$code}");
+    }
+
+    /**
+     * El driver de Socialite, con la URL de vuelta según por dónde llegó la
+     * request. redirect() y callback() tienen que usar exactamente la misma
+     * (el proveedor la compara al canjear el código).
+     */
+    private function provider(): Provider
+    {
+        $driver = Socialite::driver($this->driver());
+        $callbackUrl = $this->callbackUrlViaFrontend();
+
+        if ($callbackUrl !== null && $driver instanceof AbstractProvider) {
+            $driver->redirectUrl($callbackUrl);
+        }
+
+        return $driver;
+    }
+
+    /**
+     * Si la request llegó por el frontend (vercel.json reenvía /api al
+     * backend), la vuelta del proveedor también va por ahí: así la cookie
+     * de sesión que guarda el "state" de Socialite es del mismo sitio que
+     * la app. Pasando por capymeal.onrender.com, los navegadores con
+     * protección contra rastreo (Samsung Internet, entre otros) la
+     * bloqueaban o borraban, y el ingreso fallaba con InvalidStateException.
+     *
+     * Solo se confía en X-Forwarded-Host si coincide con FRONTEND_URL. Si
+     * la request llega directo al backend (desarrollo local, o el flujo
+     * anterior), se usa la URL configurada en services.php como siempre.
+     */
+    private function callbackUrlViaFrontend(): ?string
+    {
+        if (! $this->supportsCallbackViaFrontend()) {
+            return null;
+        }
+
+        $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+        $frontendHost = parse_url($frontendUrl, PHP_URL_HOST);
+        $forwardedHost = trim(explode(',', (string) request()->header('X-Forwarded-Host'))[0]);
+
+        if (! $frontendHost || $forwardedHost !== $frontendHost) {
+            return null;
+        }
+
+        return "{$frontendUrl}/api/auth/{$this->driver()}/callback";
+    }
+
+    /**
+     * Cada proveedor tiene que tener registrada la URL de vuelta del
+     * frontend en su consola (Google Cloud, Azure) antes de activarlo.
+     */
+    protected function supportsCallbackViaFrontend(): bool
+    {
+        return false;
     }
 
     public function exchange(Request $request)

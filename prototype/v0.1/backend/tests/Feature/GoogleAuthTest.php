@@ -6,9 +6,11 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
 use Laravel\Socialite\Two\User as SocialiteUser;
+use Mockery;
 use Tests\TestCase;
 
 // Sólo lo específico de Google vive acá -- el comportamiento genérico de
@@ -53,12 +55,51 @@ class GoogleAuthTest extends TestCase
         // Pasa al reabrir el callback con un "state" ya usado (por ejemplo,
         // al tocar "Volver a intentar"): antes era una pantalla 500.
         config(['app.frontend_url' => 'https://capy-meal.vercel.app']);
-        Socialite::shouldReceive('driver->user')->andThrow(new InvalidStateException);
+        $provider = Mockery::mock(Provider::class);
+        $provider->shouldReceive('user')->andThrow(new InvalidStateException);
+        Socialite::shouldReceive('driver')->with('google')->andReturn($provider);
 
         $this->get('/api/auth/google/callback')
             ->assertRedirect('https://capy-meal.vercel.app/login?social_error=google');
 
         $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_redirect_through_the_frontend_returns_to_the_frontend(): void
+    {
+        config([
+            'app.frontend_url' => 'https://capy-meal.vercel.app',
+            'services.google.client_id' => 'client-id',
+            'services.google.redirect' => 'https://capymeal.onrender.com/api/auth/google/callback',
+        ]);
+
+        $location = $this->withHeader('X-Forwarded-Host', 'capy-meal.vercel.app')
+            ->get('/api/auth/google/redirect')
+            ->headers->get('Location');
+
+        $this->assertStringContainsString(
+            'redirect_uri='.urlencode('https://capy-meal.vercel.app/api/auth/google/callback'),
+            $location
+        );
+    }
+
+    public function test_redirect_straight_to_the_backend_keeps_the_configured_callback(): void
+    {
+        config([
+            'app.frontend_url' => 'https://capy-meal.vercel.app',
+            'services.google.client_id' => 'client-id',
+            'services.google.redirect' => 'https://capymeal.onrender.com/api/auth/google/callback',
+        ]);
+
+        // Un X-Forwarded-Host que no es el frontend no se respeta.
+        $location = $this->withHeader('X-Forwarded-Host', 'sitio-ajeno.example')
+            ->get('/api/auth/google/redirect')
+            ->headers->get('Location');
+
+        $this->assertStringContainsString(
+            'redirect_uri='.urlencode('https://capymeal.onrender.com/api/auth/google/callback'),
+            $location
+        );
     }
 
     public function test_existing_google_user_logs_in_again_without_duplicating(): void
