@@ -2,7 +2,7 @@
   <button
     v-if="!confirmingDeleteAccount"
     type="button"
-    class="settings-item settings-item--danger"
+    class="settings-item settings-item--action settings-item--danger"
     @click="confirmingDeleteAccount = true"
   >
     <v-icon :icon="`svg:${mdiDeleteOutline}`" class="settings-item__icon" />

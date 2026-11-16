@@ -64,8 +64,6 @@
     "themeDark": "Dark",
     "themeLight": "Light",
     "language": "Language",
-    "languageSpanish": "Español",
-    "languageEnglish": "English",
     "avatar": "Avatar",
     "avatarError": "Couldn't save your avatar. Try again.",
     "gravatarTitle": "Gravatar",
@@ -87,7 +85,10 @@
     "confirmDelete": "Yes, delete my account",
     "cancel": "Cancel",
     "confirmPasswordRequired": "Enter your password to confirm.",
-    "deleteOfflineError": "Couldn't delete: you're offline."
+    "deleteOfflineError": "Couldn't delete: you're offline.",
+    "sectionPreferences": "Preferences",
+    "sectionAccount": "Account",
+    "themeSystem": "System"
   },
   "diary": {
     "title": "My Diary",

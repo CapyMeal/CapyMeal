@@ -64,8 +64,6 @@
     "themeDark": "Oscuro",
     "themeLight": "Claro",
     "language": "Idioma",
-    "languageSpanish": "Español",
-    "languageEnglish": "English",
     "avatar": "Avatar",
     "avatarError": "No pude guardar el avatar. Intentá nuevamente.",
     "gravatarTitle": "Gravatar",
@@ -87,7 +85,10 @@
     "confirmDelete": "Sí, eliminar mi cuenta",
     "cancel": "Cancelar",
     "confirmPasswordRequired": "Ingresá tu contraseña para confirmar.",
-    "deleteOfflineError": "No se pudo eliminar: estás sin conexión."
+    "deleteOfflineError": "No se pudo eliminar: estás sin conexión.",
+    "sectionPreferences": "Preferencias",
+    "sectionAccount": "Cuenta",
+    "themeSystem": "Sistema"
   },
   "diary": {
     "title": "Mi Diario",

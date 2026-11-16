@@ -4,7 +4,7 @@
 // ya autoimportaba cada componente.
 import { createVuetify } from 'vuetify'
 import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from '@mdi/js'
-import { getInitialTheme } from '../utils/theme'
+import { getInitialTheme, vuetifyThemeName } from '../utils/theme'
 
 // Estos valores son copia de los tokens de ../styles/main.css (los mismos
 // hex, en el mismo orden). Vuetify necesita colores concretos para sus
@@ -51,11 +51,10 @@ const capymealDark = {
   },
 }
 
-const savedTheme = getInitialTheme()
 
 export default createVuetify({
   theme: {
-    defaultTheme: savedTheme === 'dark' ? 'capymealDark' : 'capymealLight',
+    defaultTheme: vuetifyThemeName(getInitialTheme()),
     themes: {
       capymealLight,
       capymealDark,

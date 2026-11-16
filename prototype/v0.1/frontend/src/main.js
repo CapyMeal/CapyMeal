@@ -10,7 +10,7 @@ import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
 import i18n, { initI18n } from './plugins/i18n'
-import { getInitialTheme } from './utils/theme'
+import { getInitialTheme, followSystemTheme } from './utils/theme'
 
 import './styles/vuetify-overrides.css'
 
@@ -95,6 +95,8 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 }
 
 app.use(router).use(vuetify).use(i18n)
+
+followSystemTheme(vuetify.theme)
 
 // El catálogo del idioma activo se pide aparte (ver plugins/i18n.js) -- la
 // app espera a que llegue antes de montarse para no arrancar mostrando
