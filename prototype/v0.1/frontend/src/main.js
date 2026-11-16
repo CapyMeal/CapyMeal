@@ -38,9 +38,23 @@ sessionStorage.removeItem('capymeal-reloaded-after-stale-chunk')
 // encontraba una pestaña abierta, aunque la recarga ya lo resolviera. Si
 // la recarga ya se intentó y vuelve a fallar, no se llama, y el error sí
 // llega a Sentry porque ahí hay un problema real.
+//
+// `reloading`: una misma navegación puede pedir varios archivos viejos a la
+// vez (el JS de la ruta y su CSS, como MainLayout-*.css). El primero
+// dispara la recarga y marca sessionStorage; sin esta marca en memoria, el
+// segundo veía esa marca, creía que la recarga ya se había intentado y
+// mandaba a Sentry un "Unable to preload CSS" que la recarga en curso ya
+// estaba resolviendo.
+let reloading = false
+
 window.addEventListener('vite:preloadError', (event) => {
+  if (reloading) {
+    event.preventDefault()
+    return
+  }
   if (sessionStorage.getItem('capymeal-reloaded-after-stale-chunk')) return
   event.preventDefault()
+  reloading = true
   sessionStorage.setItem('capymeal-reloaded-after-stale-chunk', '1')
   window.location.reload()
 })
