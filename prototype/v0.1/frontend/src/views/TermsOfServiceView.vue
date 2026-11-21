@@ -8,7 +8,7 @@
     <section class="privacy-section">
       <h2>{{ t('legal.terms.whatHeading') }}</h2>
       <i18n-t keypath="legal.terms.whatBody" tag="p">
-        <template #email><a href="mailto:hello@capymeal.app">hello@capymeal.app</a></template>
+        <template #email><a :href="`mailto:${CONTACT_EMAIL}`">{{ CONTACT_EMAIL }}</a></template>
       </i18n-t>
     </section>
 
@@ -52,6 +52,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LegalPageLayout from '../layouts/LegalPageLayout.vue'
+import { CONTACT_EMAIL } from '../config/contact'
 import { isAuthenticated } from '../stores/authStore'
 
 const { t } = useI18n()
