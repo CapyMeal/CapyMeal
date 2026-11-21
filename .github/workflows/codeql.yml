@@ -1,0 +1,48 @@
+# Análisis de seguridad del código con CodeQL (gratis en repos públicos).
+#
+# Configuración "avanzada" y no la automática de GitHub: la automática solo
+# analiza los lenguajes que detecta GitHub en el repo, y no reconoce el
+# JavaScript del frontend (lo cuenta como Vue), así que solo revisaba los
+# workflows. El analizador de JavaScript también entiende los .vue.
+#
+# PHP (el backend) no está soportado por CodeQL; ahí cubren Larastan y los
+# tests (ver ci.yml).
+name: CodeQL
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+  schedule:
+    # Una vez por semana, aunque no haya cambios: las reglas de CodeQL se
+    # actualizan y pueden encontrar problemas nuevos en código viejo.
+    - cron: '23 9 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analizar (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, actions]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Preparar CodeQL
+        uses: github/codeql-action/init@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+
+      - name: Analizar
+        uses: github/codeql-action/analyze@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
+        with:
+          category: /language:${{ matrix.language }}
